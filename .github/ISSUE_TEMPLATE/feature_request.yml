@@ -1,0 +1,19 @@
+name: Feature request
+description: Suggest an idea for Arca
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like to happen?
+  - type: textarea
+    id: security
+    attributes:
+      label: Does it touch secrets or send anything outside the Mac?
+      description: If so, what and where. Arca keeps everything on-device.

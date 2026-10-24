@@ -1,0 +1,26 @@
+name: Bug report
+description: Something isn't working as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Never paste real passwords, variable values or vault files here. For security issues, use the Security tab instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. Open a project's Variables tab\n2. ..."
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version and Mac
+      placeholder: "26.0.1, MacBook Air M3"
+    validations:
+      required: true

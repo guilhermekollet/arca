@@ -1,0 +1,12 @@
+# Swift
+.build/
+dist/
+build/
+*.xcodeproj/
+.swiftpm/
+xcuserdata/
+Resources/AppIcon.iconset/
+
+# Local tooling
+.claude/
+.DS_Store

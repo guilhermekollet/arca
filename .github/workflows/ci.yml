@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  app:
+    name: App (build and test)
+    # The app targets the macOS 26 SDK, so it needs a runner with Xcode 26.
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v7
+      - name: Swift version
+        run: swift --version
+      - name: Build
+        run: swift build -c release
+      - name: Test
+        run: swift test
