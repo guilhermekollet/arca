@@ -11,12 +11,12 @@
 
 /* Vault errors */
 "Não foi possível salvar o cofre: %@" = "Couldn't save the vault: %@";
-"O arquivo do cofre não é um cofre da Arca." = "The vault file isn't an Arca vault.";
-"Este cofre foi salvo por uma versão mais nova da Arca. Atualize o app para abri-lo." = "This vault was saved by a newer version of Arca. Update the app to open it.";
+"O arquivo do cofre não é um cofre do Chaves." = "The vault file isn't a Chaves vault.";
+"Este cofre foi salvo por uma versão mais nova do Chaves. Atualize o app para abri-lo." = "This vault was saved by a newer version of Chaves. Update the app to open it.";
 "Este cofre foi trancado com outra chave: ele foi criado em outro Mac ou a chave deste Mac foi trocada." = "This vault was locked with another key: it was created on another Mac, or this Mac's key was replaced.";
 "O arquivo do cofre está danificado ou foi alterado." = "The vault file is damaged or was changed.";
 "A chave deste Mac não está no Keychain, então o cofre não pode ser aberto aqui." = "This Mac's key isn't in the Keychain, so the vault can't be opened here.";
-"Este Mac não tem Secure Enclave, que a Arca usa para guardar a chave do cofre." = "This Mac has no Secure Enclave, which Arca uses to keep the vault's key.";
+"Este Mac não tem Secure Enclave, que o Chaves usa para guardar a chave do cofre." = "This Mac has no Secure Enclave, which Chaves uses to keep the vault's key.";
 
 /* Main window */
 "Novo projeto" = "New project";
@@ -144,7 +144,7 @@
 /* Menu bar panel */
 "Buscar acesso ou variável" = "Search accesses and variables";
 "Crie o cofre para começar." = "Create the vault to get started.";
-"Abrir a Arca" = "Open Arca";
+"Abrir o Chaves" = "Open Chaves";
 "Nenhum projeto ainda." = "No projects yet.";
 "Nada encontrado." = "Nothing found.";
 "Ajustes" = "Settings";
@@ -160,14 +160,14 @@
 "%lld s" = "%lld s";
 "Cofre" = "Vault";
 "Cópias de segurança" = "Backups";
-"O arquivo e as cópias são criptografados e só abrem neste Mac, com a chave do Secure Enclave. A Arca guarda as %lld cópias mais recentes, uma por sessão." = "The file and its backups are encrypted and only open on this Mac, with the Secure Enclave's key. Arca keeps the %lld most recent backups, one per session.";
+"O arquivo e as cópias são criptografados e só abrem neste Mac, com a chave do Secure Enclave. O Chaves guarda as %lld cópias mais recentes, uma por sessão." = "The file and its backups are encrypted and only open on this Mac, with the Secure Enclave's key. Chaves keeps the %lld most recent backups, one per session.";
 "Código-fonte no GitHub" = "Source code on GitHub";
 "Salvar" = "Save";
 "Cancelar" = "Cancel";
 
 
 /* Introduction, menus and help tags */
-"Boas-vindas à Arca" = "Welcome to Arca";
+"Boas-vindas ao Chaves" = "Welcome to Chaves";
 "O contexto de cada projeto" = "Each project's context";
 "Como rodar, como publicar, onde está cada coisa e por que foi feito assim, para retomar meses depois." = "How to run it, how to ship it, where everything is and why it was built this way, to pick it up months later.";
 "Variáveis e acessos juntos" = "Variables and accesses together";
@@ -178,7 +178,7 @@
 "Crie um ambiente, como development ou production, para guardar as variáveis dele." = "Create an environment, such as development or production, to keep its variables.";
 "Trocar o símbolo" = "Change the symbol";
 "Situação do projeto" = "The project's status";
-"Ajustes da Arca" = "Arca Settings";
+"Ajustes do Chaves" = "Chaves Settings";
 "Ajustes…" = "Settings…";
 
 
@@ -186,10 +186,10 @@
 "%lld h" = "%lld h";
 "Ficar destrancado por" = "Stay unlocked for";
 "Trancar antes, sem uso do Mac após" = "Lock sooner, after the Mac is idle for";
-"Touch ID destranca o cofre pelo tempo escolhido; depois ele tranca e pede de novo. Também tranca quando você fecha a Arca. Senhas e valores secretos copiados não entram no histórico de gerenciadores de área de transferência." = "Touch ID unlocks the vault for the time you choose; then it locks and asks again. It also locks when you quit Arca. Copied passwords and secret values stay out of clipboard managers' history.";
+"Touch ID destranca o cofre pelo tempo escolhido; depois ele tranca e pede de novo. Também tranca quando você fecha o Chaves. Senhas e valores secretos copiados não entram no histórico de gerenciadores de área de transferência." = "Touch ID unlocks the vault for the time you choose; then it locks and asks again. It also locks when you quit Chaves. Copied passwords and secret values stay out of clipboard managers' history.";
 "Buscar em %@" = "Search %@";
 "Voltar aos projetos" = "Back to the projects";
-"Abrir na janela da Arca" = "Open in Arca's window";
+"Abrir na janela do Chaves" = "Open in the Chaves window";
 "Este projeto ainda não tem acessos nem variáveis." = "This project has no accesses or variables yet.";
 "Projetos" = "Projects";
 "Acessos e variáveis" = "Accesses and variables";

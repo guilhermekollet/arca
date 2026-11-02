@@ -45,7 +45,7 @@ struct MenuBarPanel: View {
         }
         .padding(14)
         .frame(width: 330)
-        .arcaSurface()
+        .chavesSurface()
         // Esc inside a project goes back to the list, like a back button.
         .onKeyPress(.escape) {
             guard projectID != nil else { return .ignored }
@@ -69,7 +69,7 @@ struct MenuBarPanel: View {
         HStack(spacing: 6) {
             Image(nsImage: Theme.menuBarIcon)
                 .renderingMode(.template)
-            Text("Arca")
+            Text("Chaves")
                 .font(Theme.display(19))
             Spacer()
             if vault.state == .unlocked && !vault.isSample {
@@ -87,7 +87,7 @@ struct MenuBarPanel: View {
                 .font(.system(size: 13, weight: .semibold))
                 .lineLimit(1)
             Spacer()
-            IconButton(symbol: "macwindow", help: localized("Abrir na janela da Arca")) { open(project.id, at: .context) }
+            IconButton(symbol: "macwindow", help: localized("Abrir na janela do Chaves")) { open(project.id, at: .context) }
         }
     }
 
@@ -105,7 +105,7 @@ struct MenuBarPanel: View {
                 .buttonStyle(PillButtonStyle())
                 .disabled(vault.isUnlocking)
             } else {
-                Button(localized("Abrir a Arca")) { present(mainWindowID, using: openWindow) }
+                Button(localized("Abrir o Chaves")) { present(mainWindowID, using: openWindow) }
                     .buttonStyle(PillButtonStyle())
             }
         }
@@ -199,7 +199,7 @@ struct MenuBarPanel: View {
 
     private var footer: some View {
         HStack(spacing: 12) {
-            link(localized("Abrir a Arca")) { present(mainWindowID, using: openWindow) }
+            link(localized("Abrir o Chaves")) { present(mainWindowID, using: openWindow) }
             link(localized("Ajustes")) { present(settingsWindowID, using: openWindow) }
             Spacer(minLength: 12)
             link(localized("Sair")) { NSApp.terminate(nil) }
@@ -295,7 +295,7 @@ struct QuickMatchRow: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .help(localized("Abrir na janela da Arca"))
+            .help(localized("Abrir na janela do Chaves"))
             switch match.item {
             case .credential(let credential):
                 if !credential.username.isEmpty {

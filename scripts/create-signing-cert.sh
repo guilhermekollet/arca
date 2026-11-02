@@ -1,12 +1,12 @@
 #!/bin/bash
 # Creates a self-signed code-signing certificate in your login keychain, so local builds keep a
-# stable signature and the Keychain keeps letting Arca read its device key between rebuilds.
+# stable signature and the Keychain keeps letting Chaves read its device key between rebuilds.
 # It is only trusted for signing on this Mac; it is not a Developer ID certificate.
 #
-# Usage: scripts/create-signing-cert.sh ["Certificate name"]   (default: "Arca Local Signing")
+# Usage: scripts/create-signing-cert.sh ["Certificate name"]   (default: "Chaves Local Signing")
 set -euo pipefail
 
-NAME="${1:-Arca Local Signing}"
+NAME="${1:-Chaves Local Signing}"
 if security find-identity -p codesigning | grep -q "$NAME"; then
   echo "\"$NAME\" already exists in your keychain."
   exit 0

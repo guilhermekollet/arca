@@ -5,13 +5,13 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>CFBundleName</key>
-    <string>Arca</string>
+    <string>Chaves</string>
     <key>CFBundleDisplayName</key>
-    <string>Arca</string>
+    <string>Chaves</string>
     <key>CFBundleIdentifier</key>
-    <string>com.guilhermekollet.arca</string>
+    <string>com.guilhermekollet.chaves</string>
     <key>CFBundleExecutable</key>
-    <string>Arca</string>
+    <string>Chaves</string>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>CFBundlePackageType</key>

@@ -16,7 +16,7 @@ struct SettingsView: View {
                 .font(Theme.display(26))
                 .padding(.bottom, 4)
 
-            Card(localized("Segurança"), hint: localized("Touch ID destranca o cofre pelo tempo escolhido; depois ele tranca e pede de novo. Também tranca quando você fecha a Arca. Senhas e valores secretos copiados não entram no histórico de gerenciadores de área de transferência.")) {
+            Card(localized("Segurança"), hint: localized("Touch ID destranca o cofre pelo tempo escolhido; depois ele tranca e pede de novo. Também tranca quando você fecha o Chaves. Senhas e valores secretos copiados não entram no histórico de gerenciadores de área de transferência.")) {
                 VStack(spacing: 8) {
                     row(localized("Ficar destrancado por")) {
                         Picker(localized("Ficar destrancado por"), selection: $unlockMinutes) {
@@ -47,7 +47,7 @@ struct SettingsView: View {
                 }
             }
 
-            Card(localized("Cofre"), hint: localized("O arquivo e as cópias são criptografados e só abrem neste Mac, com a chave do Secure Enclave. A Arca guarda as \(Vault.backupCount) cópias mais recentes, uma por sessão.")) {
+            Card(localized("Cofre"), hint: localized("O arquivo e as cópias são criptografados e só abrem neste Mac, com a chave do Secure Enclave. O Chaves guarda as \(Vault.backupCount) cópias mais recentes, uma por sessão.")) {
                 VStack(alignment: .leading, spacing: 10) {
                     Text((Vault.fileURL.path as NSString).abbreviatingWithTildeInPath)
                         .font(.system(size: 11.5, design: .monospaced))
@@ -68,9 +68,9 @@ struct SettingsView: View {
             }
 
             HStack(spacing: 6) {
-                Text("Arca \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "dev")")
+                Text("Chaves \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "dev")")
                 Text("·")
-                Link(localized("Código-fonte no GitHub"), destination: URL(string: "https://github.com/guilhermekollet/arca")!)
+                Link(localized("Código-fonte no GitHub"), destination: URL(string: "https://github.com/guilhermekollet/chaves")!)
                     .foregroundStyle(Theme.accent)
             }
             .font(.system(size: 11.5))
@@ -78,7 +78,7 @@ struct SettingsView: View {
         }
         .padding(22)
         .frame(width: 460, alignment: .topLeading)
-        .arcaSurface()
+        .chavesSurface()
     }
 
     private func row<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {

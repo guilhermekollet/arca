@@ -1,7 +1,7 @@
 import AppKit
 import SwiftUI
 
-/// Arca's visual identity, shared with Mara AI: near-black, off-white and lavender as the only
+/// The app's visual identity, shared with Mara AI: near-black, off-white and lavender as the only
 /// accent, the system font, pill-shaped controls and a dot-matrix mark (braces here,
 /// "M" there).
 enum Theme {
@@ -46,7 +46,7 @@ enum Theme {
 
 extension View {
     /// The app's look on a window or panel: dark, ink behind, off-white text, lavender controls.
-    func arcaSurface() -> some View {
+    func chavesSurface() -> some View {
         background(Theme.ink)
             .foregroundStyle(Theme.paper)
             .tint(Theme.accent)
@@ -78,7 +78,7 @@ struct DotMark: View {
             }
         }
         .accessibilityElement()
-        .accessibilityLabel("Arca")
+        .accessibilityLabel("Chaves")
     }
 }
 

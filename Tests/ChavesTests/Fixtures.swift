@@ -1,10 +1,10 @@
 // Test helpers that need Foundation or CryptoKit live here, in a file that does not import
 // Testing: with only the Command Line Tools installed (no Xcode), importing Testing next to
 // Foundation fails because the `_Testing_Foundation` overlay is missing. Test files import just
-// Testing and Arca and talk to these helpers through plain values.
+// Testing and Chaves and talk to these helpers through plain values.
 import CryptoKit
 import Foundation
-@testable import Arca
+@testable import Chaves
 
 // MARK: Vault file
 
@@ -74,9 +74,9 @@ func sealsDiffer() -> Bool {
 /// Writes a vault to a temporary folder and reads it back: whether it is the same, and the file's
 /// permissions in octal ("600").
 func vaultOnDisk() -> (sameAfterReading: Bool, permissions: String, plaintextVisible: Bool) {
-    let folder = FileManager.default.temporaryDirectory.appendingPathComponent("arca-tests-\(UUID().uuidString)")
+    let folder = FileManager.default.temporaryDirectory.appendingPathComponent("chaves-tests-\(UUID().uuidString)")
     defer { try? FileManager.default.removeItem(at: folder) }
-    let url = folder.appendingPathComponent("vault.arca")
+    let url = folder.appendingPathComponent("vault.chaves")
     do {
         let (file, _) = try VaultFile.create(try Vault.encode(VaultContents(projects: SampleVault.projects)), for: P256.KeyAgreement.PrivateKey())
         try file.write(to: url)
@@ -92,7 +92,7 @@ func vaultOnDisk() -> (sameAfterReading: Bool, permissions: String, plaintextVis
 
 /// A file that isn't JSON at all is reported as not being a vault.
 func readingGarbage() -> String {
-    let url = FileManager.default.temporaryDirectory.appendingPathComponent("arca-garbage-\(UUID().uuidString).arca")
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent("chaves-garbage-\(UUID().uuidString).chaves")
     defer { try? FileManager.default.removeItem(at: url) }
     try? Data("not a vault".utf8).write(to: url)
     do {
@@ -154,7 +154,7 @@ func projectsMatching(_ query: String) -> [String] {
 
 private let sources = URL(fileURLWithPath: #filePath)
     .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-    .appendingPathComponent("Sources/Arca")
+    .appendingPathComponent("Sources/Chaves")
 
 /// The interface's translation table for `language` ("en", "es"), read from the sources.
 func translationTable(_ language: String) -> [String: String] {
@@ -169,7 +169,7 @@ func formatSpecifiers(_ text: String) -> [String] {
         .map { String(text[Range($0.range, in: text)!]) }
 }
 
-/// The key of every `localized("…")` in Sources/Arca, the way `String.LocalizationValue` builds
+/// The key of every `localized("…")` in Sources/Chaves, the way `String.LocalizationValue` builds
 /// it, except that interpolations become `%@` whatever their type (the source doesn't say).
 func localizedKeysInSources() -> [String] {
     let files = (try? FileManager.default.contentsOfDirectory(at: sources, includingPropertiesForKeys: nil)) ?? []

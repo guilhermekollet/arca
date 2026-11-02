@@ -1,6 +1,6 @@
 import Foundation
 
-/// The made-up vault `Arca --sample` opens, for screenshots and UI work. Every value is fake.
+/// The made-up vault `Chaves --sample` opens, for screenshots and UI work. Every value is fake.
 enum SampleVault {
     static var projects: [Project] {
         let now = Date()

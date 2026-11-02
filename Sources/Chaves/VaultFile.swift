@@ -20,7 +20,7 @@ extension SecureEnclave.P256.KeyAgreement.PrivateKey: AgreementKey {}
 /// works after Touch ID or the Mac's password. The header is bound to both seals, so it can't be
 /// swapped from another vault.
 struct VaultFile: Codable, Equatable {
-    static let formatName = "arca-vault"
+    static let formatName = "chaves-vault"
     static let currentVersion = 1
 
     var format = VaultFile.formatName
@@ -112,7 +112,7 @@ struct VaultFile: Codable, Equatable {
         secret.hkdfDerivedSymmetricKey(
             using: SHA256.self,
             salt: ephemeral + recipient,
-            sharedInfo: Data("arca vault key v1".utf8),
+            sharedInfo: Data("chaves vault key v1".utf8),
             outputByteCount: 32
         )
     }
@@ -151,9 +151,9 @@ enum VaultError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .notAVault:
-            localized("O arquivo do cofre não é um cofre da Arca.")
+            localized("O arquivo do cofre não é um cofre do Chaves.")
         case .newerVersion:
-            localized("Este cofre foi salvo por uma versão mais nova da Arca. Atualize o app para abri-lo.")
+            localized("Este cofre foi salvo por uma versão mais nova do Chaves. Atualize o app para abri-lo.")
         case .otherDeviceKey:
             localized("Este cofre foi trancado com outra chave: ele foi criado em outro Mac ou a chave deste Mac foi trocada.")
         case .damaged:
@@ -161,7 +161,7 @@ enum VaultError: LocalizedError, Equatable {
         case .missingDeviceKey:
             localized("A chave deste Mac não está no Keychain, então o cofre não pode ser aberto aqui.")
         case .noSecureEnclave:
-            localized("Este Mac não tem Secure Enclave, que a Arca usa para guardar a chave do cofre.")
+            localized("Este Mac não tem Secure Enclave, que o Chaves usa para guardar a chave do cofre.")
         }
     }
 }

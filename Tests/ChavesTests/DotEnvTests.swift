@@ -1,5 +1,5 @@
 import Testing
-@testable import Arca
+@testable import Chaves
 
 @Suite("Dotenv")
 struct DotEnvTests {
@@ -25,7 +25,7 @@ struct DotEnvTests {
     }
 
     @Test func trimsSpacesAroundTheEqualsSign() {
-        #expect(pairs("  NAME =  Arca  ") == ["NAME=Arca"])
+        #expect(pairs("  NAME =  Chaves  ") == ["NAME=Chaves"])
     }
 
     @Test func understandsQuotes() {

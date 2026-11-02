@@ -1,5 +1,5 @@
 import Testing
-@testable import Arca
+@testable import Chaves
 
 @Suite("Search")
 struct SearchTests {

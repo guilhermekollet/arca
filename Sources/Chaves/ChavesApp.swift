@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct ArcaApp: App {
+struct ChavesApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @StateObject private var vault = Vault.shared
 
@@ -10,17 +10,17 @@ struct ArcaApp: App {
     }
 
     var body: some Scene {
-        Window("Arca", id: mainWindowID) {
+        Window("Chaves", id: mainWindowID) {
             RootView()
                 .environmentObject(vault)
                 .frame(minWidth: 860, minHeight: 540)
         }
         .defaultSize(width: 1080, height: 680)
-        .commands { ArcaCommands(vault: vault) }
+        .commands { ChavesCommands(vault: vault) }
 
         // A window rather than a Settings scene, as in Mara: it opens the same way from the menu
-        // bar panel and from ⌘, (see ArcaCommands).
-        Window(localized("Ajustes da Arca"), id: settingsWindowID) {
+        // bar panel and from ⌘, (see ChavesCommands).
+        Window(localized("Ajustes do Chaves"), id: settingsWindowID) {
             SettingsView().environmentObject(vault)
         }
         .windowResizability(.contentSize)
@@ -38,7 +38,7 @@ let mainWindowID = "main"
 
 /// The menu bar's commands, where a Mac app keeps them: Settings under the app menu with ⌘,,
 /// a new project in File with ⌘N, and locking the vault with ⇧⌘L.
-struct ArcaCommands: Commands {
+struct ChavesCommands: Commands {
     @ObservedObject var vault: Vault
     @Environment(\.openWindow) private var openWindow
 
@@ -60,11 +60,11 @@ struct ArcaCommands: Commands {
     }
 }
 
-/// Keeps Arca in the menu bar after its window closes, and saves before quitting.
+/// Keeps Chaves in the menu bar after its window closes, and saves before quitting.
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Development tool: `Arca --snapshot folder` draws every screen with the sample vault and
+        // Development tool: `Chaves --snapshot folder` draws every screen with the sample vault and
         // quits, so the interface can be checked without Touch ID or a real vault.
         if let flag = CommandLine.arguments.firstIndex(of: "--snapshot"), CommandLine.arguments.count > flag + 1 {
             let folder = URL(fileURLWithPath: CommandLine.arguments[flag + 1])

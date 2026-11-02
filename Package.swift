@@ -2,19 +2,19 @@
 import PackageDescription
 
 let package = Package(
-    name: "Arca",
-    // The interface is written in Brazilian Portuguese and translated in Sources/Arca/Resources.
+    name: "Chaves",
+    // The interface is written in Brazilian Portuguese and translated in Sources/Chaves/Resources.
     defaultLocalization: "pt-BR",
     platforms: [.macOS(.v26)],
     targets: [
         .executableTarget(
-            name: "Arca",
+            name: "Chaves",
             resources: [.process("Resources")],
             swiftSettings: [.swiftLanguageMode(.v5)]
         ),
         .testTarget(
-            name: "ArcaTests",
-            dependencies: ["Arca"],
+            name: "ChavesTests",
+            dependencies: ["Chaves"],
             swiftSettings: [.swiftLanguageMode(.v5)]
         ),
     ]
