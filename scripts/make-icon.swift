@@ -1,4 +1,4 @@
-// Generates Resources/AppIcon.icns: a dot-matrix "A" on a dark background, like Mara AI's "M".
+// Generates Resources/AppIcon.icns: dot-matrix braces "{ }" on a dark background, in the style of Mara AI's "M".
 // Usage: swift scripts/make-icon.swift
 import AppKit
 
@@ -7,7 +7,7 @@ let paper = NSColor(srgbRed: 0xFA / 255, green: 0xFA / 255, blue: 0xFA / 255, al
 let accent = NSColor(srgbRed: 0xB8 / 255, green: 0xA4 / 255, blue: 0xF8 / 255, alpha: 1)
 
 // Rows from top to bottom; "o" is the accent dot.
-let glyph = [".xxx.", "x...x", "xxoxx", "x...x", "x...x"]
+let glyph = [".x.x.", "x...x", "x.o.x", "x...x", ".x.x."]
 
 func render(_ pixels: Int) -> Data {
     let rep = NSBitmapImageRep(

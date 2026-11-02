@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 
 /// Arca's visual identity, shared with Mara AI: near-black, off-white and lavender as the only
-/// accent, the system font, pill-shaped controls and a dot-matrix letter as the mark ("A" here,
+/// accent, the system font, pill-shaped controls and a dot-matrix mark (braces here,
 /// "M" there).
 enum Theme {
     static let ink = Color(red: 0x0D / 255, green: 0x0D / 255, blue: 0x0D / 255)
@@ -18,10 +18,11 @@ enum Theme {
         .system(size: size * 0.86, weight: .semibold)
     }
 
-    /// The 5 × 5 "A"; "o" is the accent dot, in the middle of the crossbar.
-    static let glyph = [".xxx.", "x...x", "xxoxx", "x...x", "x...x"]
+    /// The 5 × 5 braces, "{ }": the variables and code a project keeps. "o" is the accent dot,
+    /// in the middle.
+    static let glyph = [".x.x.", "x...x", "x.o.x", "x...x", ".x.x."]
 
-    /// The "A" as a template image for the menu bar.
+    /// The braces as a template image for the menu bar.
     static let menuBarIcon: NSImage = {
         let side: CGFloat = 18
         let image = NSImage(size: NSSize(width: side, height: side), flipped: true) { _ in
@@ -53,7 +54,7 @@ extension View {
     }
 }
 
-/// The icon's dot-matrix "A", with its lavender dot. The dots pop in from left to right when
+/// The icon's dot-matrix braces, with their lavender dot. The dots pop in from left to right when
 /// `shown` turns on.
 struct DotMark: View {
     let shown: Bool
