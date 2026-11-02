@@ -64,7 +64,7 @@ struct MenuBarPanel: View {
         return localized("Buscar acesso ou variável")
     }
 
-    /// Logo and name; while the vault is open, when it locks again and the lock.
+    /// Logo and name, with the lock on the right.
     private var header: some View {
         HStack(spacing: 6) {
             Image(nsImage: Theme.menuBarIcon)
@@ -72,13 +72,6 @@ struct MenuBarPanel: View {
             Text("Arca")
                 .font(Theme.display(19))
             Spacer()
-            if vault.state == .unlocked, let locksAt = vault.locksAt {
-                let time = locksAt.formatted(date: .omitted, time: .shortened)
-                Text(localized("até \(time)"))
-                    .font(.system(size: 11))
-                    .foregroundStyle(Theme.muted)
-                    .help(localized("O cofre tranca sozinho às \(time). Para destrancar de novo, Touch ID."))
-            }
             if vault.state == .unlocked && !vault.isSample {
                 IconButton(symbol: "lock", help: localized("Trancar o cofre")) { vault.lock() }
             }
@@ -111,9 +104,6 @@ struct MenuBarPanel: View {
                 }
                 .buttonStyle(PillButtonStyle())
                 .disabled(vault.isUnlocking)
-                Text(localized("Fica destrancado por \(Preferences.duration(Preferences.unlockMinutes))."))
-                    .font(.system(size: 11))
-                    .foregroundStyle(Theme.muted)
             } else {
                 Button(localized("Abrir a Arca")) { present(mainWindowID, using: openWindow) }
                     .buttonStyle(PillButtonStyle())

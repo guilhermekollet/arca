@@ -108,7 +108,7 @@ final class Vault: ObservableObject {
             // Checked before asking for Touch ID: a vault for another key can't open whatever the person does.
             guard let publicKey = DeviceKey.publicKey() else { throw VaultError.missingDeviceKey }
             guard publicKey == file.recipient else { throw VaultError.otherDeviceKey }
-            let deviceKey = try await DeviceKey.unlock(reason: localized("destrancar o cofre por \(Preferences.duration(Preferences.unlockMinutes))"))
+            let deviceKey = try await DeviceKey.unlock(reason: localized("destrancar o cofre"))
             let key = try file.unwrapKey(with: deviceKey)
             let contents = try Self.decode(file.open(with: key))
             self.file = file

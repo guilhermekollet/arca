@@ -6,6 +6,7 @@
 "Começar um cofre novo…" = "Start a new vault…";
 "Começar um cofre novo?" = "Start a new vault?";
 "Começar de novo" = "Start over";
+"destrancar o cofre" = "unlock the vault";
 "O cofre atual não é apagado: ele é renomeado e fica na mesma pasta, caso você recupere a chave." = "The current vault isn't deleted: it is renamed and stays in the same folder, in case you get the key back.";
 
 /* Vault errors */
@@ -183,13 +184,9 @@
 
 /* Menu bar projects and unlock duration */
 "%lld h" = "%lld h";
-"destrancar o cofre por %@" = "unlock the vault for %@";
-"Fica destrancado por %@." = "Stays unlocked for %@.";
 "Ficar destrancado por" = "Stay unlocked for";
 "Trancar antes, sem uso do Mac após" = "Lock sooner, after the Mac is idle for";
 "Touch ID destranca o cofre pelo tempo escolhido; depois ele tranca e pede de novo. Também tranca quando você fecha a Arca. Senhas e valores secretos copiados não entram no histórico de gerenciadores de área de transferência." = "Touch ID unlocks the vault for the time you choose; then it locks and asks again. It also locks when you quit Arca. Copied passwords and secret values stay out of clipboard managers' history.";
-"até %@" = "until %@";
-"O cofre tranca sozinho às %@. Para destrancar de novo, Touch ID." = "The vault locks by itself at %@. Touch ID unlocks it again.";
 "Buscar em %@" = "Search %@";
 "Voltar aos projetos" = "Back to the projects";
 "Abrir na janela da Arca" = "Open in Arca's window";

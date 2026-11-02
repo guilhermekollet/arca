@@ -128,10 +128,6 @@ struct LockScreen: View {
             .keyboardShortcut(.defaultAction)
             .disabled(vault.isUnlocking)
             .padding(.top, 28)
-            Text(localized("Fica destrancado por \(Preferences.duration(Preferences.unlockMinutes))."))
-                .font(.system(size: 12))
-                .foregroundStyle(Theme.muted)
-                .padding(.top, 12)
         case .unreadable(let reason):
             Text(reason)
                 .font(.system(size: 13.5))
