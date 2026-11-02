@@ -214,3 +214,29 @@ func localizedKeysInSources() -> [String] {
 func normalizedKey(_ key: String) -> String {
     key.replacingOccurrences(of: "%l{0,2}[dfu]", with: "%@", options: .regularExpression)
 }
+
+// MARK: Menu bar and locking
+
+/// The titles the menu bar lists inside the sample project called `projectName`, as in
+/// `quickMatchTitles`.
+func projectItemTitles(_ projectName: String, query: String) -> [String] {
+    guard let project = SampleVault.projects.first(where: { $0.name == projectName }) else { return ["no such project"] }
+    return Search.items(in: project, query: query).map { match in
+        switch match.item {
+        case .credential(let credential): credential.displayTitle
+        case .variable(let variable, let environment): "\(variable.key)@\(environment)"
+        }
+    }
+}
+
+/// Whether the vault locks `minutesSinceUnlock` after Touch ID, with an unlock that lasts
+/// `unlockMinutes`, the Mac idle for `idleMinutes` and the idle lock set to `idleLock` minutes.
+func locks(minutesSinceUnlock: Double, unlockMinutes: Int, idleMinutes: Double = 0, idleLock: Int = 0) -> Bool {
+    let unlockedAt = Date(timeIntervalSinceReferenceDate: 0)
+    return AutoLock.shouldLock(
+        now: unlockedAt.addingTimeInterval(minutesSinceUnlock * 60),
+        locksAt: unlockedAt.addingTimeInterval(TimeInterval(unlockMinutes * 60)),
+        idleSeconds: idleMinutes * 60,
+        idleMinutes: idleLock
+    )
+}

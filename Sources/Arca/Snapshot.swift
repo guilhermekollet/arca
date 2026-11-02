@@ -30,6 +30,9 @@ enum Snapshot {
         await draw(SettingsView().environmentObject(vault), size: nil, to: folder, name: "settings")
         await draw(MenuBarPanel().environmentObject(vault), size: nil, to: folder, name: "panel")
         await draw(MenuBarPanel(query: "aurora prod").environmentObject(vault), size: nil, to: folder, name: "panel-search")
+        await draw(MenuBarPanel(project: vault.projects.first?.id).environmentObject(vault), size: nil, to: folder, name: "panel-project")
+        await draw(MenuBarPanel(query: "prod", project: vault.projects.first?.id).environmentObject(vault), size: nil, to: folder, name: "panel-project-search")
+        await draw(MenuBarPanel().environmentObject(Vault(previewing: .locked)), size: nil, to: folder, name: "panel-locked")
         if let credential = vault.projects.first?.credentials.last {
             await draw(CredentialEditor(credential: .constant(credential)) {}, size: nil, to: folder, name: "credential-editor")
         }

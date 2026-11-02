@@ -5,7 +5,8 @@ let settingsWindowID = "settings"
 /// Settings, laid out like Mara's: a title, then a card per subject.
 struct SettingsView: View {
     @EnvironmentObject private var vault: Vault
-    @AppStorage(Preferences.lockMinutesKey) private var lockMinutes = 15
+    @AppStorage(Preferences.unlockMinutesKey) private var unlockMinutes = 120
+    @AppStorage(Preferences.lockMinutesKey) private var lockMinutes = 0
     @AppStorage(Preferences.lockOnSleepKey) private var lockOnSleep = true
     @AppStorage(Preferences.clipboardSecondsKey) private var clipboardSeconds = 30
 
@@ -15,12 +16,19 @@ struct SettingsView: View {
                 .font(Theme.display(26))
                 .padding(.bottom, 4)
 
-            Card(localized("Segurança"), hint: localized("O cofre também tranca quando você fecha a Arca. Senhas e valores secretos copiados não entram no histórico de gerenciadores de área de transferência.")) {
+            Card(localized("Segurança"), hint: localized("Touch ID destranca o cofre pelo tempo escolhido; depois ele tranca e pede de novo. Também tranca quando você fecha a Arca. Senhas e valores secretos copiados não entram no histórico de gerenciadores de área de transferência.")) {
                 VStack(spacing: 8) {
-                    row(localized("Trancar sem uso do Mac após")) {
-                        Picker(localized("Trancar sem uso do Mac após"), selection: $lockMinutes) {
+                    row(localized("Ficar destrancado por")) {
+                        Picker(localized("Ficar destrancado por"), selection: $unlockMinutes) {
+                            ForEach(Preferences.unlockMinuteChoices, id: \.self) { minutes in
+                                Text(Preferences.duration(minutes)).tag(minutes)
+                            }
+                        }
+                    }
+                    row(localized("Trancar antes, sem uso do Mac após")) {
+                        Picker(localized("Trancar antes, sem uso do Mac após"), selection: $lockMinutes) {
                             ForEach(Preferences.lockMinuteChoices, id: \.self) { minutes in
-                                Text(minutes == 0 ? localized("Nunca") : localized("\(minutes) min")).tag(minutes)
+                                Text(minutes == 0 ? localized("Nunca") : Preferences.duration(minutes)).tag(minutes)
                             }
                         }
                     }

@@ -7,7 +7,6 @@
 "Começar um cofre novo?" = "¿Empezar una bóveda nueva?";
 "Começar de novo" = "Empezar de nuevo";
 "O cofre atual não é apagado: ele é renomeado e fica na mesma pasta, caso você recupere a chave." = "La bóveda actual no se borra: se le cambia el nombre y queda en la misma carpeta, por si recuperas la clave.";
-"destrancar o cofre" = "abrir la bóveda";
 
 /* Vault errors */
 "Não foi possível salvar o cofre: %@" = "No se pudo guardar la bóveda: %@";
@@ -144,10 +143,8 @@
 /* Menu bar panel */
 "Buscar acesso ou variável" = "Buscar accesos y variables";
 "Crie o cofre para começar." = "Crea la bóveda para empezar.";
-"Destrancar" = "Abrir";
 "Abrir a Arca" = "Abrir Arca";
 "Nenhum projeto ainda." = "Aún no hay proyectos.";
-"Recentes" = "Recientes";
 "Nada encontrado." = "No se encontró nada.";
 "Ajustes" = "Ajustes";
 "Sair" = "Salir";
@@ -155,7 +152,6 @@
 
 /* Settings */
 "Segurança" = "Seguridad";
-"Trancar sem uso do Mac após" = "Cerrar tras no usar el Mac durante";
 "Nunca" = "Nunca";
 "%lld min" = "%lld min";
 "Trancar quando o Mac dormir ou a tela bloquear" = "Cerrar cuando el Mac duerma o se bloquee la pantalla";
@@ -181,7 +177,23 @@
 "Crie um ambiente, como development ou production, para guardar as variáveis dele." = "Crea un entorno, como development o production, para guardar sus variables.";
 "Trocar o símbolo" = "Cambiar el símbolo";
 "Situação do projeto" = "Estado del proyecto";
-"Abrir no projeto" = "Abrir en el proyecto";
 "Ajustes da Arca" = "Ajustes de Arca";
 "Ajustes…" = "Ajustes…";
-"O cofre também tranca quando você fecha a Arca. Senhas e valores secretos copiados não entram no histórico de gerenciadores de área de transferência." = "La bóveda también se cierra al salir de Arca. Las contraseñas y los valores secretos copiados no entran en el historial de los gestores de portapapeles.";
+
+
+/* Menu bar projects and unlock duration */
+"%lld h" = "%lld h";
+"destrancar o cofre por %@" = "abrir la bóveda durante %@";
+"Fica destrancado por %@." = "Queda abierta durante %@.";
+"Ficar destrancado por" = "Mantener abierta durante";
+"Trancar antes, sem uso do Mac após" = "Cerrar antes, tras no usar el Mac durante";
+"Touch ID destranca o cofre pelo tempo escolhido; depois ele tranca e pede de novo. Também tranca quando você fecha a Arca. Senhas e valores secretos copiados não entram no histórico de gerenciadores de área de transferência." = "Touch ID abre la bóveda durante el tiempo que elijas; después se cierra y vuelve a pedirlo. También se cierra al salir de Arca. Las contraseñas y los valores secretos copiados no entran en el historial de los gestores de portapapeles.";
+"até %@" = "hasta las %@";
+"O cofre tranca sozinho às %@. Para destrancar de novo, Touch ID." = "La bóveda se cierra sola a las %@. Touch ID la vuelve a abrir.";
+"Buscar em %@" = "Buscar en %@";
+"Voltar aos projetos" = "Volver a los proyectos";
+"Abrir na janela da Arca" = "Abrir en la ventana de Arca";
+"Este projeto ainda não tem acessos nem variáveis." = "Este proyecto aún no tiene accesos ni variables.";
+"Projetos" = "Proyectos";
+"Acessos e variáveis" = "Accesos y variables";
+"Ver os acessos e as variáveis de %@" = "Ver los accesos y las variables de %@";

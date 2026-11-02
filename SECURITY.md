@@ -25,6 +25,8 @@ defends against.
 **Not protected**
 
 - Malware running as your user while the vault is open: the contents are in the app's memory.
+  The vault stays open for the unlock time you choose (2 hours by default), so a shorter one
+  narrows that window.
 - Someone who knows your Mac's password and has your Mac.
 - Losing the Mac or resetting its Keychain: the vault can't be opened anywhere else. This is the
   price of having no master password.

@@ -28,6 +28,8 @@ final class Vault: ObservableObject {
     @Published var selection: Project.ID?
     @Published var section = ProjectSection.context
     @Published private(set) var isUnlocking = false
+    /// When Touch ID last opened the vault; it locks again `Preferences.unlockMinutes` later.
+    @Published private(set) var unlockedAt: Date?
     /// The last thing that went wrong, shown until the next attempt.
     @Published var problem: String?
     /// The lock screen asks for Touch ID by itself once per launch; after a lock it waits for a click.
@@ -59,6 +61,7 @@ final class Vault: ObservableObject {
         isSample = sample
         if sample {
             state = .unlocked
+            unlockedAt = Date()
             projects = SampleVault.projects
             selection = projects.first?.id
         } else {
@@ -86,6 +89,7 @@ final class Vault: ObservableObject {
             self.file = file
             self.key = key
             backedUp = true
+            unlockedAt = Date()
             state = .unlocked
             projects = []
             startAutoLock()
@@ -104,12 +108,13 @@ final class Vault: ObservableObject {
             // Checked before asking for Touch ID: a vault for another key can't open whatever the person does.
             guard let publicKey = DeviceKey.publicKey() else { throw VaultError.missingDeviceKey }
             guard publicKey == file.recipient else { throw VaultError.otherDeviceKey }
-            let deviceKey = try await DeviceKey.unlock(reason: localized("destrancar o cofre"))
+            let deviceKey = try await DeviceKey.unlock(reason: localized("destrancar o cofre por \(Preferences.duration(Preferences.unlockMinutes))"))
             let key = try file.unwrapKey(with: deviceKey)
             let contents = try Self.decode(file.open(with: key))
             self.file = file
             self.key = key
             backedUp = false
+            unlockedAt = Date()
             state = .unlocked
             projects = contents.projects
             if let selection, !projects.contains(where: { $0.id == selection }) { self.selection = nil }
@@ -130,6 +135,7 @@ final class Vault: ObservableObject {
         autoLock.stop()
         key = nil
         file = nil
+        unlockedAt = nil
         // Locked first, so clearing the projects isn't saved.
         state = .locked
         projects = []
@@ -149,9 +155,14 @@ final class Vault: ObservableObject {
         }
     }
 
+    /// When the vault will lock by itself, read with the current setting so a change applies at once.
+    var locksAt: Date? {
+        unlockedAt.map { $0.addingTimeInterval(TimeInterval(Preferences.unlockMinutes * 60)) }
+    }
+
     private func startAutoLock() {
         guard !isSample else { return }
-        autoLock.start { [weak self] in self?.lock() }
+        autoLock.start(locksAt: { [weak self] in self?.locksAt }) { [weak self] in self?.lock() }
     }
 
     // MARK: Saving
@@ -259,21 +270,27 @@ final class Vault: ObservableObject {
     }
 }
 
-/// Locks the vault after a while without using the Mac, and when it sleeps or its screen locks.
+/// Locks the vault when its unlock runs out, after a while without using the Mac (if the person
+/// asked for that), and when the Mac sleeps or its screen locks.
 @MainActor
 final class AutoLock {
     private var timer: Timer?
     private var observers: [(center: NotificationCenter, token: NSObjectProtocol)] = []
 
-    func start(lock: @escaping @MainActor @Sendable () -> Void) {
+    /// Whether to lock `now`: the unlock ran out at `locksAt`, or the Mac has been idle for
+    /// `idleSeconds`, longer than `idleMinutes` (0 never locks for being idle).
+    nonisolated static func shouldLock(now: Date, locksAt: Date?, idleSeconds: Double, idleMinutes: Int) -> Bool {
+        if let locksAt, now >= locksAt { return true }
+        return idleMinutes > 0 && idleSeconds >= Double(idleMinutes * 60)
+    }
+
+    func start(locksAt: @escaping @MainActor @Sendable () -> Date?, lock: @escaping @MainActor @Sendable () -> Void) {
         stop()
         timer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { _ in
             Task { @MainActor in
-                let minutes = Preferences.lockMinutes
-                guard minutes > 0 else { return }
                 // Seconds since the last keyboard, mouse or trackpad event anywhere on the Mac.
                 let idle = CGEventSource.secondsSinceLastEventType(.combinedSessionState, eventType: CGEventType(rawValue: ~0)!)
-                if idle >= Double(minutes * 60) { lock() }
+                if Self.shouldLock(now: Date(), locksAt: locksAt(), idleSeconds: idle, idleMinutes: Preferences.lockMinutes) { lock() }
             }
         }
         let onSleep: @Sendable (Notification) -> Void = { _ in

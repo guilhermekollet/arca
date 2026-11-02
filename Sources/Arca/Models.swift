@@ -160,27 +160,36 @@ enum Search {
     static func quickMatches(in projects: [Project], query: String, limit: Int = 30) -> [QuickMatch] {
         let words = words(query)
         guard !words.isEmpty else { return [] }
+        let ordered = projects.filter { $0.status != .archived } + projects.filter { $0.status == .archived }
+        return Array(ordered.lazy.flatMap { matches(in: $0, words: words) }.prefix(limit))
+    }
+
+    /// What the menu bar lists inside one project: its accesses, then its variables environment
+    /// by environment, narrowed to those that contain every word of `query` (all of them while
+    /// it's empty).
+    static func items(in project: Project, query: String) -> [QuickMatch] {
+        matches(in: project, words: words(query))
+    }
+
+    private static func matches(in project: Project, words: [String]) -> [QuickMatch] {
         func matches(_ text: String) -> Bool {
             words.allSatisfy { text.range(of: $0, options: [.caseInsensitive, .diacriticInsensitive]) != nil }
         }
         var found: [QuickMatch] = []
-        let ordered = projects.filter { $0.status != .archived } + projects.filter { $0.status == .archived }
-        for project in ordered {
-            let base = [project.name] + project.tags
-            for credential in project.credentials {
-                let text = (base + [credential.title, credential.url, credential.username, credential.kind.rawValue]).joined(separator: " ")
-                if matches(text) { found.append(QuickMatch(projectID: project.id, projectName: project.name, item: .credential(credential))) }
-            }
-            for environment in project.environments {
-                for variable in environment.variables where !variable.key.isEmpty {
-                    let text = (base + [environment.name, variable.key]).joined(separator: " ")
-                    if matches(text) {
-                        found.append(QuickMatch(projectID: project.id, projectName: project.name, item: .variable(variable, environment: environment.name)))
-                    }
+        let base = [project.name] + project.tags
+        for credential in project.credentials {
+            let text = (base + [credential.title, credential.url, credential.username, credential.kind.rawValue]).joined(separator: " ")
+            if matches(text) { found.append(QuickMatch(projectID: project.id, projectName: project.name, item: .credential(credential))) }
+        }
+        for environment in project.environments {
+            for variable in environment.variables where !variable.key.isEmpty {
+                let text = (base + [environment.name, variable.key]).joined(separator: " ")
+                if matches(text) {
+                    found.append(QuickMatch(projectID: project.id, projectName: project.name, item: .variable(variable, environment: environment.name)))
                 }
             }
         }
-        return Array(found.prefix(limit))
+        return found
     }
 }
 

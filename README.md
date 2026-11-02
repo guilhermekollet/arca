@@ -57,11 +57,13 @@ Mac.
 **Everyday details**
 - Search everything from the sidebar: names, context, tags, links, variable names and usernames.
   Secret values are never searched.
-- The menu bar icon finds an access or a variable across all projects and copies it, without
-  opening the main window (try "aurora prod database").
+- **The menu bar**: click the icon, click a project, and search its accesses and variables; each
+  one copies with a click, without opening the main window. Typing before choosing a project
+  searches all of them (try "aurora prod database"). Esc goes back to the projects.
+- Touch ID unlocks the vault for **2 hours**, then it locks and asks again (15 minutes to 8 hours,
+  in **Ajustes**). It also locks when the Mac sleeps or the screen locks, unless you turn that
+  off, and can lock sooner when the Mac sits idle.
 - Secrets are copied as concealed, so clipboard managers skip them, and cleared after 30 seconds.
-- The vault locks itself after 15 minutes without using the Mac, and when it sleeps or the screen
-  locks (both adjustable in **Ajustes**).
 
 ## How the vault is protected
 
@@ -95,8 +97,13 @@ scripts/create-signing-cert.sh   # recommended, see "Signing" below
 open build/Arca.app
 ```
 
-On first launch, click **Criar cofre** (Create vault). From then on Arca opens with Touch ID. It
-lives in the Dock and in the menu bar; closing the window keeps it in the menu bar.
+On first launch, click **Criar cofre** (Create vault). From then on Arca opens with Touch ID (or the
+Mac's password, on a Mac without Touch ID or with the lid closed). It lives in the Dock and in the
+menu bar; closing the window keeps it in the menu bar.
+
+On a MacBook with a notch, menu bar icons that don't fit are hidden behind it. Arca asks for a
+place near the clock the first time; if it's still hidden, hold <kbd>⌘</kbd> and drag a few other
+icons out of the menu bar.
 
 ### Signing
 
