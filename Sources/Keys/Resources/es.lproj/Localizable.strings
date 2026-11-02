@@ -1,0 +1,213 @@
+/* The app's name: "Chaves" stays only in Portuguese */
+"Chaves" = "Keys";
+
+/* Lock screen */
+"Criar cofre" = "Crear bóveda";
+"O cofre está trancado." = "La bóveda está cerrada.";
+"Destrancar com Touch ID" = "Abrir con Touch ID";
+"Mostrar no Finder" = "Mostrar en el Finder";
+"Começar um cofre novo…" = "Empezar una bóveda nueva…";
+"Começar um cofre novo?" = "¿Empezar una bóveda nueva?";
+"Começar de novo" = "Empezar de nuevo";
+"destrancar o cofre" = "abrir la bóveda";
+"O cofre atual não é apagado: ele é renomeado e fica na mesma pasta, caso você recupere a chave." = "La bóveda actual no se borra: se le cambia el nombre y queda en la misma carpeta, por si recuperas la clave.";
+
+/* Vault errors */
+"Não foi possível salvar o cofre: %@" = "No se pudo guardar la bóveda: %@";
+"O arquivo do cofre não é um cofre do Chaves." = "El archivo de la bóveda no es una bóveda de Keys.";
+"Este cofre foi salvo por uma versão mais nova do Chaves. Atualize o app para abri-lo." = "Esta bóveda se guardó con una versión más nueva de Keys. Actualiza la app para abrirla.";
+"Este cofre foi trancado com outra chave: ele foi criado em outro Mac ou a chave deste Mac foi trocada." = "Esta bóveda se cerró con otra clave: se creó en otro Mac o se cambió la clave de este Mac.";
+"O arquivo do cofre está danificado ou foi alterado." = "El archivo de la bóveda está dañado o fue modificado.";
+"A chave deste Mac não está no Keychain, então o cofre não pode ser aberto aqui." = "La clave de este Mac no está en el Llavero, así que la bóveda no se puede abrir aquí.";
+"Este Mac não tem Secure Enclave, que o Chaves usa para guardar a chave do cofre." = "Este Mac no tiene Secure Enclave, que Keys usa para guardar la clave de la bóveda.";
+
+/* Main window */
+"Novo projeto" = "Nuevo proyecto";
+"Novo projeto (⌘N)" = "Nuevo proyecto (⌘N)";
+"Trancar" = "Cerrar";
+"Trancar o cofre" = "Cerrar la bóveda";
+"Trancar o cofre (⇧⌘L)" = "Cerrar la bóveda (⇧⌘L)";
+"O cofre de exemplo não tranca" = "La bóveda de ejemplo no se cierra";
+"Buscar em tudo" = "Buscar en todo";
+"Apagar %@?" = "¿Borrar %@?";
+"Apagar projeto" = "Borrar proyecto";
+"Apagar projeto…" = "Borrar proyecto…";
+"O contexto, as variáveis e os acessos do projeto saem do cofre. A cópia de segurança de antes desta sessão continua em Backups." = "El contexto, las variables y los accesos del proyecto salen de la bóveda. La copia de seguridad de antes de esta sesión sigue en Backups.";
+"Nenhum projeto ainda" = "Aún no hay proyectos";
+"Escolha um projeto" = "Elige un proyecto";
+"Cada projeto guarda o contexto para retomá-lo, as variáveis de ambiente e os acessos." = "Cada proyecto guarda el contexto para retomarlo, sus variables de entorno y sus accesos.";
+"Sem nome" = "Sin nombre";
+
+/* Project */
+"Contexto" = "Contexto";
+"Variáveis" = "Variables";
+"Acessos" = "Accesos";
+"Links" = "Enlaces";
+"Símbolo" = "Símbolo";
+"Nome do projeto" = "Nombre del proyecto";
+"Uma linha sobre o projeto" = "Una línea sobre el proyecto";
+"Etiquetas, separadas por vírgula" = "Etiquetas, separadas por comas";
+"Situação" = "Estado";
+"Em andamento" = "En curso";
+"Em manutenção" = "En mantenimiento";
+"Pausado" = "En pausa";
+"Arquivado" = "Archivado";
+
+/* Context */
+"Pasta do projeto neste Mac" = "Carpeta del proyecto en este Mac";
+"Escolher…" = "Elegir…";
+"Escolher" = "Elegir";
+"Abrir no Finder" = "Abrir en el Finder";
+"Abrir no Terminal" = "Abrir en Terminal";
+"Tudo o que você vai querer saber quando voltar a este projeto: como rodar, como publicar, onde está cada coisa, por que foi feito assim e com quem falar." = "Todo lo que vas a querer saber cuando vuelvas a este proyecto: cómo ejecutarlo, cómo publicarlo, dónde está cada cosa, por qué se hizo así y con quién hablar.";
+"Começar com um roteiro" = "Empezar con un guion";
+"Como rodar" = "Cómo ejecutarlo";
+"Deploy" = "Despliegue";
+"Onde está o quê" = "Dónde está cada cosa";
+"Decisões" = "Decisiones";
+"Armadilhas" = "Trampas";
+"Contatos" = "Contactos";
+
+/* Links */
+"Nenhum link" = "Ningún enlace";
+"Repositório, produção, painéis, documentação." = "Repositorio, producción, paneles, documentación.";
+"Adicionar link" = "Añadir enlace";
+"Copiar o endereço" = "Copiar la dirección";
+"Abrir" = "Abrir";
+"Abrir %@" = "Abrir %@";
+"Remover" = "Quitar";
+
+/* Variables */
+"Ambientes" = "Entornos";
+"Nenhum ambiente" = "Ningún entorno";
+"Novo ambiente" = "Nuevo entorno";
+"Nome do ambiente" = "Nombre del entorno";
+"Renomear %@…" = "Renombrar %@…";
+"Duplicar %@" = "Duplicar %@";
+"Apagar %@…" = "Borrar %@…";
+"Apagar o ambiente %@?" = "¿Borrar el entorno %@?";
+"Apagar ambiente" = "Borrar entorno";
+"As variáveis dele saem do cofre." = "Sus variables salen de la bóveda.";
+"%@ (cópia)" = "%@ (copia)";
+"Importar" = "Importar";
+"De um arquivo .env…" = "De un archivo .env…";
+"Colar da área de transferência" = "Pegar del portapapeles";
+"Escolha um arquivo .env" = "Elige un archivo .env";
+"Nenhuma variável encontrada" = "No se encontraron variables";
+"%lld novas, %lld atualizadas" = "%lld nuevas, %lld actualizadas";
+"Exportar" = "Exportar";
+"Copiar como .env" = "Copiar como .env";
+"Copiado como .env" = "Copiado como .env";
+"Salvar arquivo .env…" = "Guardar archivo .env…";
+"O arquivo fica sem criptografia, como as ferramentas esperam. Não o coloque no Git." = "El archivo queda sin cifrar, como lo esperan las herramientas. No lo subas a Git.";
+"Salvo em %@" = "Guardado en %@";
+"Nenhuma variável" = "Ninguna variable";
+"Adicione uma a uma ou importe um arquivo .env." = "Añádelas una a una o importa un archivo .env.";
+"Adicionar variável" = "Añadir variable";
+"Os valores secretos ficam ocultos e são copiados sem passar pelo histórico da área de transferência." = "Los valores secretos quedan ocultos y se copian sin pasar por el historial del portapapeles.";
+"valor" = "valor";
+"Copiar o valor" = "Copiar el valor";
+"Secreta: oculta na tela" = "Secreta: oculta en pantalla";
+"Marcar como secreta" = "Marcar como secreta";
+
+/* Accesses */
+"Nenhum acesso" = "Ningún acceso";
+"Painéis, bancos de dados, servidores e chaves de API do projeto." = "Paneles, bases de datos, servidores y claves de API del proyecto.";
+"Novo acesso" = "Nuevo acceso";
+"Editar" = "Editar";
+"Editar…" = "Editar…";
+"Apagar acesso" = "Borrar acceso";
+"Apagar acesso…" = "Borrar acceso…";
+"Apagar o acesso %@?" = "¿Borrar el acceso %@?";
+"Tipo" = "Tipo";
+"Nome" = "Nombre";
+"Painel da Vercel, banco de produção…" = "Panel de Vercel, base de datos de producción…";
+"Endereço" = "Dirección";
+"Usuário" = "Usuario";
+"Senha" = "Contraseña";
+"Notas" = "Notas";
+"Pronto" = "Listo";
+"Copiar o usuário" = "Copiar el usuario";
+"Copiar a senha" = "Copiar la contraseña";
+"Ocultar" = "Ocultar";
+"Mostrar" = "Mostrar";
+"Site ou painel" = "Sitio o panel";
+"Banco de dados" = "Base de datos";
+"Servidor" = "Servidor";
+"Chave de API" = "Clave de API";
+"E-mail" = "Correo";
+"Outro" = "Otro";
+
+/* Password generator */
+"Gerar senha" = "Generar contraseña";
+"%lld caracteres" = "%lld caracteres";
+"Outra" = "Otra";
+"Usar esta senha" = "Usar esta contraseña";
+
+/* Menu bar panel */
+"Buscar acesso ou variável" = "Buscar accesos y variables";
+"Crie o cofre para começar." = "Crea la bóveda para empezar.";
+"Abrir o Chaves" = "Abrir Keys";
+"Nenhum projeto ainda." = "Aún no hay proyectos.";
+"Nada encontrado." = "No se encontró nada.";
+"Ajustes" = "Ajustes";
+"Sair" = "Salir";
+"Copiar" = "Copiar";
+
+/* Settings */
+"Segurança" = "Seguridad";
+"Nunca" = "Nunca";
+"%lld min" = "%lld min";
+"Trancar quando o Mac dormir ou a tela bloquear" = "Cerrar cuando el Mac duerma o se bloquee la pantalla";
+"Limpar senhas copiadas após" = "Borrar contraseñas copiadas tras";
+"%lld s" = "%lld s";
+"Cofre" = "Bóveda";
+"Cópias de segurança" = "Copias de seguridad";
+"O arquivo e as cópias são criptografados e só abrem neste Mac, com a chave do Secure Enclave. O Chaves guarda as %lld cópias mais recentes, uma por sessão." = "El archivo y las copias están cifrados y solo se abren en este Mac, con la clave del Secure Enclave. Keys guarda las %lld copias más recientes, una por sesión.";
+"Código-fonte no GitHub" = "Código fuente en GitHub";
+"Salvar" = "Guardar";
+"Cancelar" = "Cancelar";
+
+
+/* Introduction, menus and help tags */
+"Boas-vindas ao Chaves" = "Te damos la bienvenida a Keys";
+"O contexto de cada projeto" = "El contexto de cada proyecto";
+"Como rodar, como publicar, onde está cada coisa e por que foi feito assim, para retomar meses depois." = "Cómo ejecutarlo, cómo publicarlo, dónde está cada cosa y por qué se hizo así, para retomarlo meses después.";
+"Variáveis e acessos juntos" = "Variables y accesos juntos";
+"Os .env de cada ambiente, os painéis, os bancos e as chaves de API, a um clique de copiar." = "Los .env de cada entorno, los paneles, las bases de datos y las claves de API, a un clic de copiarlos.";
+"Só neste Mac" = "Solo en este Mac";
+"A chave fica no Secure Enclave e só abre com Touch ID ou a senha do Mac. Nada vai para a internet." = "La clave vive en el Secure Enclave y solo se abre con Touch ID o la contraseña del Mac. Nada va a internet.";
+"O cofre não abre aqui" = "La bóveda no se abre aquí";
+"Crie um ambiente, como development ou production, para guardar as variáveis dele." = "Crea un entorno, como development o production, para guardar sus variables.";
+"Trocar o símbolo" = "Cambiar el símbolo";
+"Situação do projeto" = "Estado del proyecto";
+"Ajustes do Chaves" = "Ajustes de Keys";
+"Ajustes…" = "Ajustes…";
+
+
+/* Menu bar projects and unlock duration */
+"%lld h" = "%lld h";
+"Ficar destrancado por" = "Mantener abierta durante";
+"Trancar antes, sem uso do Mac após" = "Cerrar antes, tras no usar el Mac durante";
+"Touch ID destranca o cofre pelo tempo escolhido; depois ele tranca e pede de novo. Também tranca quando você fecha o Chaves. Senhas e valores secretos copiados não entram no histórico de gerenciadores de área de transferência." = "Touch ID abre la bóveda durante el tiempo que elijas; después se cierra y vuelve a pedirlo. También se cierra al salir de Keys. Las contraseñas y los valores secretos copiados no entran en el historial de los gestores de portapapeles.";
+"Buscar em %@" = "Buscar en %@";
+"Voltar aos projetos" = "Volver a los proyectos";
+"Abrir na janela do Chaves" = "Abrir en la ventana de Keys";
+"Projetos" = "Proyectos";
+"Acessos e variáveis" = "Accesos y variables";
+"Ver os acessos e as variáveis de %@" = "Ver los accesos y las variables de %@";
+
+
+/* Projects inside projects */
+"Novo subprojeto" = "Nuevo subproyecto";
+"O contexto, as variáveis e os acessos do projeto saem do cofre. Os subprojetos ficam, um nível acima." = "El contexto, las variables y los accesos del proyecto salen de la bóveda. Los subproyectos se quedan, un nivel más arriba.";
+"Subprojeto" = "Subproyecto";
+"Criar um projeto dentro deste" = "Crear un proyecto dentro de este";
+"Dentro de" = "Dentro de";
+"Nenhum: projeto principal" = "Ninguno: proyecto principal";
+"Em %@" = "En %@";
+"Projeto principal" = "Proyecto principal";
+"Mover para dentro de outro projeto" = "Mover dentro de otro proyecto";
+"Subprojetos" = "Subproyectos";
+"Este projeto ainda não tem acessos, variáveis nem subprojetos." = "Este proyecto aún no tiene accesos, variables ni subproyectos.";
+"Voltar para %@" = "Volver a %@";

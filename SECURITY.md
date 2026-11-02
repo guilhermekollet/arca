@@ -7,7 +7,7 @@ repository's Security tab to send a private report, and include steps to reprodu
 
 ## Threat model
 
-Arca keeps passwords, API keys and environment variables, so this section says plainly what it
+Keys keeps passwords, API keys and environment variables, so this section says plainly what it
 defends against.
 
 **Protected**
@@ -25,6 +25,8 @@ defends against.
 **Not protected**
 
 - Malware running as your user while the vault is open: the contents are in the app's memory.
+  The vault stays open for the unlock time you choose (2 hours by default), so a shorter one
+  narrows that window.
 - Someone who knows your Mac's password and has your Mac.
 - Losing the Mac or resetting its Keychain: the vault can't be opened anywhere else. This is the
   price of having no master password.
@@ -35,6 +37,6 @@ defends against.
 - Any way to read the vault's contents without the Secure Enclave key and user presence.
 - Secrets reaching disk unencrypted (logs, caches, crash reports, temporary files), except files
   the person exports on purpose.
-- Secret values appearing in search indexes, Spotlight, or anything sent off the Mac. Arca sends
+- Secret values appearing in search indexes, Spotlight, or anything sent off the Mac. Keys sends
   nothing anywhere; any network request is a bug.
 - The vault being saved in a way that loses data (a partial write, a backup not taken).

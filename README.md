@@ -1,13 +1,13 @@
 <div align="center">
-  <img src="Resources/icon-1024.png" alt="Arca" width="96" height="96">
+  <img src="Resources/icon-1024.png" alt="Keys" width="96" height="96">
 
-  <h1>Arca</h1>
+  <h1>Keys</h1>
 
   <p>Everything you need to pick a project up again — context, environment variables, accesses and
   passwords — encrypted on your Mac and opened with Touch ID.</p>
 
   <p>
-    <a href="https://github.com/guilhermekollet/arca/actions/workflows/ci.yml"><img src="https://github.com/guilhermekollet/arca/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+    <a href="https://github.com/guilhermekollet/keys/actions/workflows/ci.yml"><img src="https://github.com/guilhermekollet/keys/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-b8a4f8" alt="MIT license"></a>
     <img src="https://img.shields.io/badge/macOS-26%2B-0d0d0d" alt="macOS 26+">
     <img src="https://img.shields.io/badge/Swift-6.2-F05138" alt="Swift 6.2">
@@ -16,11 +16,16 @@
 
 Months after you last touched a project, a bug report arrives. Where is the code? How do you run
 it? Which `.env` did production use? What was the database password, and why was it built this
-way? Arca keeps those answers together, one project at a time, in a vault that never leaves your
+way? Keys keeps those answers together, one project at a time, in a vault that never leaves your
 Mac.
 
+**Keys** is the app's name in every language but one: on a Mac set to Portuguese it is
+**Chaves**, the word for both "keys" and the curly braces `{ }`, which is what its dotted icon
+draws. The name follows the Mac's language, in the app and in Finder, the Dock and the menu bar.
+
 > **Language note:** the app's interface follows your Mac's language: Portuguese (Brazil), English or
-> Spanish, and English on a Mac set to any other language. Code, comments and docs are in English.
+> Spanish, and English on a Mac set to any other language. The name does too: Chaves in
+> Portuguese, Keys everywhere else. Code, comments and docs are in English.
 
 ## Contents
 
@@ -36,6 +41,10 @@ Mac.
 ## Features
 
 **Projects**
+- **Projects inside projects**: a company and its products, a product and its services, as deep
+  as you need. The sidebar shows the tree, each project shows the path above it and its
+  subprojects, and searching a project also searches what's inside it. Deleting a project keeps
+  its subprojects, one level up.
 - A project per thing you maintain, with a symbol, a one-line summary, tags and a status:
   active, in maintenance, paused or archived.
 - **Context**: free Markdown text for how to run it, how it's deployed, where things are, the
@@ -57,17 +66,19 @@ Mac.
 **Everyday details**
 - Search everything from the sidebar: names, context, tags, links, variable names and usernames.
   Secret values are never searched.
-- The menu bar icon finds an access or a variable across all projects and copies it, without
-  opening the main window (try "aurora prod database").
+- **The menu bar**: click the icon, click a project (and a subproject, if it has them), and search
+  its accesses and variables; each one copies with a click, without opening the main window. Typing before choosing a project
+  searches all of them (try "aurora prod database"). Esc goes back to the projects.
+- Touch ID unlocks the vault for **2 hours**, then it locks and asks again (15 minutes to 8 hours,
+  in **Ajustes**). It also locks when the Mac sleeps or the screen locks, unless you turn that
+  off, and can lock sooner when the Mac sits idle.
 - Secrets are copied as concealed, so clipboard managers skip them, and cleared after 30 seconds.
-- The vault locks itself after 15 minutes without using the Mac, and when it sleeps or the screen
-  locks (both adjustable in **Ajustes**).
 
 ## How the vault is protected
 
 | Piece | Where it lives |
 | --- | --- |
-| Projects, variables, accesses | One file, `~/Library/Application Support/Arca/vault.arca`, encrypted with ChaCha20-Poly1305 under a random 256-bit vault key. |
+| Projects, variables, accesses | One file, `~/Library/Application Support/Keys/vault.keys`, encrypted with ChaCha20-Poly1305 under a random 256-bit vault key. |
 | The vault key | Inside the same file, sealed for the device key (P256 key agreement + HKDF-SHA256). |
 | The device key | Created inside the Mac's **Secure Enclave**, which never lets it out. Using it requires Touch ID or the Mac's password. |
 | The device key's handle | Your login Keychain. It is encrypted by the Secure Enclave and useless on any other Mac. |
@@ -88,15 +99,20 @@ See [SECURITY.md](SECURITY.md) for what this protects against, and what it doesn
 ## Getting started
 
 ```bash
-git clone https://github.com/guilhermekollet/arca.git
-cd arca
+git clone https://github.com/guilhermekollet/keys.git
+cd keys
 scripts/create-signing-cert.sh   # recommended, see "Signing" below
 ./build.sh
-open build/Arca.app
+open build/Keys.app
 ```
 
-On first launch, click **Criar cofre** (Create vault). From then on Arca opens with Touch ID. It
-lives in the Dock and in the menu bar; closing the window keeps it in the menu bar.
+On first launch, click **Criar cofre** (Create vault). From then on Keys opens with Touch ID (or the
+Mac's password, on a Mac without Touch ID or with the lid closed). It lives in the Dock and in the
+menu bar; closing the window keeps it in the menu bar.
+
+On a MacBook with a notch, menu bar icons that don't fit are hidden behind it. Keys asks for a
+place near the clock the first time; if it's still hidden, hold <kbd>⌘</kbd> and drag a few other
+icons out of the menu bar.
 
 ### Signing
 
@@ -104,7 +120,7 @@ The Keychain remembers which app may read the device key's handle by its signatu
 signature changes on every build, so macOS would ask again each time.
 `scripts/create-signing-cert.sh` creates a self-signed certificate in your login keychain, which
 `build.sh` uses automatically; choose **Always Allow** the first time macOS asks. To use another
-identity, set `ARCA_SIGNING_IDENTITY`.
+identity, set `KEYS_SIGNING_IDENTITY`.
 
 ## Development
 
@@ -112,9 +128,9 @@ identity, set `ARCA_SIGNING_IDENTITY`.
 swift build                     # debug build
 scripts/test.sh                 # tests (works with Xcode or with only the Command Line Tools)
 ./build.sh                      # release build and app bundle
-open build/Arca.app --args --sample   # a made-up vault in memory: no Touch ID, nothing saved
-build/Arca.app/Contents/MacOS/Arca --snapshot /tmp/arca-screens   # draw every screen to PNG and quit
-ARCA_VAULT_DIR=/tmp/arca-dev open build/Arca.app   # a separate vault, to try things safely
+open build/Keys.app --args --sample   # a made-up vault in memory: no Touch ID, nothing saved
+build/Keys.app/Contents/MacOS/Keys --snapshot /tmp/keys-screens   # draw every screen to PNG and quit
+KEYS_VAULT_DIR=/tmp/keys-dev open build/Keys.app   # a separate vault, to try things safely
 ```
 
 `--sample` is the way to work on the interface without touching your vault, and `--snapshot` draws
@@ -122,15 +138,15 @@ each screen with it (main window per tab, lock screens, settings, menu bar panel
 without Touch ID or permission to record the screen. The translucent sidebar and toolbar come out
 blank in those drawings; everything else is as on screen.
 
-Arca shares Mara AI's design: near-black, off-white and lavender as the only accent, the system
+Keys shares Mara AI's design: near-black, off-white and lavender as the only accent, the system
 font, pill-shaped buttons, icon tabs and a dot-matrix mark. The tokens and shared controls are in
-`Sources/Arca/Theme.swift`.
+`Sources/Keys/Theme.swift`.
 
 ## Project layout
 
 ```
-Sources/Arca/
-  ArcaApp.swift            App entry point, main window, menu bar item, commands
+Sources/Keys/
+  KeysApp.swift              App entry point, main window, menu bar item, commands
   Vault.swift              The vault while the app runs: unlock, lock, saving, backups, auto-lock
   VaultFile.swift          The file format and its encryption
   DeviceKey.swift          The Secure Enclave key and its handle in the Keychain
@@ -147,8 +163,8 @@ Sources/Arca/
   Theme.swift              Colors, the dot-matrix mark and the shared controls (pills, cards, tabs)
   SampleVault.swift        The made-up vault behind --sample
   Snapshot.swift           --snapshot: draws every screen to PNG
-  Localization.swift       Picks the interface language; translations live in Resources/*.lproj
-Tests/ArcaTests/           Swift Testing suite
+  Localization.swift       Picks the interface language and the app's name; translations in Resources/*.lproj
+Tests/KeysTests/           Swift Testing suite
 scripts/                   Icon generation, signing, test runner, commit helper
 ```
 

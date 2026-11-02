@@ -1,4 +1,4 @@
-# Contributing to Arca
+# Contributing to Keys
 
 Thanks for helping! This guide covers how to set up the project, what we expect from a change and
 how to get it merged.
@@ -12,9 +12,9 @@ how to get it merged.
    builds read the device key (see the README).
 4. Run the tests: `scripts/test.sh`.
 
-To work on the interface without touching your own vault, run `open build/Arca.app --args --sample`
+To work on the interface without touching your own vault, run `open build/Keys.app --args --sample`
 (a made-up vault in memory, nothing saved) or point the app at another folder with
-`ARCA_VAULT_DIR`.
+`KEYS_VAULT_DIR`.
 
 ## Making a change
 
@@ -23,20 +23,20 @@ To work on the interface without touching your own vault, run `open build/Arca.a
 - **Match the surrounding code**: SwiftUI views, a `@MainActor` vault, small helpers, and comments
   that explain *why*, not *what*. Code and comments are in English. The app's UI text is written
   in Brazilian Portuguese inside `localized("…")`, which is also its key: add the English and
-  Spanish versions to `Sources/Arca/Resources/en.lproj` and `es.lproj` (a test checks for it).
+  Spanish versions to `Sources/Keys/Resources/en.lproj` and `es.lproj` (a test checks for it).
 - **Add or update tests** for logic you touch. The suite uses Swift Testing (`import Testing`).
-  If a helper needs Foundation or CryptoKit, put it in `Tests/ArcaTests/Fixtures.swift`: with only
+  If a helper needs Foundation or CryptoKit, put it in `Tests/KeysTests/Fixtures.swift`: with only
   the Command Line Tools installed, a file that imports both `Testing` and `Foundation` does not
   compile.
 - **Never break old vaults**: a new field needs a default in its `init(from:)` (see `Models.swift`),
   and a change to the file format needs a new `VaultFile.currentVersion` and a way to read the old
   one.
-- **Keep the look**: Arca shares Mara AI's design. Use the colors and controls in `Theme.swift`
+- **Keep the look**: Keys shares Mara AI's design. Use the colors and controls in `Theme.swift`
   (`PillButtonStyle`, `IconButton`, `Card`, `CapsuleTabs`) rather than new ones, and keep the
   behavior a Mac user expects: menu commands with their usual shortcuts, help tags on icon
   buttons, Delete to remove, confirmation before anything is lost.
 - **Check it builds and the tests pass**: `swift build` and `scripts/test.sh`. For UI changes,
-  include the screens drawn by `build/Arca.app/Contents/MacOS/Arca --snapshot <folder>`.
+  include the screens drawn by `build/Keys.app/Contents/MacOS/Keys --snapshot <folder>`.
 - **Security is the feature**: nothing leaves the Mac, and secrets never reach disk unencrypted
   unless the person exports them. Call out any change that touches the vault, the keys or the
   clipboard.
@@ -53,7 +53,7 @@ No co-author or "generated with" trailers.
 scripts/ship.sh setup                                   # once: check every commit message
 scripts/ship.sh branch fix/clipboard-clear
 git add -p
-scripts/ship.sh commit "fix(clipboard): clear only what arca copied" body.txt
+scripts/ship.sh commit "fix(clipboard): clear only what keys copied" body.txt
 scripts/ship.sh push
 scripts/ship.sh pr                                      # title and description from the commit
 scripts/ship.sh merge 42                                # maintainers: squash once checks pass

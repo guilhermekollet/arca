@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest an idea for Arca
+description: Suggest an idea for Keys
 labels: [enhancement]
 body:
   - type: textarea
@@ -16,4 +16,4 @@ body:
     id: security
     attributes:
       label: Does it touch secrets or send anything outside the Mac?
-      description: If so, what and where. Arca keeps everything on-device.
+      description: If so, what and where. Keys keeps everything on-device.
