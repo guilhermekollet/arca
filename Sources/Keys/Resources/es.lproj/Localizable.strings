@@ -16,7 +16,6 @@
 "Não foi possível salvar o cofre: %@" = "No se pudo guardar la bóveda: %@";
 "O arquivo do cofre não é um cofre do Chaves." = "El archivo de la bóveda no es una bóveda de Keys.";
 "Este cofre foi salvo por uma versão mais nova do Chaves. Atualize o app para abri-lo." = "Esta bóveda se guardó con una versión más nueva de Keys. Actualiza la app para abrirla.";
-"Este cofre foi trancado com outra chave: ele foi criado em outro Mac ou a chave deste Mac foi trocada." = "Esta bóveda se cerró con otra clave: se creó en otro Mac o se cambió la clave de este Mac.";
 "O arquivo do cofre está danificado ou foi alterado." = "El archivo de la bóveda está dañado o fue modificado.";
 "A chave deste Mac não está no Keychain, então o cofre não pode ser aberto aqui." = "La clave de este Mac no está en el Llavero, así que la bóveda no se puede abrir aquí.";
 "Este Mac não tem Secure Enclave, que o Chaves usa para guardar a chave do cofre." = "Este Mac no tiene Secure Enclave, que Keys usa para guardar la clave de la bóveda.";
@@ -211,3 +210,37 @@
 "Subprojetos" = "Subproyectos";
 "Este projeto ainda não tem acessos, variáveis nem subprojetos." = "Este proyecto aún no tiene accesos, variables ni subproyectos.";
 "Voltar para %@" = "Volver a %@";
+
+
+/* Backups and moving to another Mac */
+"Este cofre foi trancado com outra chave: ele foi criado em outro Mac ou a chave deste Mac foi trocada. Para trazê-lo, importe um backup feito no Mac de origem." = "Esta bóveda se cerró con otra clave: se creó en otro Mac o se cambió la clave de este Mac. Para traerla, importa una copia de seguridad hecha en el Mac de origen.";
+"Este arquivo não é um backup do cofre." = "Este archivo no es una copia de seguridad de la bóveda.";
+"Este backup foi feito por uma versão mais nova do app. Atualize o app para abri-lo." = "Esta copia se hizo con una versión más nueva de la app. Actualiza la app para abrirla.";
+"A senha não abre este backup. Confira a senha; se ela estiver certa, o arquivo foi alterado." = "La contraseña no abre esta copia. Revísala; si es correcta, el archivo fue modificado.";
+"Use uma senha com pelo menos %lld caracteres." = "Usa una contraseña de al menos %lld caracteres.";
+"As duas senhas não são iguais." = "Las dos contraseñas no coinciden.";
+"Escolha o arquivo de backup" = "Elige el archivo de la copia";
+"Backup e migração" = "Copia de seguridad y migración";
+"Para levar o cofre a outro Mac, ou guardar uma cópia fora deste caso ele se perca. O backup é protegido por uma senha que você escolhe e que não fica guardada." = "Para llevar la bóveda a otro Mac, o guardar una copia fuera de este por si se pierde. La copia está protegida por una contraseña que eliges y que no se guarda en ningún sitio.";
+"Exportar backup…" = "Exportar copia…";
+"Importar backup…" = "Importar copia…";
+"Destranque o cofre para exportar ou importar." = "Abre la bóveda para exportar o importar.";
+"Nenhum backup exportado ainda." = "Aún no se exportó ninguna copia.";
+"Último backup: %@" = "Última copia: %@";
+"Exportar backup" = "Exportar copia";
+"Backup salvo em %@." = "Copia guardada en %@.";
+"Guarde o arquivo e a senha em lugares diferentes. Para usar em outro Mac, abra o app lá e escolha “Tenho um backup de outro Mac”." = "Guarda el archivo y la contraseña en sitios distintos. Para usarla en otro Mac, abre la app allí y elige “Tengo una copia de otro Mac”.";
+"Um arquivo com todo o cofre, protegido por uma senha que você escolhe agora. Serve para levar o cofre a outro Mac ou para guardar fora deste. A senha não fica guardada em lugar nenhum: sem ela, ninguém abre o backup, nem você." = "Un archivo con toda la bóveda, protegido por una contraseña que eliges ahora. Sirve para llevar la bóveda a otro Mac o guardarla fuera de este. La contraseña no se guarda en ningún sitio: sin ella nadie abre la copia, ni tú.";
+"Pelo menos %lld caracteres. Uma frase longa é mais forte e mais fácil de lembrar." = "Al menos %lld caracteres. Una frase larga es más fuerte y más fácil de recordar.";
+"Senha do backup" = "Contraseña de la copia";
+"Repita a senha" = "Repite la contraseña";
+"Protegendo o backup…" = "Protegiendo la copia…";
+"Exportar…" = "Exportar…";
+"Importar backup" = "Importar copia";
+"Abrindo o backup…" = "Abriendo la copia…";
+"Os projetos do backup entram no cofre. Um projeto que já existe fica com a versão alterada por último; nada é apagado." = "Los proyectos de la copia entran en la bóveda. Un proyecto que ya existe se queda con la versión modificada por última vez; no se borra nada.";
+"O backup vira o cofre deste Mac. O cofre que não abre aqui não é apagado: ele é renomeado e fica na mesma pasta." = "La copia pasa a ser la bóveda de este Mac. La bóveda que no se abre aquí no se borra: se renombra y queda en la misma carpeta.";
+"O backup vira o cofre deste Mac, que passa a abrir com o Touch ID daqui." = "La copia pasa a ser la bóveda de este Mac, que se abre con el Touch ID de aquí.";
+"Projetos novos: %lld · atualizados: %lld" = "Proyectos nuevos: %lld · actualizados: %lld";
+"Projetos importados: %lld" = "Proyectos importados: %lld";
+"Tenho um backup de outro Mac" = "Tengo una copia de otro Mac";

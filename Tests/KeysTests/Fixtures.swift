@@ -319,3 +319,77 @@ func finderName(in language: String) -> String {
     let table = NSDictionary(contentsOf: url) as? [String: String] ?? [:]
     return [table["CFBundleName"], table["CFBundleDisplayName"]].map { $0 ?? "-" }.joined(separator: "/")
 }
+
+// MARK: Backups
+
+/// Ways to break a backup, to check that each one is refused.
+enum BackupTampering: String, CaseIterable {
+    case none, sealedByte, fewerIterations, otherSalt, otherDate, otherFormat, newerVersion
+}
+
+/// Seals a sample with `password` (few rounds, so the test is fast), tampers with it and opens it
+/// with `attempt`: "opened" with the same contents, or the error.
+func openBackup(sealedWith password: String, openedWith attempt: String, after tampering: BackupTampering = .none) -> String {
+    let secret = Data("PIX_WEBHOOK_SECRET=abc".utf8)
+    do {
+        var backup = try VaultBackup.seal(secret, password: password, iterations: 2_000)
+        switch tampering {
+        case .none: break
+        case .sealedByte: backup.sealed[backup.sealed.count - 5] ^= 1
+        case .fewerIterations: backup.iterations = 1_000
+        case .otherSalt: backup.salt[0] ^= 1
+        case .otherDate: backup.createdAt = backup.createdAt.addingTimeInterval(60)
+        case .otherFormat: backup.format = "something-else"
+        case .newerVersion: backup.version = VaultBackup.currentVersion + 1
+        }
+        return try backup.open(password: attempt) == secret ? "opened" : "wrong contents"
+    } catch let error as BackupError {
+        return "\(error)"
+    } catch {
+        return "unexpected: \(error)"
+    }
+}
+
+/// Writes a backup of the sample vault and reads it back: the same projects, the file's permissions,
+/// and whether any name or secret can be read in it.
+func backupOnDisk() -> (sameProjects: Bool, permissions: String, plaintextVisible: Bool) {
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent("keys-backup-\(UUID().uuidString).keys-backup")
+    defer { try? FileManager.default.removeItem(at: url) }
+    let projects = SampleVault.projects
+    do {
+        try VaultBackup.seal(try Vault.encode(VaultContents(projects: projects)), password: "correct horse battery", iterations: 2_000).write(to: url)
+        let read = try VaultBackup.read(from: url)
+        let contents = try Vault.decode(try read.open(password: "correct horse battery"))
+        let permissions = String((try FileManager.default.attributesOfItem(atPath: url.path)[.posixPermissions] as? NSNumber)?.intValue ?? 0, radix: 8)
+        let raw = try String(contentsOf: url, encoding: .utf8)
+        return (contents.projects == projects, permissions, raw.contains("Loja Aurora") || raw.contains("sample-password"))
+    } catch {
+        return (false, "", true)
+    }
+}
+
+/// Merges `backup` into `current` (projects as name and minutes since a fixed date, same id when
+/// the name is the same) and returns the counts and the names with their minutes.
+func merge(backup: [(String, Int)], into current: [(String, Int)]) -> (added: Int, updated: Int, result: [String]) {
+    var ids: [String: UUID] = [:]
+    func project(_ entry: (String, Int)) -> Project {
+        let id = ids[entry.0] ?? UUID()
+        ids[entry.0] = id
+        return Project(id: id, name: entry.0, updatedAt: Date(timeIntervalSinceReferenceDate: Double(entry.1) * 60))
+    }
+    let mine = VaultContents(projects: current.map(project))
+    let theirs = VaultContents(projects: backup.map(project))
+    let merged = mine.merging(theirs)
+    let result = merged.contents.projects.map { "\($0.name)@\(Int($0.updatedAt.timeIntervalSinceReferenceDate / 60))" }
+    return (merged.added, merged.updated, result)
+}
+
+/// The file name offered when saving a backup made on 2 November 2026.
+func suggestedBackupName() -> String {
+    var components = DateComponents()
+    components.year = 2026
+    components.month = 11
+    components.day = 2
+    components.hour = 12
+    return VaultBackup.suggestedFileName(on: Calendar.current.date(from: components)!)
+}

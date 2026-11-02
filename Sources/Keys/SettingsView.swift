@@ -67,6 +67,8 @@ struct SettingsView: View {
                 }
             }
 
+            BackupCard()
+
             HStack(spacing: 6) {
                 Text("\(appName) \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "dev")")
                 Text("·")

@@ -83,18 +83,62 @@ final class Vault: ObservableObject {
         guard !isSample else { return }
         problem = nil
         do {
-            let deviceKey = try DeviceKey.create()
-            let (file, key) = try VaultFile.create(Self.encode(VaultContents()), for: deviceKey)
-            try file.write(to: Self.fileURL)
-            self.file = file
-            self.key = key
-            backedUp = true
-            unlockedAt = Date()
-            state = .unlocked
-            projects = []
-            startAutoLock()
+            try createVault(with: VaultContents())
         } catch {
             problem = error.localizedDescription
+        }
+    }
+
+    /// A new device key and a vault for it holding `contents`.
+    private func createVault(with contents: VaultContents) throws {
+        let deviceKey = try DeviceKey.create()
+        let (file, key) = try VaultFile.create(Self.encode(contents), for: deviceKey)
+        try file.write(to: Self.fileURL)
+        self.file = file
+        self.key = key
+        backedUp = true
+        unlockedAt = Date()
+        state = .unlocked
+        projects = contents.projects
+        startAutoLock()
+    }
+
+    // MARK: Backups
+
+    /// Writes a copy of the open vault to `url`, sealed with `password` (see VaultBackup).
+    func exportBackup(password: String, to url: URL) async throws {
+        guard state == .unlocked else { return }
+        let plaintext = try Self.encode(VaultContents(projects: projects))
+        // Deriving the key takes about half a second: off the main thread, so the window keeps drawing.
+        let backup = try await Task.detached { try VaultBackup.seal(plaintext, password: password) }.value
+        try backup.write(to: url)
+        UserDefaults.standard.set(Date(), forKey: Preferences.lastBackupKey)
+    }
+
+    /// Brings in the backup at `url`. Into an open vault it merges (see `VaultContents.merging`).
+    /// With no vault here, as on a new Mac, or one this Mac can't open, the backup becomes the
+    /// vault, sealed for this Mac's own key; the unreadable vault is kept aside, renamed.
+    func importBackup(from url: URL, password: String) async throws -> (added: Int, updated: Int) {
+        let backup = try VaultBackup.read(from: url)
+        let plaintext = try await Task.detached { try backup.open(password: password) }.value
+        let contents = try Self.decode(plaintext)
+        switch state {
+        case .unlocked:
+            let result = VaultContents(projects: projects).merging(contents)
+            projects = result.contents.projects
+            return (result.added, result.updated)
+        case .new, .unreadable:
+            guard !isSample else { return (0, 0) }
+            if case .unreadable = state {
+                setAsideUnreadable()
+                guard state == .new else { throw VaultError.damaged }
+            }
+            problem = nil
+            try createVault(with: contents)
+            return (contents.projects.count, 0)
+        case .locked:
+            // The interface asks to unlock first; merging needs the vault open.
+            return (0, 0)
         }
     }
 
