@@ -63,7 +63,7 @@ final class Vault: ObservableObject {
             state = .unlocked
             unlockedAt = Date()
             projects = SampleVault.projects
-            selection = projects.first?.id
+            selection = projects.first { !$0.credentials.isEmpty && $0.parentID != nil }?.id
         } else {
             state = FileManager.default.fileExists(atPath: Self.fileURL.path) ? .locked : .new
         }
@@ -238,16 +238,20 @@ final class Vault: ObservableObject {
 
     // MARK: Projects
 
+    /// A new project, at the top level or inside `parent`, opened on its context.
     @discardableResult
-    func addProject() -> Project.ID {
-        let project = Project(name: localized("Novo projeto"))
+    func addProject(inside parent: Project.ID? = nil) -> Project.ID {
+        var project = Project(name: parent == nil ? localized("Novo projeto") : localized("Novo subprojeto"))
+        project.parentID = parent
         projects.append(project)
         selection = project.id
+        section = .context
         return project.id
     }
 
+    /// Deletes the project; its subprojects move up one level instead of going with it.
     func deleteProject(_ id: Project.ID) {
-        projects.removeAll { $0.id == id }
+        projects = ProjectTree.removing(id, from: projects)
         if selection == id { selection = nil }
     }
 

@@ -190,7 +190,21 @@
 "Buscar em %@" = "Buscar en %@";
 "Voltar aos projetos" = "Volver a los proyectos";
 "Abrir na janela do Chaves" = "Abrir en la ventana de Chaves";
-"Este projeto ainda não tem acessos nem variáveis." = "Este proyecto aún no tiene accesos ni variables.";
 "Projetos" = "Proyectos";
 "Acessos e variáveis" = "Accesos y variables";
 "Ver os acessos e as variáveis de %@" = "Ver los accesos y las variables de %@";
+
+
+/* Projects inside projects */
+"Novo subprojeto" = "Nuevo subproyecto";
+"O contexto, as variáveis e os acessos do projeto saem do cofre. Os subprojetos ficam, um nível acima." = "El contexto, las variables y los accesos del proyecto salen de la bóveda. Los subproyectos se quedan, un nivel más arriba.";
+"Subprojeto" = "Subproyecto";
+"Criar um projeto dentro deste" = "Crear un proyecto dentro de este";
+"Dentro de" = "Dentro de";
+"Nenhum: projeto principal" = "Ninguno: proyecto principal";
+"Em %@" = "En %@";
+"Projeto principal" = "Proyecto principal";
+"Mover para dentro de outro projeto" = "Mover dentro de otro proyecto";
+"Subprojetos" = "Subproyectos";
+"Este projeto ainda não tem acessos, variáveis nem subprojetos." = "Este proyecto aún no tiene accesos, variables ni subproyectos.";
+"Voltar para %@" = "Volver a %@";

@@ -20,6 +20,12 @@ struct MenuBarTests {
     @Test func anEmptyProjectListsNothing() {
         #expect(projectItemTitles("Site institucional", query: "").isEmpty)
     }
+
+    @Test func aGroupListsItsOwnItemsButSearchesItsSubprojects() {
+        #expect(projectItemTitles("Grupo Aurora", query: "") == ["Google Workspace"])
+        #expect(projectItemTitles("Grupo Aurora", query: "produção") == ["Postgres de produção"])
+        #expect(projectItemTitles("Grupo Aurora", query: "staging") == ["VPS de staging", "GATEWAY_API_KEY@staging"])
+    }
 }
 
 @Suite("Auto-lock")

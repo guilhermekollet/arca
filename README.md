@@ -39,6 +39,10 @@ project needs, which is also what its dotted icon draws.
 ## Features
 
 **Projects**
+- **Projects inside projects**: a company and its products, a product and its services, as deep
+  as you need. The sidebar shows the tree, each project shows the path above it and its
+  subprojects, and searching a project also searches what's inside it. Deleting a project keeps
+  its subprojects, one level up.
 - A project per thing you maintain, with a symbol, a one-line summary, tags and a status:
   active, in maintenance, paused or archived.
 - **Context**: free Markdown text for how to run it, how it's deployed, where things are, the
@@ -60,8 +64,8 @@ project needs, which is also what its dotted icon draws.
 **Everyday details**
 - Search everything from the sidebar: names, context, tags, links, variable names and usernames.
   Secret values are never searched.
-- **The menu bar**: click the icon, click a project, and search its accesses and variables; each
-  one copies with a click, without opening the main window. Typing before choosing a project
+- **The menu bar**: click the icon, click a project (and a subproject, if it has them), and search
+  its accesses and variables; each one copies with a click, without opening the main window. Typing before choosing a project
   searches all of them (try "aurora prod database"). Esc goes back to the projects.
 - Touch ID unlocks the vault for **2 hours**, then it locks and asks again (15 minutes to 8 hours,
   in **Ajustes**). It also locks when the Mac sleeps or the screen locks, unless you turn that

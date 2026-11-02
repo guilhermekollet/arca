@@ -155,6 +155,8 @@ struct MainView: View {
     @EnvironmentObject private var vault: Vault
     @State private var query = ""
     @State private var deleting: Project.ID?
+    /// Projects whose subprojects are folded away in the sidebar; everything starts unfolded.
+    @State private var collapsed: Set<Project.ID> = []
     /// The list starts with the keyboard, as in Mail and Notes; otherwise the project's name
     /// field would, with its text selected, one keystroke away from being replaced.
     @FocusState private var listFocused: Bool
@@ -208,7 +210,11 @@ struct MainView: View {
                 if let deleting { vault.deleteProject(deleting) }
             }
         } message: {
-            Text(localized("O contexto, as variáveis e os acessos do projeto saem do cofre. A cópia de segurança de antes desta sessão continua em Backups."))
+            if let deleting, !ProjectTree.children(of: deleting, in: vault.projects).isEmpty {
+                Text(localized("O contexto, as variáveis e os acessos do projeto saem do cofre. Os subprojetos ficam, um nível acima."))
+            } else {
+                Text(localized("O contexto, as variáveis e os acessos do projeto saem do cofre. A cópia de segurança de antes desta sessão continua em Backups."))
+            }
         }
     }
 
@@ -218,18 +224,24 @@ struct MainView: View {
 
     private var sidebar: some View {
         List(selection: $vault.selection) {
-            ForEach(Project.Status.allCases) { status in
-                let projects = filtered.filter { $0.status == status }.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
-                if !projects.isEmpty {
-                    Section(status.label) {
-                        ForEach(projects) { project in
-                            ProjectRow(project: project)
-                                .tag(project.id)
-                                .contextMenu {
-                                    Button(localized("Apagar projeto…"), role: .destructive) { deleting = project.id }
-                                }
+            if Search.words(query).isEmpty {
+                // The tree: top-level projects grouped by status, each with what's inside it.
+                ForEach(Project.Status.allCases) { status in
+                    let roots = ProjectTree.children(of: nil, in: vault.projects).filter { $0.status == status }
+                    if !roots.isEmpty {
+                        Section(status.label) {
+                            ForEach(roots) { project in
+                                ProjectTreeRow(project: project, collapsed: $collapsed, actions: rowActions)
+                            }
                         }
                     }
+                }
+            } else {
+                // A search shows what matched as a flat list, each with the path to it.
+                ForEach(filtered.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }) { project in
+                    ProjectRow(project: project, path: ProjectTree.ancestors(of: project, in: vault.projects).map(\.name))
+                        .tag(project.id)
+                        .contextMenu { rowActions(project) }
                 }
             }
         }
@@ -251,6 +263,13 @@ struct MainView: View {
         }
     }
 
+    @ViewBuilder
+    private func rowActions(_ project: Project) -> some View {
+        Button(localized("Novo subprojeto")) { vault.addProject(inside: project.id) }
+        Divider()
+        Button(localized("Apagar projeto…"), role: .destructive) { deleting = project.id }
+    }
+
     private var emptyDetail: some View {
         VStack(spacing: 14) {
             DotMark(shown: true, dot: 6, spacing: 3.5)
@@ -266,8 +285,45 @@ struct MainView: View {
     }
 }
 
+/// A project in the sidebar and, under a disclosure triangle, the projects inside it.
+struct ProjectTreeRow<Actions: View>: View {
+    let project: Project
+    @Binding var collapsed: Set<Project.ID>
+    let actions: (Project) -> Actions
+    @EnvironmentObject private var vault: Vault
+
+    var body: some View {
+        let children = ProjectTree.children(of: project.id, in: vault.projects)
+        if children.isEmpty {
+            row
+        } else {
+            DisclosureGroup(isExpanded: Binding(
+                get: { !collapsed.contains(project.id) },
+                set: { expanded in
+                    if expanded { collapsed.remove(project.id) } else { collapsed.insert(project.id) }
+                }
+            )) {
+                // Type-erased: the row contains rows of its own type.
+                ForEach(children) { child in
+                    AnyView(ProjectTreeRow(project: child, collapsed: $collapsed, actions: actions))
+                }
+            } label: {
+                row
+            }
+        }
+    }
+
+    private var row: some View {
+        ProjectRow(project: project)
+            .tag(project.id)
+            .contextMenu { actions(project) }
+    }
+}
+
 struct ProjectRow: View {
     let project: Project
+    /// The names of the projects above it, shown when the tree isn't (in a search).
+    var path: [String] = []
 
     var body: some View {
         HStack(spacing: 10) {
@@ -275,7 +331,12 @@ struct ProjectRow: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text(project.name.isEmpty ? localized("Sem nome") : project.name)
                     .lineLimit(1)
-                if !project.summary.isEmpty {
+                if !path.isEmpty {
+                    Text(path.joined(separator: " › "))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                } else if !project.summary.isEmpty {
                     Text(project.summary)
                         .font(.caption)
                         .foregroundStyle(.secondary)

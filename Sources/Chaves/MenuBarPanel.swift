@@ -46,10 +46,10 @@ struct MenuBarPanel: View {
         .padding(14)
         .frame(width: 330)
         .chavesSurface()
-        // Esc inside a project goes back to the list, like a back button.
+        // Esc inside a project goes back one level, like the back button.
         .onKeyPress(.escape) {
             guard projectID != nil else { return .ignored }
-            leaveProject()
+            goUp()
             return .handled
         }
         .onChange(of: vault.state) {
@@ -81,7 +81,11 @@ struct MenuBarPanel: View {
     /// Back to the projects, the project open in the panel, and a way to open it in the app.
     private func projectBar(_ project: Project) -> some View {
         HStack(spacing: 8) {
-            IconButton(symbol: "chevron.left", help: localized("Voltar aos projetos"), action: leaveProject)
+            IconButton(
+                symbol: "chevron.left",
+                help: vault.project(project.parentID).map { localized("Voltar para \($0.name)") } ?? localized("Voltar aos projetos"),
+                action: goUp
+            )
             ProjectBadge(project: project, size: 22)
             Text(project.name)
                 .font(.system(size: 13, weight: .semibold))
@@ -118,11 +122,29 @@ struct MenuBarPanel: View {
     private var content: some View {
         let searching = !Search.words(query).isEmpty
         if let project = vault.project(projectID) {
-            let items = Search.items(in: project, query: query)
-            if items.isEmpty {
-                note(searching ? localized("Nada encontrado.") : localized("Este projeto ainda não tem acessos nem variáveis."))
+            if searching {
+                // Inside a project, a search covers its subprojects too.
+                let inside = ProjectTree.descendantIDs(of: project.id, in: vault.projects)
+                let projects = vault.projects.filter { inside.contains($0.id) && $0.matches(query) }
+                let items = Search.items(in: project, among: vault.projects, query: query)
+                results(projects: projects, items: items)
             } else {
-                matchList(items, showsProject: false)
+                let children = ProjectTree.children(of: project.id, in: vault.projects)
+                let items = Search.items(in: project, among: vault.projects, query: "")
+                if children.isEmpty && items.isEmpty {
+                    note(localized("Este projeto ainda não tem acessos, variáveis nem subprojetos."))
+                }
+                if !children.isEmpty {
+                    section(localized("Subprojetos"))
+                    projectRows(children)
+                }
+                if !items.isEmpty {
+                    if !children.isEmpty {
+                        section(localized("Acessos e variáveis"))
+                            .padding(.top, 8)
+                    }
+                    matchList(items, showsProject: false)
+                }
             }
         } else if !searching {
             if projectList.isEmpty {
@@ -132,39 +154,47 @@ struct MenuBarPanel: View {
                 projectRows(projectList)
             }
         } else {
-            let projects = vault.projects.filter { $0.matches(query) }
-            let matches = Search.quickMatches(in: vault.projects, query: query, limit: 12)
-            if projects.isEmpty && matches.isEmpty {
-                note(localized("Nada encontrado."))
-            }
-            if !projects.isEmpty {
-                section(localized("Projetos"))
-                projectRows(Array(projects.prefix(4)))
-            }
-            if !matches.isEmpty {
-                section(localized("Acessos e variáveis"))
-                    .padding(.top, projects.isEmpty ? 0 : 8)
-                matchList(matches, showsProject: true)
-            }
+            results(
+                projects: vault.projects.filter { $0.matches(query) },
+                items: Search.quickMatches(in: vault.projects, query: query, limit: 12)
+            )
         }
     }
 
-    /// The projects worth reaching from the menu bar: all but the archived ones (search still
-    /// finds those), in the main window's order.
-    private var projectList: [Project] {
-        vault.projects
-            .filter { $0.status != .archived }
-            .sorted {
-                let order = Project.Status.allCases
-                if $0.status != $1.status { return order.firstIndex(of: $0.status)! < order.firstIndex(of: $1.status)! }
-                return $0.name.localizedStandardCompare($1.name) == .orderedAscending
-            }
+    /// What a search found: projects first (with the path to them), then accesses and variables.
+    @ViewBuilder
+    private func results(projects: [Project], items: [QuickMatch]) -> some View {
+        if projects.isEmpty && items.isEmpty {
+            note(localized("Nada encontrado."))
+        }
+        if !projects.isEmpty {
+            section(localized("Projetos"))
+            projectRows(Array(projects.prefix(4)), showsPath: true)
+        }
+        if !items.isEmpty {
+            section(localized("Acessos e variáveis"))
+                .padding(.top, projects.isEmpty ? 0 : 8)
+            matchList(items, showsProject: true)
+        }
     }
 
-    private func projectRows(_ projects: [Project]) -> some View {
+    /// The top-level projects worth reaching from the menu bar: all but the archived ones (search
+    /// still finds those), in the main window's order. Subprojects are one click further in.
+    private var projectList: [Project] {
+        let order = Project.Status.allCases
+        return ProjectTree.children(of: nil, in: vault.projects)
+            .filter { $0.status != .archived }
+            .sorted { order.firstIndex(of: $0.status)! < order.firstIndex(of: $1.status)! }
+    }
+
+    private func projectRows(_ projects: [Project], showsPath: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             ForEach(projects) { project in
-                PanelProjectRow(project: project) { enter(project.id) }
+                PanelProjectRow(
+                    project: project,
+                    path: showsPath ? ProjectTree.ancestors(of: project, in: vault.projects).map(\.name).joined(separator: " › ") : "",
+                    subprojects: ProjectTree.children(of: project.id, in: vault.projects).count
+                ) { enter(project.id) }
             }
         }
     }
@@ -220,6 +250,12 @@ struct MenuBarPanel: View {
         searchFocused = true
     }
 
+    /// Back to the project this one is inside, or to the list at the top level.
+    private func goUp() {
+        projectID = vault.project(projectID)?.parentID.flatMap { vault.project($0)?.id }
+        query = ""
+    }
+
     private func leaveProject() {
         projectID = nil
         query = ""
@@ -235,6 +271,9 @@ struct MenuBarPanel: View {
 /// A project in the panel's list: what it holds, and a chevron, since clicking goes into it.
 private struct PanelProjectRow: View {
     let project: Project
+    /// The projects above it ("Grupo Fazolli › Reallead"), shown in search results.
+    var path = ""
+    var subprojects = 0
     let open: () -> Void
     @State private var hovering = false
 
@@ -242,10 +281,19 @@ private struct PanelProjectRow: View {
         Button(action: open) {
             HStack(spacing: 8) {
                 ProjectBadge(project: project, size: 22)
-                Text(project.name.isEmpty ? localized("Sem nome") : project.name)
-                    .font(.system(size: 12.5))
-                    .lineLimit(1)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(project.name.isEmpty ? localized("Sem nome") : project.name)
+                        .font(.system(size: 12.5))
+                        .lineLimit(1)
+                    if !path.isEmpty {
+                        Text(path)
+                            .font(.system(size: 10.5))
+                            .foregroundStyle(Theme.muted)
+                            .lineLimit(1)
+                    }
+                }
                 Spacer(minLength: 8)
+                count(subprojects, symbol: "folder")
                 count(project.credentials.count, symbol: "key")
                 count(project.environments.reduce(0) { $0 + $1.variables.count }, symbol: "curlybraces")
                 Image(systemName: "chevron.right")

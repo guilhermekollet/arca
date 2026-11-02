@@ -4,7 +4,7 @@ import Foundation
 enum SampleVault {
     static var projects: [Project] {
         let now = Date()
-        return [
+        var projects = [
             Project(
                 name: "Loja Aurora",
                 symbol: "cart",
@@ -100,5 +100,31 @@ enum SampleVault {
                 updatedAt: now.addingTimeInterval(-86_400 * 300)
             ),
         ]
+        // A company with its products inside it, as projects inside a project.
+        let group = Project(
+            name: "Grupo Aurora",
+            symbol: "building.2",
+            status: .active,
+            summary: "A empresa e os produtos dela.",
+            tags: ["empresa"],
+            context: """
+            ## Contatos
+            - Financeiro: Bia
+            - Infra: Rafa
+
+            ## Decisões
+            - Cada produto tem o próprio banco; o login é compartilhado.
+            """,
+            links: [ProjectLink(title: "Drive da empresa", url: "https://drive.example.com")],
+            environments: [],
+            credentials: [
+                Credential(kind: .email, title: "Google Workspace", url: "https://admin.google.com", username: "admin@example.com", password: "sample-password-4"),
+            ],
+            updatedAt: now.addingTimeInterval(-86_400)
+        )
+        for index in projects.indices where ["Loja Aurora", "API de Cobranças"].contains(projects[index].name) {
+            projects[index].parentID = group.id
+        }
+        return [group] + projects
     }
 }

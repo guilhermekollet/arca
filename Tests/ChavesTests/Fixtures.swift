@@ -220,8 +220,9 @@ func normalizedKey(_ key: String) -> String {
 /// The titles the menu bar lists inside the sample project called `projectName`, as in
 /// `quickMatchTitles`.
 func projectItemTitles(_ projectName: String, query: String) -> [String] {
-    guard let project = SampleVault.projects.first(where: { $0.name == projectName }) else { return ["no such project"] }
-    return Search.items(in: project, query: query).map { match in
+    let projects = SampleVault.projects
+    guard let project = projects.first(where: { $0.name == projectName }) else { return ["no such project"] }
+    return Search.items(in: project, among: projects, query: query).map { match in
         switch match.item {
         case .credential(let credential): credential.displayTitle
         case .variable(let variable, let environment): "\(variable.key)@\(environment)"
@@ -239,4 +240,59 @@ func locks(minutesSinceUnlock: Double, unlockMinutes: Int, idleMinutes: Double =
         idleSeconds: idleMinutes * 60,
         idleMinutes: idleLock
     )
+}
+
+// MARK: Projects inside projects
+
+/// A small tree, by name: "Grupo" holds "Loja" and "API", "Loja" holds "Checkout", and "Site"
+/// stands alone. `loop` also makes "A" and "B" each other's parent.
+private func tree(loop: Bool = false) -> [Project] {
+    var group = Project(name: "Grupo")
+    var shop = Project(name: "Loja")
+    var api = Project(name: "API")
+    var checkout = Project(name: "Checkout")
+    let site = Project(name: "Site")
+    shop.parentID = group.id
+    api.parentID = group.id
+    checkout.parentID = shop.id
+    group.parentID = nil
+    var projects = [checkout, site, api, shop, group]
+    if loop {
+        var a = Project(name: "A")
+        var b = Project(name: "B")
+        a.parentID = b.id
+        b.parentID = a.id
+        projects += [a, b]
+    }
+    return projects
+}
+
+private func names(_ projects: [Project]) -> [String] { projects.map(\.name) }
+
+/// The names directly inside `name` ("" for the top level).
+func childrenNames(of name: String, loop: Bool = false) -> [String] {
+    let projects = tree(loop: loop)
+    let parent = projects.first { $0.name == name }?.id
+    return names(ProjectTree.children(of: name.isEmpty ? nil : parent, in: projects))
+}
+
+/// The path shown above `name`, and the places it could be moved to.
+func treeFacts(_ name: String) -> (path: String, parents: [String]) {
+    let projects = tree()
+    let project = projects.first { $0.name == name }!
+    return (ProjectTree.path(of: project, in: projects), names(ProjectTree.possibleParents(for: project.id, in: projects)))
+}
+
+/// After deleting `name`, each remaining project with the name of its parent ("-" at the top).
+func parentsAfterDeleting(_ name: String) -> [String] {
+    let projects = tree()
+    let id = projects.first { $0.name == name }!.id
+    let remaining = ProjectTree.removing(id, from: projects)
+    return remaining.map { project in "\(project.name)<\(remaining.first { $0.id == project.parentID }?.name ?? "-")" }.sorted()
+}
+
+/// Decodes a project saved before subprojects existed: whether it comes back at the top level.
+func oldProjectHasNoParent() -> Bool {
+    guard let contents = try? Vault.decode(Data(#"{"projects":[{"name":"Old"}]}"#.utf8)) else { return false }
+    return contents.projects.first?.parentID == nil
 }

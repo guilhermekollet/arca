@@ -65,6 +65,7 @@ struct ProjectView: View {
 
 struct ProjectHeader: View {
     @Binding var project: Project
+    @EnvironmentObject private var vault: Vault
     @State private var tags = ""
 
     var body: some View {
@@ -86,6 +87,7 @@ struct ProjectHeader: View {
             .help(localized("Trocar o símbolo"))
 
             VStack(alignment: .leading, spacing: 3) {
+                path
                 TextField(localized("Nome do projeto"), text: $project.name)
                     .font(Theme.display(26))
                     .textFieldStyle(.plain)
@@ -98,9 +100,15 @@ struct ProjectHeader: View {
                     .textFieldStyle(.plain)
                     .foregroundStyle(Theme.paper.opacity(0.45))
                     .onChange(of: tags) { commitTags() }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    subprojects
+                }
+                .padding(.top, 8)
             }
 
             Spacer(minLength: 12)
+
+            parentMenu
 
             Menu {
                 Picker(localized("Situação"), selection: $project.status) {
@@ -119,6 +127,85 @@ struct ProjectHeader: View {
             .help(localized("Situação do projeto"))
         }
         .onAppear { tags = project.tags.joined(separator: ", ") }
+    }
+
+    /// "Grupo Fazolli ›" above the name of a subproject, each step a way back up.
+    @ViewBuilder
+    private var path: some View {
+        let ancestors = ProjectTree.ancestors(of: project, in: vault.projects)
+        if !ancestors.isEmpty {
+            HStack(spacing: 4) {
+                ForEach(ancestors) { ancestor in
+                    Button(ancestor.name) { vault.selection = ancestor.id }
+                        .buttonStyle(.plain)
+                        .help(localized("Abrir \(ancestor.name)"))
+                    Text("›")
+                }
+            }
+            .font(.system(size: 11.5, weight: .medium))
+            .foregroundStyle(Theme.muted)
+        }
+    }
+
+    /// The projects inside this one, as chips that open them, and a way to add another.
+    private var subprojects: some View {
+        HStack(spacing: 6) {
+            ForEach(ProjectTree.children(of: project.id, in: vault.projects)) { child in
+                Button {
+                    vault.selection = child.id
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: child.symbol)
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(Theme.accent)
+                        Text(child.name.isEmpty ? localized("Sem nome") : child.name)
+                            .font(.system(size: 11.5, weight: .medium))
+                            .lineLimit(1)
+                    }
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 4)
+                    .background(Theme.paper.opacity(0.08), in: Capsule())
+                    .contentShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .help(localized("Abrir \(child.name)"))
+            }
+            Button {
+                vault.addProject(inside: project.id)
+            } label: {
+                Label(localized("Subprojeto"), systemImage: "plus")
+                    .font(.system(size: 11.5, weight: .medium))
+                    .foregroundStyle(Theme.muted)
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 4)
+                    .overlay(Capsule().strokeBorder(Theme.paper.opacity(0.15)))
+                    .contentShape(Capsule())
+            }
+            .buttonStyle(.plain)
+            .help(localized("Criar um projeto dentro deste"))
+        }
+    }
+
+    /// Moves the project inside another one, or back to the top level.
+    private var parentMenu: some View {
+        Menu {
+            Picker(localized("Dentro de"), selection: $project.parentID) {
+                Text(localized("Nenhum: projeto principal")).tag(Project.ID?.none)
+                Divider()
+                ForEach(ProjectTree.possibleParents(for: project.id, in: vault.projects)) { candidate in
+                    Text(ProjectTree.path(of: candidate, in: vault.projects)).tag(Optional(candidate.id))
+                }
+            }
+            .pickerStyle(.inline)
+        } label: {
+            let parent = vault.project(project.parentID)
+            Badge(text: parent.map { localized("Em \($0.name)") } ?? localized("Projeto principal"), symbol: "folder")
+        }
+        .menuStyle(.button)
+        .buttonStyle(.plain)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .help(localized("Mover para dentro de outro projeto"))
     }
 
     private func commitTags() {

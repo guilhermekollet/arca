@@ -19,6 +19,12 @@ enum Snapshot {
                 write(window, to: folder.appendingPathComponent("main-\(section.rawValue).png"))
             }
             vault.section = .context
+            // A project with subprojects: its chips, and the tree in the sidebar.
+            let selected = vault.selection
+            vault.selection = vault.projects.first { !ProjectTree.children(of: $0.id, in: vault.projects).isEmpty }?.id
+            try? await Task.sleep(for: .milliseconds(600))
+            write(window, to: folder.appendingPathComponent("main-group.png"))
+            vault.selection = selected
         }
 
         await draw(RootView().environmentObject(Vault(previewing: .new)), size: CGSize(width: 860, height: 620), to: folder, name: "lock-new")
@@ -31,6 +37,7 @@ enum Snapshot {
         await draw(MenuBarPanel().environmentObject(vault), size: nil, to: folder, name: "panel")
         await draw(MenuBarPanel(query: "aurora prod").environmentObject(vault), size: nil, to: folder, name: "panel-search")
         await draw(MenuBarPanel(project: vault.projects.first?.id).environmentObject(vault), size: nil, to: folder, name: "panel-project")
+        await draw(MenuBarPanel(project: vault.selection).environmentObject(vault), size: nil, to: folder, name: "panel-subproject")
         await draw(MenuBarPanel(query: "prod", project: vault.projects.first?.id).environmentObject(vault), size: nil, to: folder, name: "panel-project-search")
         await draw(MenuBarPanel().environmentObject(Vault(previewing: .locked)), size: nil, to: folder, name: "panel-locked")
         if let credential = vault.projects.first?.credentials.last {

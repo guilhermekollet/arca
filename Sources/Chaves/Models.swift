@@ -24,6 +24,8 @@ struct Project: Codable, Identifiable, Hashable {
     var credentials: [Credential] = []
     var createdAt = Date()
     var updatedAt = Date()
+    /// The project this one belongs to, such as a company and its products; nil at the top level.
+    var parentID: Project.ID?
 
     enum Status: String, Codable, CaseIterable, Identifiable {
         case active, maintenance, paused, archived
@@ -109,6 +111,81 @@ extension EnvironmentSet {
     }
 }
 
+// MARK: Tree
+
+/// Projects inside projects: a company and its products, a product and its services. Every
+/// question about the tree goes through here, so a parent that no longer exists, or a loop the
+/// vault somehow ended up with, never hides a project: it is simply shown at the top level.
+enum ProjectTree {
+    /// The projects directly inside `parent`, by name; `nil` gives the top level.
+    static func children(of parent: Project.ID?, in projects: [Project]) -> [Project] {
+        projects
+            // A project in a loop is shown at the top level only, so walking down the tree always ends.
+            .filter { parent == nil ? isTopLevel($0, in: projects) : $0.parentID == parent && !isTopLevel($0, in: projects) }
+            .sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+    }
+
+    /// Whether `project` is shown at the top level: it has no parent, its parent is gone, or
+    /// following the parents goes round in a loop.
+    static func isTopLevel(_ project: Project, in projects: [Project]) -> Bool {
+        guard let parentID = project.parentID, projects.contains(where: { $0.id == parentID }) else { return true }
+        return ancestors(of: project, in: projects).isEmpty
+    }
+
+    /// The projects above `project`, from the top level down to its parent. Empty for a project
+    /// at the top level, and when its parents go round in a loop.
+    static func ancestors(of project: Project, in projects: [Project]) -> [Project] {
+        var chain: [Project] = []
+        var seen: Set<Project.ID> = [project.id]
+        var next = project.parentID
+        while let id = next {
+            guard let parent = projects.first(where: { $0.id == id }) else { break }
+            guard seen.insert(parent.id).inserted else { return [] }
+            chain.insert(parent, at: 0)
+            next = parent.parentID
+        }
+        return chain
+    }
+
+    /// Every project inside `id`, at any depth.
+    static func descendantIDs(of id: Project.ID, in projects: [Project]) -> Set<Project.ID> {
+        var found: Set<Project.ID> = []
+        var queue = [id]
+        while let current = queue.popLast() {
+            for child in projects where child.parentID == current && !found.contains(child.id) && child.id != id {
+                found.insert(child.id)
+                queue.append(child.id)
+            }
+        }
+        return found
+    }
+
+    /// Where `id` can be moved: any project but itself and those inside it, which would make a loop.
+    static func possibleParents(for id: Project.ID, in projects: [Project]) -> [Project] {
+        let excluded = descendantIDs(of: id, in: projects).union([id])
+        return projects
+            .filter { !excluded.contains($0.id) }
+            .sorted { path(of: $0, in: projects).localizedStandardCompare(path(of: $1, in: projects)) == .orderedAscending }
+    }
+
+    /// "Grupo Fazolli › Reallead": the project's name after those above it.
+    static func path(of project: Project, in projects: [Project]) -> String {
+        (ancestors(of: project, in: projects) + [project]).map(\.name).joined(separator: " › ")
+    }
+
+    /// `projects` without `id`. What was inside it moves up one level, so deleting a company
+    /// never deletes its products along with it.
+    static func removing(_ id: Project.ID, from projects: [Project]) -> [Project] {
+        let parent = projects.first { $0.id == id }?.parentID
+        return projects.compactMap { project in
+            guard project.id != id else { return nil }
+            var project = project
+            if project.parentID == id { project.parentID = parent }
+            return project
+        }
+    }
+}
+
 // MARK: Search
 
 extension Project {
@@ -161,22 +238,29 @@ enum Search {
         let words = words(query)
         guard !words.isEmpty else { return [] }
         let ordered = projects.filter { $0.status != .archived } + projects.filter { $0.status == .archived }
-        return Array(ordered.lazy.flatMap { matches(in: $0, words: words) }.prefix(limit))
+        return Array(ordered.lazy.flatMap { matches(in: $0, among: projects, words: words) }.prefix(limit))
     }
 
-    /// What the menu bar lists inside one project: its accesses, then its variables environment
-    /// by environment, narrowed to those that contain every word of `query` (all of them while
-    /// it's empty).
-    static func items(in project: Project, query: String) -> [QuickMatch] {
-        matches(in: project, words: words(query))
+    /// What the menu bar lists inside one project. While `query` is empty, the project's own
+    /// accesses and then its variables environment by environment (its subprojects are listed
+    /// apart). A search also looks inside its subprojects, at any depth: searching a company
+    /// finds the database of one of its products.
+    static func items(in project: Project, among projects: [Project], query: String) -> [QuickMatch] {
+        let words = words(query)
+        guard !words.isEmpty else { return matches(in: project, among: projects, words: []) }
+        let inside = ProjectTree.descendantIDs(of: project.id, in: projects)
+        let scope = [project] + projects.filter { inside.contains($0.id) }
+        return scope.flatMap { matches(in: $0, among: projects, words: words) }
     }
 
-    private static func matches(in project: Project, words: [String]) -> [QuickMatch] {
+    /// The project's accesses and variables that contain every word, counting the names of the
+    /// projects above it as part of each one ("fazolli reallead banco").
+    private static func matches(in project: Project, among projects: [Project], words: [String]) -> [QuickMatch] {
         func matches(_ text: String) -> Bool {
             words.allSatisfy { text.range(of: $0, options: [.caseInsensitive, .diacriticInsensitive]) != nil }
         }
         var found: [QuickMatch] = []
-        let base = [project.name] + project.tags
+        let base = ProjectTree.ancestors(of: project, in: projects).map(\.name) + [project.name] + project.tags
         for credential in project.credentials {
             let text = (base + [credential.title, credential.url, credential.username, credential.kind.rawValue]).joined(separator: " ")
             if matches(text) { found.append(QuickMatch(projectID: project.id, projectName: project.name, item: .credential(credential))) }
@@ -228,6 +312,7 @@ extension Project {
         credentials = try container.value(.credentials, or: [])
         createdAt = try container.value(.createdAt, or: Date())
         updatedAt = try container.value(.updatedAt, or: createdAt)
+        parentID = try container.decodeIfPresent(UUID.self, forKey: .parentID)
     }
 }
 
