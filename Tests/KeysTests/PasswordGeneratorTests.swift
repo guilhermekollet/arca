@@ -1,5 +1,5 @@
 import Testing
-@testable import Chaves
+@testable import Keys
 
 @Suite("Password generator")
 struct PasswordGeneratorTests {

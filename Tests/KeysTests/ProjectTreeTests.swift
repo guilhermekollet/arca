@@ -1,5 +1,5 @@
 import Testing
-@testable import Chaves
+@testable import Keys
 
 @Suite("Projects inside projects")
 struct ProjectTreeTests {

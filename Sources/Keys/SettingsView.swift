@@ -68,9 +68,9 @@ struct SettingsView: View {
             }
 
             HStack(spacing: 6) {
-                Text("Chaves \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "dev")")
+                Text("\(appName) \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "dev")")
                 Text("·")
-                Link(localized("Código-fonte no GitHub"), destination: URL(string: "https://github.com/guilhermekollet/chaves")!)
+                Link(localized("Código-fonte no GitHub"), destination: URL(string: "https://github.com/guilhermekollet/keys")!)
                     .foregroundStyle(Theme.accent)
             }
             .font(.system(size: 11.5))
@@ -78,7 +78,7 @@ struct SettingsView: View {
         }
         .padding(22)
         .frame(width: 460, alignment: .topLeading)
-        .chavesSurface()
+        .keysSurface()
     }
 
     private func row<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {

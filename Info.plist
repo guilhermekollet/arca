@@ -5,13 +5,13 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>CFBundleName</key>
-    <string>Chaves</string>
+    <string>Keys</string>
     <key>CFBundleDisplayName</key>
-    <string>Chaves</string>
+    <string>Keys</string>
     <key>CFBundleIdentifier</key>
-    <string>com.guilhermekollet.chaves</string>
+    <string>com.guilhermekollet.keys</string>
     <key>CFBundleExecutable</key>
-    <string>Chaves</string>
+    <string>Keys</string>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>CFBundlePackageType</key>
@@ -27,6 +27,8 @@
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
     <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>LSHasLocalizedDisplayName</key>
     <true/>
     <key>NSHumanReadableCopyright</key>
     <string>© 2026 Guilherme Kollet. MIT License.</string>

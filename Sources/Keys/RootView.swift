@@ -13,7 +13,7 @@ struct RootView: View {
             }
         }
         .animation(.easeInOut(duration: 0.2), value: vault.state)
-        .chavesSurface()
+        .keysSurface()
     }
 }
 
@@ -74,7 +74,7 @@ struct LockScreen: View {
         switch vault.state {
         case .new: localized("Boas-vindas ao Chaves")
         case .unreadable: localized("O cofre não abre aqui")
-        default: "Chaves"
+        default: appName
         }
     }
 

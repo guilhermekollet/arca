@@ -20,7 +20,7 @@ extension SecureEnclave.P256.KeyAgreement.PrivateKey: AgreementKey {}
 /// works after Touch ID or the Mac's password. The header is bound to both seals, so it can't be
 /// swapped from another vault.
 struct VaultFile: Codable, Equatable {
-    static let formatName = "chaves-vault"
+    static let formatName = "keys-vault"
     static let currentVersion = 1
 
     var format = VaultFile.formatName
@@ -112,7 +112,7 @@ struct VaultFile: Codable, Equatable {
         secret.hkdfDerivedSymmetricKey(
             using: SHA256.self,
             salt: ephemeral + recipient,
-            sharedInfo: Data("chaves vault key v1".utf8),
+            sharedInfo: Data("keys vault key v1".utf8),
             outputByteCount: 32
         )
     }

@@ -46,7 +46,7 @@ enum Theme {
 
 extension View {
     /// The app's look on a window or panel: dark, ink behind, off-white text, lavender controls.
-    func chavesSurface() -> some View {
+    func keysSurface() -> some View {
         background(Theme.ink)
             .foregroundStyle(Theme.paper)
             .tint(Theme.accent)
@@ -78,7 +78,7 @@ struct DotMark: View {
             }
         }
         .accessibilityElement()
-        .accessibilityLabel("Chaves")
+        .accessibilityLabel(appName)
     }
 }
 

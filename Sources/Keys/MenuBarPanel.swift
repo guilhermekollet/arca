@@ -45,7 +45,7 @@ struct MenuBarPanel: View {
         }
         .padding(14)
         .frame(width: 330)
-        .chavesSurface()
+        .keysSurface()
         // Esc inside a project goes back one level, like the back button.
         .onKeyPress(.escape) {
             guard projectID != nil else { return .ignored }
@@ -69,7 +69,7 @@ struct MenuBarPanel: View {
         HStack(spacing: 6) {
             Image(nsImage: Theme.menuBarIcon)
                 .renderingMode(.template)
-            Text("Chaves")
+            Text(appName)
                 .font(Theme.display(19))
             Spacer()
             if vault.state == .unlocked && !vault.isSample {

@@ -1,7 +1,7 @@
 import AppKit
 import SwiftUI
 
-/// Development tool behind `Chaves --snapshot folder`: draws every screen with the sample vault into
+/// Development tool behind `Keys --snapshot folder`: draws every screen with the sample vault into
 /// PNG files and quits, so the interface can be checked (and shown in a pull request) without
 /// Touch ID, a real vault or permission to record the screen.
 @MainActor

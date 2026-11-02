@@ -2,19 +2,19 @@
 import PackageDescription
 
 let package = Package(
-    name: "Chaves",
-    // The interface is written in Brazilian Portuguese and translated in Sources/Chaves/Resources.
+    name: "Keys",
+    // The interface is written in Brazilian Portuguese and translated in Sources/Keys/Resources.
     defaultLocalization: "pt-BR",
     platforms: [.macOS(.v26)],
     targets: [
         .executableTarget(
-            name: "Chaves",
+            name: "Keys",
             resources: [.process("Resources")],
             swiftSettings: [.swiftLanguageMode(.v5)]
         ),
         .testTarget(
-            name: "ChavesTests",
-            dependencies: ["Chaves"],
+            name: "KeysTests",
+            dependencies: ["Keys"],
             swiftSettings: [.swiftLanguageMode(.v5)]
         ),
     ]

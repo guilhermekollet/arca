@@ -52,7 +52,7 @@ enum DeviceKey {
 private enum Keychain {
     private static let item: [String: Any] = [
         kSecClass as String: kSecClassGenericPassword,
-        kSecAttrService as String: "com.guilhermekollet.chaves",
+        kSecAttrService as String: "com.guilhermekollet.keys",
         kSecAttrAccount as String: "device-key",
     ]
 
@@ -69,8 +69,8 @@ private enum Keychain {
         SecItemDelete(item as CFDictionary)
         var entry = item
         entry[kSecValueData as String] = data
-        entry[kSecAttrLabel as String] = "Chaves"
-        entry[kSecAttrDescription as String] = "Chaves vault key (Secure Enclave)"
+        entry[kSecAttrLabel as String] = "Keys"
+        entry[kSecAttrDescription as String] = "Keys vault key (Secure Enclave)"
         let status = SecItemAdd(entry as CFDictionary, nil)
         guard status == errSecSuccess else {
             throw NSError(domain: NSOSStatusErrorDomain, code: Int(status))

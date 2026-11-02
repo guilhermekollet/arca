@@ -207,7 +207,7 @@ struct CredentialEditor: View {
         }
         .padding(22)
         .frame(width: 520)
-        .chavesSurface()
+        .keysSurface()
         .onChange(of: credential.password) { credential.updatedAt = Date() }
     }
 
@@ -265,7 +265,7 @@ struct GeneratorPopover: View {
             }
         }
         .padding(16)
-        .chavesSurface()
+        .keysSurface()
         .onAppear { preview = generator.generate() }
         .onChange(of: generator) { preview = generator.generate() }
     }

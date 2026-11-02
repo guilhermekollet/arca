@@ -44,15 +44,15 @@ final class Vault: ObservableObject {
     private var backedUp = false
     private let autoLock = AutoLock()
 
-    /// `CHAVES_VAULT_DIR` points the app at another folder, to try things without touching your vault.
+    /// `KEYS_VAULT_DIR` points the app at another folder, to try things without touching your vault.
     static var directory: URL {
-        if let custom = ProcessInfo.processInfo.environment["CHAVES_VAULT_DIR"], !custom.isEmpty {
+        if let custom = ProcessInfo.processInfo.environment["KEYS_VAULT_DIR"], !custom.isEmpty {
             return URL(fileURLWithPath: (custom as NSString).expandingTildeInPath)
         }
-        return FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Chaves")
+        return FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Keys")
     }
 
-    static var fileURL: URL { directory.appendingPathComponent("vault.chaves") }
+    static var fileURL: URL { directory.appendingPathComponent("vault.keys") }
     static var backupsURL: URL { directory.appendingPathComponent("Backups") }
     /// How many earlier copies of the vault are kept.
     static let backupCount = 20
@@ -145,7 +145,7 @@ final class Vault: ObservableObject {
     /// can be created.
     func setAsideUnreadable() {
         let stamp = Self.stamp(Date())
-        let destination = Self.directory.appendingPathComponent("vault-unreadable-\(stamp).chaves")
+        let destination = Self.directory.appendingPathComponent("vault-unreadable-\(stamp).keys")
         do {
             try FileManager.default.moveItem(at: Self.fileURL, to: destination)
             state = .new
@@ -198,12 +198,12 @@ final class Vault: ObservableObject {
         let manager = FileManager.default
         do {
             try manager.createDirectory(at: Self.backupsURL, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
-            let copy = Self.backupsURL.appendingPathComponent("vault-\(Self.stamp(Date())).chaves")
+            let copy = Self.backupsURL.appendingPathComponent("vault-\(Self.stamp(Date())).keys")
             if !manager.fileExists(atPath: copy.path) {
                 try manager.copyItem(at: Self.fileURL, to: copy)
             }
             let copies = try manager.contentsOfDirectory(at: Self.backupsURL, includingPropertiesForKeys: nil)
-                .filter { $0.pathExtension == "chaves" }
+                .filter { $0.pathExtension == "keys" }
                 .sorted { $0.lastPathComponent > $1.lastPathComponent }
             for old in copies.dropFirst(Self.backupCount) {
                 try? manager.removeItem(at: old)
