@@ -280,3 +280,7 @@
 "Subprojetos arquivados com ele" = "Subprojects archived with it";
 "Guarda o projeto em Arquivados, fora da barra lateral e da barra de menus. Nada é apagado." = "Keeps the project in Settings › Archived, out of the sidebar and the menu bar. Nothing is deleted.";
 "Guarda o projeto e os subprojetos dele em Arquivados, fora da barra lateral e da barra de menus. Nada é apagado." = "Keeps the project and its subprojects in Settings › Archived, out of the sidebar and the menu bar. Nothing is deleted.";
+
+/* Sidebar groups */
+"Mostrar os subprojetos" = "Show the subprojects";
+"Ocultar os subprojetos" = "Hide the subprojects";

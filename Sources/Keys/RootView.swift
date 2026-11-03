@@ -276,6 +276,31 @@ struct MainView: View {
         }
     }
 
+    /// ← folds the open group, or goes up to the group of the open project, as in Finder.
+    private func foldOrGoUp() -> KeyPress.Result {
+        guard let project = vault.project(vault.selection) else { return .ignored }
+        let children = ProjectTree.children(of: project.id, in: vault.projects).filter { !$0.isArchived }
+        if !children.isEmpty, !collapsed.contains(project.id) {
+            withAnimation(.easeInOut(duration: 0.18)) { _ = collapsed.insert(project.id) }
+        } else if let parent = ProjectTree.ancestors(of: project, in: vault.projects).last {
+            vault.selection = parent.id
+        }
+        return .handled
+    }
+
+    /// → unfolds the open group, or goes into its first subproject.
+    private func unfoldOrGoIn() -> KeyPress.Result {
+        guard let project = vault.project(vault.selection) else { return .ignored }
+        let children = ProjectTree.children(of: project.id, in: vault.projects).filter { !$0.isArchived }
+        guard let first = children.first else { return .handled }
+        if collapsed.contains(project.id) {
+            withAnimation(.easeInOut(duration: 0.18)) { _ = collapsed.remove(project.id) }
+        } else {
+            vault.selection = first.id
+        }
+        return .handled
+    }
+
     private func moveSelection(by step: Int) -> KeyPress.Result {
         let order = visibleOrder
         guard !order.isEmpty else { return .ignored }
@@ -358,6 +383,8 @@ struct MainView: View {
             guard let project = vault.project(vault.selection), project.isArchived else { return }
             vault.selection = ProjectTree.ancestors(of: project, in: vault.projects).last { !$0.isArchived }?.id
         }
+        .onKeyPress(.leftArrow) { foldOrGoUp() }
+        .onKeyPress(.rightArrow) { unfoldOrGoIn() }
         .onKeyPress(.upArrow) { moveSelection(by: -1) }
         .onKeyPress(.downArrow) { moveSelection(by: 1) }
         // The Delete key asks before removing the selected project, as in Finder and Mail.
@@ -406,34 +433,30 @@ struct ProjectTreeRow<Actions: View>: View {
     let archived: Bool
     /// The projects above it, for a row that heads its list without its parent (see `roots`).
     var path: [String] = []
+    /// How deep in the tree the row is: each level indents it a little.
+    var depth = 0
     @Binding var collapsed: Set<Project.ID>
     let actions: (Project) -> Actions
     @EnvironmentObject private var vault: Vault
 
     var body: some View {
+        // Rows of their own rather than a DisclosureGroup: the system's disclosure triangle made
+        // the list keep an empty column on the left of every row, groups or not.
         let children = ProjectTree.children(of: project.id, in: vault.projects).filter { $0.isArchived == archived }
-        if children.isEmpty {
-            row
-        } else {
-            DisclosureGroup(isExpanded: Binding(
-                get: { !collapsed.contains(project.id) },
-                set: { expanded in
-                    if expanded { collapsed.remove(project.id) } else { collapsed.insert(project.id) }
-                }
-            )) {
-                // Type-erased: the row contains rows of its own type.
-                ForEach(children) { child in
-                    AnyView(ProjectTreeRow(project: child, archived: archived, collapsed: $collapsed, actions: actions))
-                }
-            } label: {
-                row
+        let expanded = !collapsed.contains(project.id)
+        SelectableProjectRow(project: project, path: path, expanded: children.isEmpty ? nil : expanded) {
+            withAnimation(.easeInOut(duration: 0.18)) {
+                if expanded { collapsed.insert(project.id) } else { collapsed.remove(project.id) }
             }
         }
-    }
-
-    private var row: some View {
-        SelectableProjectRow(project: project, path: path)
-            .contextMenu { actions(project) }
+        .padding(.leading, CGFloat(depth) * 16)
+        .contextMenu { actions(project) }
+        if expanded {
+            ForEach(children) { child in
+                // Type-erased: the row contains rows of its own type.
+                AnyView(ProjectTreeRow(project: child, archived: archived, depth: depth + 1, collapsed: $collapsed, actions: actions))
+            }
+        }
     }
 }
 
@@ -441,6 +464,9 @@ struct ProjectTreeRow<Actions: View>: View {
 struct SelectableProjectRow: View {
     let project: Project
     var path: [String] = []
+    /// For a project with subprojects, whether they show; nil for one without.
+    var expanded: Bool? = nil
+    var toggle: () -> Void = {}
     @EnvironmentObject private var vault: Vault
 
     var body: some View {
@@ -449,11 +475,28 @@ struct SelectableProjectRow: View {
         Button {
             vault.selection = project.id
         } label: {
-            ProjectRow(project: project, path: path, selected: selected)
+            ProjectRow(project: project, path: path, selected: selected, trailingRoom: expanded == nil ? 0 : 20)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(selected ? .isSelected : [])
+        .overlay(alignment: .trailing) {
+            if let expanded {
+                // The group's own chevron, on the right, pointing down while its subprojects show.
+                Button(action: toggle) {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(Theme.paper.opacity(0.45))
+                        .rotationEffect(.degrees(expanded ? 90 : 0))
+                        .frame(width: 22, height: 22)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .padding(.trailing, 4)
+                .help(expanded ? localized("Ocultar os subprojetos") : localized("Mostrar os subprojetos"))
+                .accessibilityLabel(expanded ? localized("Ocultar os subprojetos") : localized("Mostrar os subprojetos"))
+            }
+        }
     }
 }
 
@@ -464,6 +507,8 @@ struct ProjectRow: View {
     /// The open project: a quiet surface behind it and its name in semibold, in the app's own
     /// colors rather than the system's accent.
     var selected = false
+    /// Room kept free on the right for the group's chevron.
+    var trailingRoom: CGFloat = 0
     @State private var hovering = false
 
     var body: some View {
@@ -488,6 +533,7 @@ struct ProjectRow: View {
             }
             Spacer(minLength: 0)
         }
+        .padding(.trailing, trailingRoom)
         // Archived projects read a little quieter, except the one that's open.
         .opacity(project.isArchived && !selected ? 0.6 : 1)
         .padding(.vertical, 6)
