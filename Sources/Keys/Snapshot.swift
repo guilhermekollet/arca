@@ -25,6 +25,14 @@ enum Snapshot {
             try? await Task.sleep(for: .milliseconds(600))
             write(window, to: folder.appendingPathComponent("main-group.png"))
             vault.selection = selected
+            // A vault just created, with one new project: what the person sees first.
+            let projects = vault.projects
+            vault.projects = []
+            vault.addProject()
+            try? await Task.sleep(for: .milliseconds(800))
+            write(window, to: folder.appendingPathComponent("main-new-project.png"))
+            vault.projects = projects
+            vault.selection = selected
         }
 
         await draw(RootView().environmentObject(Vault(previewing: .new)), size: CGSize(width: 860, height: 620), to: folder, name: "lock-new")

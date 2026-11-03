@@ -243,26 +243,28 @@ struct ContextTab: View {
                     .disabled(!folderExists)
             }
 
-            ZStack(alignment: .topLeading) {
-                TextEditor(text: $project.context)
-                    .font(.system(size: 13, design: .monospaced))
-                    .lineSpacing(2)
-                    .scrollContentBackground(.hidden)
-                    .padding(10)
-                if project.context.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text(localized("Tudo o que você vai querer saber quando voltar a este projeto: como rodar, como publicar, onde está cada coisa, por que foi feito assim e com quem falar."))
-                            .font(.system(size: 12.5))
-                            .foregroundStyle(Theme.muted)
-                            .fixedSize(horizontal: false, vertical: true)
-                        Button(localized("Começar com um roteiro")) { project.context = Self.outline }
-                            .buttonStyle(PillButtonStyle())
+            TextEditor(text: $project.context)
+                .font(.system(size: 13, design: .monospaced))
+                .lineSpacing(2)
+                .scrollContentBackground(.hidden)
+                .padding(10)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                // An overlay, not a sibling in a stack: the hint must never decide how tall the
+                // editor is. Measured as part of the layout, its wrapped text made the whole window
+                // taller than the screen for a new, empty project.
+                .overlay(alignment: .topLeading) {
+                    if project.context.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text(localized("Tudo o que você vai querer saber quando voltar a este projeto: como rodar, como publicar, onde está cada coisa, por que foi feito assim e com quem falar."))
+                                .font(.system(size: 12.5))
+                                .foregroundStyle(Theme.muted)
+                            Button(localized("Começar com um roteiro")) { project.context = Self.outline }
+                                .buttonStyle(PillButtonStyle())
+                        }
+                        .padding(16)
+                        .frame(maxWidth: 460, alignment: .leading)
                     }
-                    .padding(16)
-                    .frame(maxWidth: 460, alignment: .leading)
                 }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Theme.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .padding(20)
