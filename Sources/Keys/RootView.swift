@@ -14,6 +14,9 @@ struct RootView: View {
         }
         .animation(.easeInOut(duration: 0.2), value: vault.state)
         .keysSurface()
+        // The title bar takes the window's ink instead of a bar of its own with a divider under
+        // it, so the header and the content read as one surface.
+        .toolbarBackgroundVisibility(.hidden, for: .windowToolbar)
     }
 }
 
