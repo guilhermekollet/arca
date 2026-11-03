@@ -125,7 +125,7 @@ struct MenuBarPanel: View {
             if searching {
                 // Inside a project, a search covers its subprojects too.
                 let inside = ProjectTree.descendantIDs(of: project.id, in: vault.projects)
-                let projects = vault.projects.filter { inside.contains($0.id) && $0.matches(query) }
+                let projects = vault.projects.filter { inside.contains($0.id) && !$0.isArchived && $0.matches(query) }
                 let items = Search.items(in: project, among: vault.projects, query: query)
                 results(projects: projects, items: items)
             } else {
@@ -155,7 +155,7 @@ struct MenuBarPanel: View {
             }
         } else {
             results(
-                projects: vault.projects.filter { $0.matches(query) },
+                projects: vault.projects.filter { !$0.isArchived && $0.matches(query) },
                 items: Search.quickMatches(in: vault.projects, query: query, limit: 12)
             )
         }
@@ -178,8 +178,8 @@ struct MenuBarPanel: View {
         }
     }
 
-    /// The top-level projects worth reaching from the menu bar: all but the archived ones (search
-    /// still finds those), in the main window's order. Subprojects are one click further in.
+    /// The top-level projects worth reaching from the menu bar: those in use, in the main
+    /// window's order. Subprojects are one click further in.
     private var projectList: [Project] {
         ProjectTree.roots(archived: false, in: vault.projects)
     }

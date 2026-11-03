@@ -244,14 +244,11 @@
 
 /* Archiving */
 "Arquivado" = "Archived";
-"Arquivados · %lld" = "Archived · %lld";
 "Arquivar" = "Archive";
 "Desarquivar" = "Unarchive";
 "Arquivado em %@" = "Archived on %@";
 "Volta a usar o projeto" = "Puts the project back in use";
 "Volta a usar o projeto e os subprojetos dele" = "Puts the project and its subprojects back in use";
-"Guarda o projeto em Arquivados, fora da barra de menus. Nada é apagado." = "Keeps the project in Archived, out of the menu bar. Nothing is deleted.";
-"Guarda o projeto e os subprojetos dele em Arquivados, fora da barra de menus. Nada é apagado." = "Keeps the project and its subprojects in Archived, out of the menu bar. Nothing is deleted.";
 
 
 /* Project icon and color */
@@ -266,3 +263,20 @@
 "Coral" = "Coral";
 "Rosa" = "Rose";
 "Ardósia" = "Slate";
+
+
+/* Settings › Archived */
+"Geral" = "General";
+"Arquivados" = "Archived";
+"Destranque o cofre para ver os projetos arquivados." = "Unlock the vault to see the archived projects.";
+"Nenhum projeto arquivado" = "No archived projects";
+"Arquive pelo cabeçalho do projeto ou pelo clique direito na barra lateral. O projeto sai da barra lateral, das buscas e da barra de menus, e fica aqui." = "Archive from the project's header or by right-clicking it in the sidebar. The project leaves the sidebar, searches and the menu bar, and stays here.";
+"Desarquivar devolve o projeto, com os subprojetos, ao lugar de antes. Apagar não tem volta aqui; a cópia de segurança de antes desta sessão continua em Backups." = "Unarchiving puts the project, with its subprojects, back where it was. Deleting can't be undone here; the backup from before this session stays in Backups.";
+"Apagar %@ de vez?" = "Delete %@ for good?";
+"Apagar de vez" = "Delete for good";
+"Apagar de vez…" = "Delete for good…";
+"O contexto, as variáveis e os acessos saem do cofre, junto com os subprojetos arquivados com ele (%lld). A cópia de segurança de antes desta sessão continua em Backups." = "The context, variables and accesses leave the vault, along with the subprojects archived with it (%lld). The backup from before this session stays in Backups.";
+"O contexto, as variáveis e os acessos saem do cofre. A cópia de segurança de antes desta sessão continua em Backups." = "The context, variables and accesses leave the vault. The backup from before this session stays in Backups.";
+"Subprojetos arquivados com ele" = "Subprojects archived with it";
+"Guarda o projeto em Arquivados, fora da barra lateral e da barra de menus. Nada é apagado." = "Keeps the project in Settings › Archived, out of the sidebar and the menu bar. Nothing is deleted.";
+"Guarda o projeto e os subprojetos dele em Arquivados, fora da barra lateral e da barra de menus. Nada é apagado." = "Keeps the project and its subprojects in Settings › Archived, out of the sidebar and the menu bar. Nothing is deleted.";

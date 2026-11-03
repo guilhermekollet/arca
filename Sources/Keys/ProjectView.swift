@@ -225,8 +225,8 @@ struct ProjectHeader: View {
             .buttonStyle(.plain)
             .fixedSize()
             .help(hasSubprojects
-                ? localized("Guarda o projeto e os subprojetos dele em Arquivados, fora da barra de menus. Nada é apagado.")
-                : localized("Guarda o projeto em Arquivados, fora da barra de menus. Nada é apagado."))
+                ? localized("Guarda o projeto e os subprojetos dele em Arquivados, fora da barra lateral e da barra de menus. Nada é apagado.")
+                : localized("Guarda o projeto em Arquivados, fora da barra lateral e da barra de menus. Nada é apagado."))
         }
     }
 

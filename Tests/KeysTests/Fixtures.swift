@@ -450,3 +450,10 @@ func firstProjectTint(from json: String) -> String {
 func projectSymbolsExist() -> (count: Int, missing: [String]) {
     (Project.symbols.count, Project.symbols.filter { NSImage(systemSymbolName: $0, accessibilityDescription: nil) == nil })
 }
+
+/// The names left after deleting `name`, and everything inside it, for good.
+func remainingAfterDeletingForGood(_ name: String) -> [String] {
+    let projects = treeForArchiving()
+    let id = projects.first { $0.name == name }!.id
+    return ProjectTree.removingWithSubprojects(id, from: projects).map(\.name).sorted()
+}

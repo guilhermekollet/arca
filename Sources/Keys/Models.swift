@@ -25,8 +25,8 @@ struct Project: Codable, Identifiable, Hashable {
     var updatedAt = Date()
     /// The project this one belongs to, such as a company and its products; nil at the top level.
     var parentID: Project.ID?
-    /// When the project was archived: kept, but out of the way (the sidebar's Archived section,
-    /// out of the menu bar's list, last in searches). Nil while it's in use.
+    /// When the project was archived: kept, but out of the way. It leaves the sidebar, searches and
+    /// the menu bar, and shows only in Settings › Archived. Nil while it's in use.
     var archivedAt: Date?
     /// The color of the project's symbol, to tell projects apart at a glance.
     var tint = Tint.lavender
@@ -193,8 +193,9 @@ enum ProjectTree {
         }
     }
 
-    /// The projects shown at the top of one of the sidebar's two lists: in use or archived. An
-    /// archived project inside one still in use (or the other way round) heads its own list.
+    /// The projects at the top of a list of those in use (the sidebar) or of those archived
+    /// (Settings). An archived project inside one still in use (or the other way round) heads
+    /// its own list.
     static func roots(archived: Bool, in projects: [Project]) -> [Project] {
         projects
             .filter { $0.isArchived == archived }
@@ -203,6 +204,13 @@ enum ProjectTree {
                 return parent.isArchived != archived
             }
             .sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+    }
+
+    /// `projects` without `id` and everything inside it: deleting an archived group for good takes
+    /// its products, archived with it, along.
+    static func removingWithSubprojects(_ id: Project.ID, from projects: [Project]) -> [Project] {
+        let gone = descendantIDs(of: id, in: projects).union([id])
+        return projects.filter { !gone.contains($0.id) }
     }
 
     /// `projects` without `id`. What was inside it moves up one level, so deleting a company
@@ -265,12 +273,11 @@ enum Search {
 
     /// Accesses and variables whose project and own name, together, contain every word of
     /// `query`: "fazon prod database" finds the database URL in Fazon's production set.
-    /// Archived projects come last.
+    /// Archived projects are left out: they show only in Settings.
     static func quickMatches(in projects: [Project], query: String, limit: Int = 30) -> [QuickMatch] {
         let words = words(query)
         guard !words.isEmpty else { return [] }
-        let ordered = projects.filter { !$0.isArchived } + projects.filter(\.isArchived)
-        return Array(ordered.lazy.flatMap { matches(in: $0, among: projects, words: words) }.prefix(limit))
+        return Array(projects.lazy.filter { !$0.isArchived }.flatMap { matches(in: $0, among: projects, words: words) }.prefix(limit))
     }
 
     /// What the menu bar lists inside one project. While `query` is empty, the project's own
@@ -281,7 +288,7 @@ enum Search {
         let words = words(query)
         guard !words.isEmpty else { return matches(in: project, among: projects, words: []) }
         let inside = ProjectTree.descendantIDs(of: project.id, in: projects)
-        let scope = [project] + projects.filter { inside.contains($0.id) }
+        let scope = [project] + projects.filter { inside.contains($0.id) && !$0.isArchived }
         return scope.flatMap { matches(in: $0, among: projects, words: words) }
     }
 

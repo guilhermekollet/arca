@@ -31,9 +31,16 @@ struct ArchiveTests {
         #expect(result.archivedRoots == ["Grupo"])
     }
 
-    @Test func searchStillFindsArchivedProjectsLast() {
-        // "Postgres de produção" is the shop's; with the shop archived it still turns up.
-        #expect(quickMatchTitlesWithShopArchived("loja postgres") == ["Postgres de produção"])
-        #expect(quickMatchTitlesWithShopArchived("grupo produção") == ["Postgres de produção"])
+    @Test func searchLeavesArchivedProjectsOut() {
+        // "Postgres de produção" is the shop's: archived, nothing of it turns up.
+        #expect(quickMatchTitlesWithShopArchived("loja postgres").isEmpty)
+        #expect(quickMatchTitlesWithShopArchived("grupo produção").isEmpty)
+        // What's still in use is found as before.
+        #expect(quickMatchTitlesWithShopArchived("staging") == ["VPS de staging", "GATEWAY_API_KEY@staging"])
+    }
+
+    @Test func deletingForGoodTakesTheSubprojectsAlong() {
+        #expect(remainingAfterDeletingForGood("Loja") == ["API", "Grupo", "Site"])
+        #expect(remainingAfterDeletingForGood("Grupo") == ["Site"])
     }
 }
