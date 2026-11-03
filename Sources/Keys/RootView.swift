@@ -172,9 +172,10 @@ struct MainView: View {
     /// The list starts with the keyboard, as in Mail and Notes; otherwise the project's name
     /// field would, with its text selected, one keystroke away from being replaced.
     @FocusState private var listFocused: Bool
+    @State private var columns = NavigationSplitViewVisibility.all
 
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(columnVisibility: $columns) {
             sidebar
                 .navigationSplitViewColumnWidth(min: 220, ideal: 250, max: 340)
         } detail: {
@@ -234,8 +235,65 @@ struct MainView: View {
         vault.projects.filter { $0.matches(query) }
     }
 
+    /// The projects in the order the sidebar shows them, for moving with the arrow keys.
+    private var visibleOrder: [Project.ID] {
+        guard Search.words(query).isEmpty else { return searchResults.map(\.id) }
+        var order: [Project.ID] = []
+        func walk(_ project: Project) {
+            order.append(project.id)
+            guard !collapsed.contains(project.id) else { return }
+            ProjectTree.children(of: project.id, in: vault.projects).forEach(walk)
+        }
+        let roots = ProjectTree.children(of: nil, in: vault.projects)
+        for status in Project.Status.allCases {
+            roots.filter { $0.status == status }.forEach(walk)
+        }
+        return order
+    }
+
+    private var searchResults: [Project] {
+        filtered.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+    }
+
+    /// Unfolds the projects above `id`, so the open project is never hidden in a folded group.
+    private func reveal(_ id: Project.ID?) {
+        guard let project = vault.project(id) else { return }
+        for ancestor in ProjectTree.ancestors(of: project, in: vault.projects) {
+            collapsed.remove(ancestor.id)
+        }
+    }
+
+    private func moveSelection(by step: Int) -> KeyPress.Result {
+        let order = visibleOrder
+        guard !order.isEmpty else { return .ignored }
+        // A selection hidden in a folded group counts from the nearest group that shows.
+        var anchor = vault.selection
+        if let project = vault.project(anchor), !order.contains(project.id) {
+            anchor = ProjectTree.ancestors(of: project, in: vault.projects).last { order.contains($0.id) }?.id
+        }
+        let current = order.firstIndex { $0 == anchor }
+        let next = current.map { min(max($0 + step, 0), order.count - 1) } ?? (step > 0 ? 0 : order.count - 1)
+        vault.selection = order[next]
+        return .handled
+    }
+
+    /// Shows or hides the sidebar, with the app's own icon (the system's button can't take one).
+    private var sidebarButton: some View {
+        Button {
+            withAnimation { columns = columns == .detailOnly ? .all : .detailOnly }
+        } label: {
+            SidebarIcon()
+        }
+        .keyboardShortcut("s", modifiers: [.control, .command])
+        .help(localized("Mostrar ou ocultar a barra lateral (⌃⌘S)"))
+        .accessibilityLabel(localized("Mostrar ou ocultar a barra lateral"))
+    }
+
     private var sidebar: some View {
-        List(selection: $vault.selection) {
+        // The list draws no selection of its own: the system's would be a strong accent color.
+        // Each row shows its own quiet highlight (see ProjectRow), and the arrow keys and Delete
+        // still work while the list has the keyboard.
+        List {
             if Search.words(query).isEmpty {
                 // The tree: top-level projects grouped by status, each with what's inside it.
                 ForEach(Project.Status.allCases) { status in
@@ -250,15 +308,28 @@ struct MainView: View {
                 }
             } else {
                 // A search shows what matched as a flat list, each with the path to it.
-                ForEach(filtered.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }) { project in
-                    ProjectRow(project: project, path: ProjectTree.ancestors(of: project, in: vault.projects).map(\.name))
-                        .tag(project.id)
+                ForEach(searchResults) { project in
+                    SelectableProjectRow(project: project, path: ProjectTree.ancestors(of: project, in: vault.projects).map(\.name))
                         .contextMenu { rowActions(project) }
                 }
             }
         }
+        .focusable()
+        .focusEffectDisabled()
         .focused($listFocused)
-        .onAppear { listFocused = true }
+        // The keyboard starts on the list, never in a text field: a project's name field with
+        // the focus has its text selected, so the first keystroke would replace the name.
+        .defaultFocus($listFocused, true)
+        .onAppear { DispatchQueue.main.async { listFocused = true } }
+        // The sidebar's own button, where the system's would be, in place of it. macOS keeps it
+        // in the title bar while the sidebar is hidden, so it also brings the sidebar back.
+        .toolbar(removing: .sidebarToggle)
+        .toolbar {
+            ToolbarItem(placement: .automatic) { sidebarButton }
+        }
+        .onChange(of: vault.selection, initial: true) { reveal(vault.selection) }
+        .onKeyPress(.upArrow) { moveSelection(by: -1) }
+        .onKeyPress(.downArrow) { moveSelection(by: 1) }
         // The Delete key asks before removing the selected project, as in Finder and Mail.
         .onDeleteCommand { deleting = vault.selection }
         .overlay {
@@ -326,9 +397,28 @@ struct ProjectTreeRow<Actions: View>: View {
     }
 
     private var row: some View {
-        ProjectRow(project: project)
-            .tag(project.id)
+        SelectableProjectRow(project: project)
             .contextMenu { actions(project) }
+    }
+}
+
+/// A project row that opens the project when clicked and shows whether it's the open one.
+struct SelectableProjectRow: View {
+    let project: Project
+    var path: [String] = []
+    @EnvironmentObject private var vault: Vault
+
+    var body: some View {
+        let selected = vault.selection == project.id
+        // A button rather than a tap gesture, so VoiceOver and other assistive tools can open it too.
+        Button {
+            vault.selection = project.id
+        } label: {
+            ProjectRow(project: project, path: path, selected: selected)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 }
 
@@ -336,26 +426,39 @@ struct ProjectRow: View {
     let project: Project
     /// The names of the projects above it, shown when the tree isn't (in a search).
     var path: [String] = []
+    /// The open project: a quiet surface behind it and its name in semibold, in the app's own
+    /// colors rather than the system's accent.
+    var selected = false
+    @State private var hovering = false
 
     var body: some View {
         HStack(spacing: 10) {
             ProjectBadge(project: project, size: 26)
             VStack(alignment: .leading, spacing: 1) {
                 Text(project.name.isEmpty ? localized("Sem nome") : project.name)
+                    .fontWeight(selected ? .semibold : .regular)
+                    .foregroundStyle(selected ? Theme.paper : Theme.paper.opacity(0.85))
                     .lineLimit(1)
                 if !path.isEmpty {
                     Text(path.joined(separator: " › "))
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.muted)
                         .lineLimit(1)
                 } else if !project.summary.isEmpty {
                     Text(project.summary)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.muted)
                         .lineLimit(1)
                 }
             }
+            Spacer(minLength: 0)
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, 4)
+        .padding(.horizontal, 6)
+        .background(
+            Theme.paper.opacity(selected ? 0.09 : hovering ? 0.04 : 0),
+            in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+        )
+        .onHover { hovering = $0 }
     }
 }

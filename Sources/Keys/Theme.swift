@@ -271,3 +271,18 @@ extension TextFieldStyle where Self == FieldStyle {
     static var field: FieldStyle { FieldStyle() }
     static var code: FieldStyle { FieldStyle(monospaced: true) }
 }
+
+/// The sidebar button's icon: a rounded square with a short bar along its left side.
+struct SidebarIcon: View {
+    var body: some View {
+        RoundedRectangle(cornerRadius: 4.5, style: .continuous)
+            .strokeBorder(lineWidth: 1.5)
+            .frame(width: 17, height: 15)
+            .overlay(alignment: .leading) {
+                Capsule()
+                    .frame(width: 1.8, height: 6.5)
+                    .padding(.leading, 4.5)
+            }
+            .accessibilityHidden(true)
+    }
+}
