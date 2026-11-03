@@ -138,21 +138,7 @@ struct ProjectHeader: View {
 
             parentMenu
 
-            Menu {
-                Picker(localized("Situação"), selection: $project.status) {
-                    ForEach(Project.Status.allCases) { status in
-                        Label(status.label, systemImage: status.symbol).tag(status)
-                    }
-                }
-                .pickerStyle(.inline)
-            } label: {
-                Badge(text: project.status.label, symbol: project.status.symbol)
-            }
-            .menuStyle(.button)
-            .buttonStyle(.plain)
-            .menuIndicator(.hidden)
-            .fixedSize()
-            .help(localized("Situação do projeto"))
+            archiveControl
         }
     }
 
@@ -177,7 +163,7 @@ struct ProjectHeader: View {
     /// The projects inside this one, as chips that open them, and a way to add another.
     private var subprojects: some View {
         HStack(spacing: 6) {
-            ForEach(ProjectTree.children(of: project.id, in: vault.projects)) { child in
+            ForEach(ProjectTree.children(of: project.id, in: vault.projects).filter { $0.isArchived == project.isArchived }) { child in
                 Button {
                     vault.selection = child.id
                 } label: {
@@ -210,6 +196,40 @@ struct ProjectHeader: View {
             }
             .buttonStyle(.plain)
             .help(localized("Criar um projeto dentro deste"))
+        }
+    }
+
+    /// Archives the project (with its subprojects) or brings it back. An archived project says
+    /// since when, and that's the only way it looks different here.
+    @ViewBuilder
+    private var archiveControl: some View {
+        let hasSubprojects = !ProjectTree.children(of: project.id, in: vault.projects).isEmpty
+        if let archivedAt = project.archivedAt {
+            HStack(spacing: 6) {
+                Badge(text: localized("Arquivado"), symbol: "archivebox")
+                    .help(localized("Arquivado em \(archivedAt.formatted(date: .abbreviated, time: .omitted))"))
+                Button(localized("Desarquivar")) { vault.setArchived(project.id, false) }
+                    .buttonStyle(PillButtonStyle(prominent: false))
+                    .help(hasSubprojects ? localized("Volta a usar o projeto e os subprojetos dele") : localized("Volta a usar o projeto"))
+            }
+            .fixedSize()
+        } else {
+            Button {
+                vault.setArchived(project.id, true)
+            } label: {
+                Label(localized("Arquivar"), systemImage: "archivebox")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(Theme.muted)
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 4)
+                    .background(Theme.paper.opacity(0.07), in: Capsule())
+                    .contentShape(Capsule())
+            }
+            .buttonStyle(.plain)
+            .fixedSize()
+            .help(hasSubprojects
+                ? localized("Guarda o projeto e os subprojetos dele em Arquivados, fora da barra de menus. Nada é apagado.")
+                : localized("Guarda o projeto em Arquivados, fora da barra de menus. Nada é apagado."))
         }
     }
 

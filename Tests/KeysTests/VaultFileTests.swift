@@ -57,6 +57,12 @@ struct VaultContentsTests {
         #expect(firstProjectDecoded(from: json) == "New|active|shippingbox|0|1")
     }
 
+    @Test func onlyTheOldArchivedStatusCarriesOver() {
+        // Vaults from before archiving had a status: "archived" stays archived, the rest is in use.
+        #expect(firstProjectDecoded(from: #"{"projects":[{"name":"Old","status":"archived"}]}"#) == "Old|archived|shippingbox|0|0")
+        #expect(firstProjectDecoded(from: #"{"projects":[{"name":"Old","status":"paused"}]}"#) == "Old|active|shippingbox|0|0")
+    }
+
     @Test func garbageIsReportedAsDamaged() {
         #expect(firstProjectDecoded(from: "{") == "failed")
     }

@@ -2,26 +2,6 @@ import Foundation
 
 // The names and symbols the interface shows for the model's choices.
 
-extension Project.Status {
-    var label: String {
-        switch self {
-        case .active: localized("Em andamento")
-        case .maintenance: localized("Em manutenção")
-        case .paused: localized("Pausado")
-        case .archived: localized("Arquivado")
-        }
-    }
-
-    var symbol: String {
-        switch self {
-        case .active: "bolt.fill"
-        case .maintenance: "wrench.and.screwdriver.fill"
-        case .paused: "pause.circle.fill"
-        case .archived: "archivebox.fill"
-        }
-    }
-}
-
 extension Project {
     /// Symbols to pick from for a project.
     static let symbols = [

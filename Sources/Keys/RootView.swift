@@ -172,6 +172,8 @@ struct MainView: View {
     @State private var deleting: Project.ID?
     /// Projects whose subprojects are folded away in the sidebar; everything starts unfolded.
     @State private var collapsed: Set<Project.ID> = []
+    /// The Archived section starts folded: archived projects are kept, not shown.
+    @State private var archivedShown = false
     /// The list starts with the keyboard, as in Mail and Notes; otherwise the project's name
     /// field would, with its text selected, one keystroke away from being replaced.
     @FocusState private var listFocused: Bool
@@ -255,14 +257,14 @@ struct MainView: View {
     private var visibleOrder: [Project.ID] {
         guard Search.words(query).isEmpty else { return searchResults.map(\.id) }
         var order: [Project.ID] = []
-        func walk(_ project: Project) {
+        func walk(_ project: Project, archived: Bool) {
             order.append(project.id)
             guard !collapsed.contains(project.id) else { return }
-            ProjectTree.children(of: project.id, in: vault.projects).forEach(walk)
+            ProjectTree.children(of: project.id, in: vault.projects).filter { $0.isArchived == archived }.forEach { walk($0, archived: archived) }
         }
-        let roots = ProjectTree.children(of: nil, in: vault.projects)
-        for status in Project.Status.allCases {
-            roots.filter { $0.status == status }.forEach(walk)
+        ProjectTree.roots(archived: false, in: vault.projects).forEach { walk($0, archived: false) }
+        if archivedShown {
+            ProjectTree.roots(archived: true, in: vault.projects).forEach { walk($0, archived: true) }
         }
         return order
     }
@@ -274,6 +276,7 @@ struct MainView: View {
     /// Unfolds the projects above `id`, so the open project is never hidden in a folded group.
     private func reveal(_ id: Project.ID?) {
         guard let project = vault.project(id) else { return }
+        if project.isArchived { archivedShown = true }
         for ancestor in ProjectTree.ancestors(of: project, in: vault.projects) {
             collapsed.remove(ancestor.id)
         }
@@ -325,15 +328,28 @@ struct MainView: View {
         // still work while the list has the keyboard.
         List {
             if Search.words(query).isEmpty {
-                // The tree: top-level projects grouped by status, each with what's inside it.
-                ForEach(Project.Status.allCases) { status in
-                    let roots = ProjectTree.children(of: nil, in: vault.projects).filter { $0.status == status }
-                    if !roots.isEmpty {
-                        Section(status.label) {
-                            ForEach(roots) { project in
-                                ProjectTreeRow(project: project, collapsed: $collapsed, actions: rowActions)
-                            }
+                // The projects in use, as a tree, then the archived ones in a section of their own.
+                let active = ProjectTree.roots(archived: false, in: vault.projects)
+                if !active.isEmpty {
+                    Section(localized("Projetos")) {
+                        ForEach(active) { project in
+                            ProjectTreeRow(project: project, archived: false, collapsed: $collapsed, actions: rowActions)
                         }
+                    }
+                }
+                let archived = ProjectTree.roots(archived: true, in: vault.projects)
+                if !archived.isEmpty {
+                    Section(isExpanded: $archivedShown) {
+                        ForEach(archived) { project in
+                            // An archived project from a group still in use says which group it was in.
+                            ProjectTreeRow(
+                                project: project, archived: true,
+                                path: ProjectTree.ancestors(of: project, in: vault.projects).map(\.name),
+                                collapsed: $collapsed, actions: rowActions
+                            )
+                        }
+                    } header: {
+                        Text(localized("Arquivados · \(vault.projects.filter(\.isArchived).count)"))
                     }
                 }
             } else {
@@ -361,6 +377,8 @@ struct MainView: View {
                 .sharedBackgroundVisibility(.hidden)
         }
         .onChange(of: vault.selection, initial: true) { reveal(vault.selection) }
+        // Archiving the open project (or bringing it back) moves it to the other list: follow it.
+        .onChange(of: vault.project(vault.selection)?.archivedAt) { reveal(vault.selection) }
         .onKeyPress(.upArrow) { moveSelection(by: -1) }
         .onKeyPress(.downArrow) { moveSelection(by: 1) }
         // The Delete key asks before removing the selected project, as in Finder and Mail.
@@ -382,6 +400,9 @@ struct MainView: View {
     @ViewBuilder
     private func rowActions(_ project: Project) -> some View {
         Button(localized("Novo subprojeto")) { vault.addProject(inside: project.id) }
+        Button(project.isArchived ? localized("Desarquivar") : localized("Arquivar")) {
+            vault.setArchived(project.id, !project.isArchived)
+        }
         Divider()
         Button(localized("Apagar projeto…"), role: .destructive) { deleting = project.id }
     }
@@ -404,12 +425,16 @@ struct MainView: View {
 /// A project in the sidebar and, under a disclosure triangle, the projects inside it.
 struct ProjectTreeRow<Actions: View>: View {
     let project: Project
+    /// Which of the sidebar's lists the row is in: its subprojects shown are those on that side.
+    let archived: Bool
+    /// The projects above it, for a row that heads its list without its parent (see `roots`).
+    var path: [String] = []
     @Binding var collapsed: Set<Project.ID>
     let actions: (Project) -> Actions
     @EnvironmentObject private var vault: Vault
 
     var body: some View {
-        let children = ProjectTree.children(of: project.id, in: vault.projects)
+        let children = ProjectTree.children(of: project.id, in: vault.projects).filter { $0.isArchived == archived }
         if children.isEmpty {
             row
         } else {
@@ -421,7 +446,7 @@ struct ProjectTreeRow<Actions: View>: View {
             )) {
                 // Type-erased: the row contains rows of its own type.
                 ForEach(children) { child in
-                    AnyView(ProjectTreeRow(project: child, collapsed: $collapsed, actions: actions))
+                    AnyView(ProjectTreeRow(project: child, archived: archived, collapsed: $collapsed, actions: actions))
                 }
             } label: {
                 row
@@ -430,7 +455,7 @@ struct ProjectTreeRow<Actions: View>: View {
     }
 
     private var row: some View {
-        SelectableProjectRow(project: project)
+        SelectableProjectRow(project: project, path: path)
             .contextMenu { actions(project) }
     }
 }
@@ -486,6 +511,8 @@ struct ProjectRow: View {
             }
             Spacer(minLength: 0)
         }
+        // Archived projects read a little quieter, except the one that's open.
+        .opacity(project.isArchived && !selected ? 0.6 : 1)
         .padding(.vertical, 4)
         .padding(.horizontal, 6)
         .background(

@@ -293,6 +293,18 @@ final class Vault: ObservableObject {
         return project.id
     }
 
+    /// Archives the project with its subprojects, or brings them all back.
+    func setArchived(_ id: Project.ID, _ archived: Bool) {
+        let now = Date()
+        let affected = ProjectTree.descendantIDs(of: id, in: projects).union([id])
+        projects = ProjectTree.settingArchived(id, at: archived ? now : nil, in: projects).map { project in
+            guard affected.contains(project.id) else { return project }
+            var project = project
+            project.updatedAt = now
+            return project
+        }
+    }
+
     /// Deletes the project; its subprojects move up one level instead of going with it.
     func deleteProject(_ id: Project.ID) {
         projects = ProjectTree.removing(id, from: projects)

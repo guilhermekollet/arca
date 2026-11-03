@@ -46,11 +46,6 @@
 "Nome do projeto" = "Nombre del proyecto";
 "Uma linha sobre o projeto" = "Una línea sobre el proyecto";
 "Etiquetas, separadas por vírgula" = "Etiquetas, separadas por comas";
-"Situação" = "Estado";
-"Em andamento" = "En curso";
-"Em manutenção" = "En mantenimiento";
-"Pausado" = "En pausa";
-"Arquivado" = "Archivado";
 
 /* Context */
 "Pasta do projeto neste Mac" = "Carpeta del proyecto en este Mac";
@@ -179,7 +174,6 @@
 "O cofre não abre aqui" = "La bóveda no se abre aquí";
 "Crie um ambiente, como development ou production, para guardar as variáveis dele." = "Crea un entorno, como development o production, para guardar sus variables.";
 "Trocar o símbolo" = "Cambiar el símbolo";
-"Situação do projeto" = "Estado del proyecto";
 "Ajustes do Chaves" = "Ajustes de Keys";
 "Ajustes…" = "Ajustes…";
 
@@ -248,3 +242,15 @@
 /* Sidebar */
 "Mostrar ou ocultar a barra lateral" = "Mostrar u ocultar la barra lateral";
 "Mostrar ou ocultar a barra lateral (⌃⌘S)" = "Mostrar u ocultar la barra lateral (⌃⌘S)";
+
+
+/* Archiving */
+"Arquivado" = "Archivado";
+"Arquivados · %lld" = "Archivados · %lld";
+"Arquivar" = "Archivar";
+"Desarquivar" = "Desarchivar";
+"Arquivado em %@" = "Archivado el %@";
+"Volta a usar o projeto" = "Vuelve a usar el proyecto";
+"Volta a usar o projeto e os subprojetos dele" = "Vuelve a usar el proyecto y sus subproyectos";
+"Guarda o projeto em Arquivados, fora da barra de menus. Nada é apagado." = "Guarda el proyecto en Archivados, fuera de la barra de menús. No se borra nada.";
+"Guarda o projeto e os subprojetos dele em Arquivados, fora da barra de menus. Nada é apagado." = "Guarda el proyecto y sus subproyectos en Archivados, fuera de la barra de menús. No se borra nada.";
