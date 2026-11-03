@@ -172,6 +172,7 @@ struct MainView: View {
     /// The list starts with the keyboard, as in Mail and Notes; otherwise the project's name
     /// field would, with its text selected, one keystroke away from being replaced.
     @FocusState private var listFocused: Bool
+    /// Followed, not driven: the sidebar button folds it with AppKit (see toggleSidebar).
     @State private var columns = NavigationSplitViewVisibility.all
 
     var body: some View {
@@ -191,6 +192,18 @@ struct MainView: View {
             .background(Theme.ink)
         }
         .searchable(text: $query, placement: .sidebar, prompt: localized("Buscar em tudo"))
+        // When the list folds away with the keyboard, AppKit hands the keyboard to the next field,
+        // the project's name, with its text selected: one stray key would replace the name. So
+        // nothing takes it then, and it goes back to the list when the sidebar returns.
+        .onChange(of: columns) {
+            if columns == .detailOnly {
+                DispatchQueue.main.async {
+                    NSApp.windows.first { $0.identifier?.rawValue == mainWindowID }?.makeFirstResponder(nil)
+                }
+            } else {
+                DispatchQueue.main.async { listFocused = true }
+            }
+        }
         .toolbar {
             ToolbarItem {
                 Button { vault.addProject() } label: {
@@ -277,13 +290,27 @@ struct MainView: View {
         return .handled
     }
 
+    /// Folds or unfolds the sidebar with AppKit's own toggle, so it moves with the system's
+    /// animation (the one the system button runs), not a SwiftUI animation layered over the split
+    /// view's. It goes up the main window's own responder chain: `NSApp.sendAction(to: nil)` only
+    /// reaches the window that is active, which isn't always this one.
+    private func toggleSidebar() {
+        let action = #selector(NSSplitViewController.toggleSidebar(_:))
+        guard let window = NSApp.windows.first(where: { $0.identifier?.rawValue == mainWindowID }) else { return }
+        let start: NSResponder? = window.firstResponder ?? window.contentView
+        if start?.tryToPerform(action, with: nil) != true {
+            NSApp.sendAction(action, to: nil, from: nil)
+        }
+    }
+
     /// Shows or hides the sidebar, with the app's own icon (the system's button can't take one).
     private var sidebarButton: some View {
         Button {
-            withAnimation { columns = columns == .detailOnly ? .all : .detailOnly }
+            toggleSidebar()
         } label: {
-            SidebarIcon()
+            SidebarButtonLabel()
         }
+        .buttonStyle(.plain)
         .keyboardShortcut("s", modifiers: [.control, .command])
         .help(localized("Mostrar ou ocultar a barra lateral (⌃⌘S)"))
         .accessibilityLabel(localized("Mostrar ou ocultar a barra lateral"))
@@ -326,6 +353,9 @@ struct MainView: View {
         .toolbar(removing: .sidebarToggle)
         .toolbar {
             ToolbarItem(placement: .automatic) { sidebarButton }
+                // No glass capsule behind it: macOS 26 gives every toolbar item one, which made
+                // this button look like a circle. It highlights on its own instead.
+                .sharedBackgroundVisibility(.hidden)
         }
         .onChange(of: vault.selection, initial: true) { reveal(vault.selection) }
         .onKeyPress(.upArrow) { moveSelection(by: -1) }

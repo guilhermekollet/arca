@@ -286,3 +286,19 @@ struct SidebarIcon: View {
             .accessibilityHidden(true)
     }
 }
+
+/// The sidebar button: the icon, and a rounded rectangle behind it under the pointer, the shape of
+/// the system's own title bar buttons.
+struct SidebarButtonLabel: View {
+    @State private var hovering = false
+
+    var body: some View {
+        SidebarIcon()
+            .foregroundStyle(Theme.paper.opacity(hovering ? 0.95 : 0.7))
+            .frame(width: 30, height: 26)
+            .background(Theme.paper.opacity(hovering ? 0.1 : 0), in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+            .contentShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+            .onHover { hovering = $0 }
+            .animation(.easeOut(duration: 0.12), value: hovering)
+    }
+}
