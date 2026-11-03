@@ -57,6 +57,25 @@ struct VaultContentsTests {
         #expect(firstProjectDecoded(from: json) == "New|active|shippingbox|0|1")
     }
 
+    @Test func onlyTheOldArchivedStatusCarriesOver() {
+        // Vaults from before archiving had a status: "archived" stays archived, the rest is in use.
+        #expect(firstProjectDecoded(from: #"{"projects":[{"name":"Old","status":"archived"}]}"#) == "Old|archived|shippingbox|0|0")
+        #expect(firstProjectDecoded(from: #"{"projects":[{"name":"Old","status":"paused"}]}"#) == "Old|active|shippingbox|0|0")
+    }
+
+    @Test func aProjectsColorFallsBackToLavender() {
+        #expect(firstProjectTint(from: #"{"projects":[{"name":"Old"}]}"#) == "lavender")
+        #expect(firstProjectTint(from: #"{"projects":[{"name":"New","tint":"ultraviolet"}]}"#) == "lavender")
+        #expect(firstProjectTint(from: #"{"projects":[{"name":"New","tint":"mint"}]}"#) == "mint")
+    }
+
+    @Test func everyProjectSymbolExists() {
+        let symbols = projectSymbolsExist()
+        #expect(symbols.count == 90)
+        #expect(symbols.missing.isEmpty)
+        #expect(Set(Project.symbols).count == Project.symbols.count)
+    }
+
     @Test func garbageIsReportedAsDamaged() {
         #expect(firstProjectDecoded(from: "{") == "failed")
     }

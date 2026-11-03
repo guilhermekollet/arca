@@ -2,6 +2,7 @@
 // Testing: with only the Command Line Tools installed (no Xcode), importing Testing next to
 // Foundation fails because the `_Testing_Foundation` overlay is missing. Test files import just
 // Testing and Keys and talk to these helpers through plain values.
+import AppKit
 import CryptoKit
 import Foundation
 @testable import Keys
@@ -119,7 +120,7 @@ func sampleRoundTrips() -> Bool {
 func firstProjectDecoded(from json: String) -> String {
     guard let contents = try? Vault.decode(Data(json.utf8)) else { return "failed" }
     guard let project = contents.projects.first else { return "no projects" }
-    return "\(project.name)|\(project.status.rawValue)|\(project.symbol)|\(project.environments.count)|\(project.credentials.count)"
+    return "\(project.name)|\(project.isArchived ? "archived" : "active")|\(project.symbol)|\(project.environments.count)|\(project.credentials.count)"
 }
 
 // MARK: Environment variables
@@ -392,4 +393,67 @@ func suggestedBackupName() -> String {
     components.day = 2
     components.hour = 12
     return VaultBackup.suggestedFileName(on: Calendar.current.date(from: components)!)
+}
+
+// MARK: Archiving
+
+/// Archives (or brings back, with `archived` false) the project called `name` in the tree above,
+/// and returns which projects end up archived, and the two sidebar lists' top rows.
+func archiving(_ name: String, archived: Bool = true, startingArchived: [String] = []) -> (archived: [String], activeRoots: [String], archivedRoots: [String]) {
+    var projects = treeForArchiving()
+    let date = Date(timeIntervalSinceReferenceDate: 0)
+    for index in projects.indices where startingArchived.contains(projects[index].name) {
+        projects[index].archivedAt = date
+    }
+    let id = projects.first { $0.name == name }!.id
+    let result = ProjectTree.settingArchived(id, at: archived ? date : nil, in: projects)
+    return (
+        result.filter(\.isArchived).map(\.name).sorted(),
+        ProjectTree.roots(archived: false, in: result).map(\.name),
+        ProjectTree.roots(archived: true, in: result).map(\.name)
+    )
+}
+
+/// "Grupo" holds "Loja" and "API", "Loja" holds "Checkout", and "Site" stands alone.
+private func treeForArchiving() -> [Project] {
+    let group = Project(name: "Grupo")
+    var shop = Project(name: "Loja")
+    var api = Project(name: "API")
+    var checkout = Project(name: "Checkout")
+    let site = Project(name: "Site")
+    shop.parentID = group.id
+    api.parentID = group.id
+    checkout.parentID = shop.id
+    return [group, shop, api, checkout, site]
+}
+
+/// The quick search's titles when the sample's "Loja Aurora" is archived: archived results last.
+func quickMatchTitlesWithShopArchived(_ query: String) -> [String] {
+    var projects = SampleVault.projects
+    for index in projects.indices where projects[index].name == "Loja Aurora" {
+        projects[index].archivedAt = Date()
+    }
+    return Search.quickMatches(in: projects, query: query).map { match in
+        switch match.item {
+        case .credential(let credential): credential.displayTitle
+        case .variable(let variable, let environment): "\(variable.key)@\(environment)"
+        }
+    }
+}
+
+/// The color the first project in `json` decodes with.
+func firstProjectTint(from json: String) -> String {
+    (try? Vault.decode(Data(json.utf8)))?.projects.first?.tint.rawValue ?? "failed"
+}
+
+/// Whether every symbol offered for a project exists on this Mac, and how many there are.
+func projectSymbolsExist() -> (count: Int, missing: [String]) {
+    (Project.symbols.count, Project.symbols.filter { NSImage(systemSymbolName: $0, accessibilityDescription: nil) == nil })
+}
+
+/// The names left after deleting `name`, and everything inside it, for good.
+func remainingAfterDeletingForGood(_ name: String) -> [String] {
+    let projects = treeForArchiving()
+    let id = projects.first { $0.name == name }!.id
+    return ProjectTree.removingWithSubprojects(id, from: projects).map(\.name).sorted()
 }

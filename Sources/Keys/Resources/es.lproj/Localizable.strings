@@ -42,15 +42,9 @@
 "Variáveis" = "Variables";
 "Acessos" = "Accesos";
 "Links" = "Enlaces";
-"Símbolo" = "Símbolo";
 "Nome do projeto" = "Nombre del proyecto";
 "Uma linha sobre o projeto" = "Una línea sobre el proyecto";
 "Etiquetas, separadas por vírgula" = "Etiquetas, separadas por comas";
-"Situação" = "Estado";
-"Em andamento" = "En curso";
-"Em manutenção" = "En mantenimiento";
-"Pausado" = "En pausa";
-"Arquivado" = "Archivado";
 
 /* Context */
 "Pasta do projeto neste Mac" = "Carpeta del proyecto en este Mac";
@@ -178,8 +172,6 @@
 "A chave fica no Secure Enclave e só abre com Touch ID ou a senha do Mac. Nada vai para a internet." = "La clave vive en el Secure Enclave y solo se abre con Touch ID o la contraseña del Mac. Nada va a internet.";
 "O cofre não abre aqui" = "La bóveda no se abre aquí";
 "Crie um ambiente, como development ou production, para guardar as variáveis dele." = "Crea un entorno, como development o production, para guardar sus variables.";
-"Trocar o símbolo" = "Cambiar el símbolo";
-"Situação do projeto" = "Estado del proyecto";
 "Ajustes do Chaves" = "Ajustes de Keys";
 "Ajustes…" = "Ajustes…";
 
@@ -248,3 +240,47 @@
 /* Sidebar */
 "Mostrar ou ocultar a barra lateral" = "Mostrar u ocultar la barra lateral";
 "Mostrar ou ocultar a barra lateral (⌃⌘S)" = "Mostrar u ocultar la barra lateral (⌃⌘S)";
+
+
+/* Archiving */
+"Arquivado" = "Archivado";
+"Arquivar" = "Archivar";
+"Desarquivar" = "Desarchivar";
+"Arquivado em %@" = "Archivado el %@";
+"Volta a usar o projeto" = "Vuelve a usar el proyecto";
+"Volta a usar o projeto e os subprojetos dele" = "Vuelve a usar el proyecto y sus subproyectos";
+
+
+/* Project icon and color */
+"Trocar o ícone e a cor" = "Cambiar el icono y el color";
+"Cor" = "Color";
+"Ícone" = "Icono";
+"Lavanda" = "Lavanda";
+"Céu" = "Cielo";
+"Menta" = "Menta";
+"Lima" = "Lima";
+"Âmbar" = "Ámbar";
+"Coral" = "Coral";
+"Rosa" = "Rosa";
+"Ardósia" = "Pizarra";
+
+
+/* Settings › Archived */
+"Geral" = "General";
+"Arquivados" = "Archivados";
+"Destranque o cofre para ver os projetos arquivados." = "Abre la bóveda para ver los proyectos archivados.";
+"Nenhum projeto arquivado" = "Ningún proyecto archivado";
+"Arquive pelo cabeçalho do projeto ou pelo clique direito na barra lateral. O projeto sai da barra lateral, das buscas e da barra de menus, e fica aqui." = "Archiva desde la cabecera del proyecto o con clic derecho en la barra lateral. El proyecto sale de la barra lateral, las búsquedas y la barra de menús, y queda aquí.";
+"Desarquivar devolve o projeto, com os subprojetos, ao lugar de antes. Apagar não tem volta aqui; a cópia de segurança de antes desta sessão continua em Backups." = "Desarchivar devuelve el proyecto, con sus subproyectos, a su lugar. Borrar no se deshace aquí; la copia de seguridad de antes de esta sesión sigue en Backups.";
+"Apagar %@ de vez?" = "¿Borrar %@ para siempre?";
+"Apagar de vez" = "Borrar para siempre";
+"Apagar de vez…" = "Borrar para siempre…";
+"O contexto, as variáveis e os acessos saem do cofre, junto com os subprojetos arquivados com ele (%lld). A cópia de segurança de antes desta sessão continua em Backups." = "El contexto, las variables y los accesos salen de la bóveda, junto con los subproyectos archivados con él (%lld). La copia de seguridad de antes de esta sesión sigue en Backups.";
+"O contexto, as variáveis e os acessos saem do cofre. A cópia de segurança de antes desta sessão continua em Backups." = "El contexto, las variables y los accesos salen de la bóveda. La copia de seguridad de antes de esta sesión sigue en Backups.";
+"Subprojetos arquivados com ele" = "Subproyectos archivados con él";
+"Guarda o projeto em Arquivados, fora da barra lateral e da barra de menus. Nada é apagado." = "Guarda el proyecto en Ajustes › Archivados, fuera de la barra lateral y de la barra de menús. No se borra nada.";
+"Guarda o projeto e os subprojetos dele em Arquivados, fora da barra lateral e da barra de menus. Nada é apagado." = "Guarda el proyecto y sus subproyectos en Ajustes › Archivados, fuera de la barra lateral y de la barra de menús. No se borra nada.";
+
+/* Sidebar groups */
+"Mostrar os subprojetos" = "Mostrar los subproyectos";
+"Ocultar os subprojetos" = "Ocultar los subproyectos";

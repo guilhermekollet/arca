@@ -45,8 +45,11 @@ draws. The name follows the Mac's language, in the app and in Finder, the Dock a
   as you need. The sidebar shows the tree, each project shows the path above it and its
   subprojects, and searching a project also searches what's inside it. Deleting a project keeps
   its subprojects, one level up.
-- A project per thing you maintain, with a symbol, a one-line summary, tags and a status:
-  active, in maintenance, paused or archived.
+- A project per thing you maintain, with a symbol, a one-line summary and tags.
+- **Archive** what you no longer work on: it leaves the sidebar, searches and the menu bar, with
+  nothing deleted, and shows only in **Ajustes › Arquivados** (Settings › Archived). There you
+  bring it back, or delete it for good after a confirmation. Archiving a project takes its
+  subprojects along; unarchiving, or deleting, does too.
 - **Context**: free Markdown text for how to run it, how it's deployed, where things are, the
   decisions taken, gotchas and who to ask. An outline gets you started.
 - The project's folder on your Mac, opened in Finder or Terminal with one click.

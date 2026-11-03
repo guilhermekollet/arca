@@ -239,17 +239,34 @@ struct Badge: View {
     }
 }
 
-/// The project's symbol on a quiet tile.
+/// The project's symbol in its color, on a quiet tile of the same color.
 struct ProjectBadge: View {
     let project: Project
     var size: CGFloat = 22
 
     var body: some View {
+        let color = Theme.color(project.tint)
         Image(systemName: project.symbol)
             .font(.system(size: size * 0.46, weight: .medium))
-            .foregroundStyle(Theme.accent)
+            .foregroundStyle(color)
             .frame(width: size, height: size)
-            .background(Theme.accent.opacity(0.14), in: RoundedRectangle(cornerRadius: size * 0.28, style: .continuous))
+            .background(color.opacity(0.16), in: RoundedRectangle(cornerRadius: size * 0.28, style: .continuous))
+    }
+}
+
+extension Theme {
+    /// A project's color. Lavender is the accent itself; the others are as soft, so none shouts.
+    static func color(_ tint: Project.Tint) -> Color {
+        switch tint {
+        case .lavender: accent
+        case .sky: Color(red: 0x8C / 255, green: 0xC4 / 255, blue: 0xF7 / 255)
+        case .mint: Color(red: 0x86 / 255, green: 0xDB / 255, blue: 0xBC / 255)
+        case .lime: Color(red: 0xC2 / 255, green: 0xDE / 255, blue: 0x80 / 255)
+        case .amber: Color(red: 0xF2 / 255, green: 0xC6 / 255, blue: 0x6D / 255)
+        case .coral: Color(red: 0xF4 / 255, green: 0x9A / 255, blue: 0x86 / 255)
+        case .rose: Color(red: 0xF0 / 255, green: 0xA2 / 255, blue: 0xC8 / 255)
+        case .slate: Color(red: 0xAE / 255, green: 0xB5 / 255, blue: 0xC0 / 255)
+        }
     }
 }
 

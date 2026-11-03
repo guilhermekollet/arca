@@ -11,7 +11,6 @@ struct Project: Codable, Identifiable, Hashable {
     var id = UUID()
     var name: String
     var symbol = "shippingbox"
-    var status = Status.active
     /// One line on what the project is.
     var summary = ""
     var tags: [String] = []
@@ -26,10 +25,18 @@ struct Project: Codable, Identifiable, Hashable {
     var updatedAt = Date()
     /// The project this one belongs to, such as a company and its products; nil at the top level.
     var parentID: Project.ID?
+    /// When the project was archived: kept, but out of the way. It leaves the sidebar, searches and
+    /// the menu bar, and shows only in Settings › Archived. Nil while it's in use.
+    var archivedAt: Date?
+    /// The color of the project's symbol, to tell projects apart at a glance.
+    var tint = Tint.lavender
 
-    enum Status: String, Codable, CaseIterable, Identifiable {
-        case active, maintenance, paused, archived
-        var id: String { rawValue }
+    var isArchived: Bool { archivedAt != nil }
+
+    /// Soft tones that sit well on the ink background; lavender, the app's accent, comes first.
+    enum Tint: String, Codable, CaseIterable, Identifiable {
+        case lavender, sky, mint, lime, amber, coral, rose, slate
+        var id: Self { self }
     }
 }
 
@@ -173,6 +180,39 @@ enum ProjectTree {
         (ancestors(of: project, in: projects) + [project]).map(\.name).joined(separator: " › ")
     }
 
+    /// `projects` with `id` archived (at `date`) or back in use (`date` nil), along with
+    /// everything inside it: archiving a company archives its products too, and unarchiving brings
+    /// them all back.
+    static func settingArchived(_ id: Project.ID, at date: Date?, in projects: [Project]) -> [Project] {
+        let affected = descendantIDs(of: id, in: projects).union([id])
+        return projects.map { project in
+            guard affected.contains(project.id) else { return project }
+            var project = project
+            project.archivedAt = date
+            return project
+        }
+    }
+
+    /// The projects at the top of a list of those in use (the sidebar) or of those archived
+    /// (Settings). An archived project inside one still in use (or the other way round) heads
+    /// its own list.
+    static func roots(archived: Bool, in projects: [Project]) -> [Project] {
+        projects
+            .filter { $0.isArchived == archived }
+            .filter { project in
+                guard !isTopLevel(project, in: projects), let parent = projects.first(where: { $0.id == project.parentID }) else { return true }
+                return parent.isArchived != archived
+            }
+            .sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+    }
+
+    /// `projects` without `id` and everything inside it: deleting an archived group for good takes
+    /// its products, archived with it, along.
+    static func removingWithSubprojects(_ id: Project.ID, from projects: [Project]) -> [Project] {
+        let gone = descendantIDs(of: id, in: projects).union([id])
+        return projects.filter { !gone.contains($0.id) }
+    }
+
     /// `projects` without `id`. What was inside it moves up one level, so deleting a company
     /// never deletes its products along with it.
     static func removing(_ id: Project.ID, from projects: [Project]) -> [Project] {
@@ -233,12 +273,11 @@ enum Search {
 
     /// Accesses and variables whose project and own name, together, contain every word of
     /// `query`: "fazon prod database" finds the database URL in Fazon's production set.
-    /// Archived projects come last.
+    /// Archived projects are left out: they show only in Settings.
     static func quickMatches(in projects: [Project], query: String, limit: Int = 30) -> [QuickMatch] {
         let words = words(query)
         guard !words.isEmpty else { return [] }
-        let ordered = projects.filter { $0.status != .archived } + projects.filter { $0.status == .archived }
-        return Array(ordered.lazy.flatMap { matches(in: $0, among: projects, words: words) }.prefix(limit))
+        return Array(projects.lazy.filter { !$0.isArchived }.flatMap { matches(in: $0, among: projects, words: words) }.prefix(limit))
     }
 
     /// What the menu bar lists inside one project. While `query` is empty, the project's own
@@ -249,7 +288,7 @@ enum Search {
         let words = words(query)
         guard !words.isEmpty else { return matches(in: project, among: projects, words: []) }
         let inside = ProjectTree.descendantIDs(of: project.id, in: projects)
-        let scope = [project] + projects.filter { inside.contains($0.id) }
+        let scope = [project] + projects.filter { inside.contains($0.id) && !$0.isArchived }
         return scope.flatMap { matches(in: $0, among: projects, words: words) }
     }
 
@@ -302,7 +341,6 @@ extension Project {
         id = try container.value(.id, or: UUID())
         name = try container.value(.name, or: "")
         symbol = try container.value(.symbol, or: fallback.symbol)
-        status = (try? container.value(.status, or: fallback.status)) ?? fallback.status
         summary = try container.value(.summary, or: "")
         tags = try container.value(.tags, or: [])
         context = try container.value(.context, or: "")
@@ -313,6 +351,16 @@ extension Project {
         createdAt = try container.value(.createdAt, or: Date())
         updatedAt = try container.value(.updatedAt, or: createdAt)
         parentID = try container.decodeIfPresent(UUID.self, forKey: .parentID)
+        archivedAt = try container.decodeIfPresent(Date.self, forKey: .archivedAt)
+        tint = (try? container.value(.tint, or: Tint.lavender)) ?? .lavender
+        // Vaults from before archiving had a status instead; only "archived" carries over.
+        if archivedAt == nil, (try? decoder.container(keyedBy: LegacyKeys.self).decodeIfPresent(String.self, forKey: .status)) == "archived" {
+            archivedAt = updatedAt
+        }
+    }
+
+    private enum LegacyKeys: String, CodingKey {
+        case status
     }
 }
 

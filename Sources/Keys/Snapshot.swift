@@ -48,6 +48,7 @@ enum Snapshot {
             size: CGSize(width: 860, height: 620), to: folder, name: "lock-unreadable"
         )
         await draw(SettingsView().environmentObject(vault), size: nil, to: folder, name: "settings")
+        await draw(SettingsView(tab: .archived).environmentObject(vault), size: nil, to: folder, name: "settings-archived")
         await draw(MenuBarPanel().environmentObject(vault), size: nil, to: folder, name: "panel")
         await draw(MenuBarPanel(query: "aurora prod").environmentObject(vault), size: nil, to: folder, name: "panel-search")
         await draw(MenuBarPanel(project: vault.projects.first?.id).environmentObject(vault), size: nil, to: folder, name: "panel-project")

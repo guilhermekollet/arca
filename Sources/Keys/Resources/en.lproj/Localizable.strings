@@ -42,15 +42,9 @@
 "Variáveis" = "Variables";
 "Acessos" = "Accesses";
 "Links" = "Links";
-"Símbolo" = "Symbol";
 "Nome do projeto" = "Project name";
 "Uma linha sobre o projeto" = "One line about the project";
 "Etiquetas, separadas por vírgula" = "Tags, separated by commas";
-"Situação" = "Status";
-"Em andamento" = "Active";
-"Em manutenção" = "In maintenance";
-"Pausado" = "Paused";
-"Arquivado" = "Archived";
 
 /* Context */
 "Pasta do projeto neste Mac" = "The project's folder on this Mac";
@@ -178,8 +172,6 @@
 "A chave fica no Secure Enclave e só abre com Touch ID ou a senha do Mac. Nada vai para a internet." = "The key lives in the Secure Enclave and only opens with Touch ID or the Mac's password. Nothing goes to the internet.";
 "O cofre não abre aqui" = "The vault doesn't open here";
 "Crie um ambiente, como development ou production, para guardar as variáveis dele." = "Create an environment, such as development or production, to keep its variables.";
-"Trocar o símbolo" = "Change the symbol";
-"Situação do projeto" = "The project's status";
 "Ajustes do Chaves" = "Keys Settings";
 "Ajustes…" = "Settings…";
 
@@ -248,3 +240,47 @@
 /* Sidebar */
 "Mostrar ou ocultar a barra lateral" = "Show or hide the sidebar";
 "Mostrar ou ocultar a barra lateral (⌃⌘S)" = "Show or hide the sidebar (⌃⌘S)";
+
+
+/* Archiving */
+"Arquivado" = "Archived";
+"Arquivar" = "Archive";
+"Desarquivar" = "Unarchive";
+"Arquivado em %@" = "Archived on %@";
+"Volta a usar o projeto" = "Puts the project back in use";
+"Volta a usar o projeto e os subprojetos dele" = "Puts the project and its subprojects back in use";
+
+
+/* Project icon and color */
+"Trocar o ícone e a cor" = "Change the icon and color";
+"Cor" = "Color";
+"Ícone" = "Icon";
+"Lavanda" = "Lavender";
+"Céu" = "Sky";
+"Menta" = "Mint";
+"Lima" = "Lime";
+"Âmbar" = "Amber";
+"Coral" = "Coral";
+"Rosa" = "Rose";
+"Ardósia" = "Slate";
+
+
+/* Settings › Archived */
+"Geral" = "General";
+"Arquivados" = "Archived";
+"Destranque o cofre para ver os projetos arquivados." = "Unlock the vault to see the archived projects.";
+"Nenhum projeto arquivado" = "No archived projects";
+"Arquive pelo cabeçalho do projeto ou pelo clique direito na barra lateral. O projeto sai da barra lateral, das buscas e da barra de menus, e fica aqui." = "Archive from the project's header or by right-clicking it in the sidebar. The project leaves the sidebar, searches and the menu bar, and stays here.";
+"Desarquivar devolve o projeto, com os subprojetos, ao lugar de antes. Apagar não tem volta aqui; a cópia de segurança de antes desta sessão continua em Backups." = "Unarchiving puts the project, with its subprojects, back where it was. Deleting can't be undone here; the backup from before this session stays in Backups.";
+"Apagar %@ de vez?" = "Delete %@ for good?";
+"Apagar de vez" = "Delete for good";
+"Apagar de vez…" = "Delete for good…";
+"O contexto, as variáveis e os acessos saem do cofre, junto com os subprojetos arquivados com ele (%lld). A cópia de segurança de antes desta sessão continua em Backups." = "The context, variables and accesses leave the vault, along with the subprojects archived with it (%lld). The backup from before this session stays in Backups.";
+"O contexto, as variáveis e os acessos saem do cofre. A cópia de segurança de antes desta sessão continua em Backups." = "The context, variables and accesses leave the vault. The backup from before this session stays in Backups.";
+"Subprojetos arquivados com ele" = "Subprojects archived with it";
+"Guarda o projeto em Arquivados, fora da barra lateral e da barra de menus. Nada é apagado." = "Keeps the project in Settings › Archived, out of the sidebar and the menu bar. Nothing is deleted.";
+"Guarda o projeto e os subprojetos dele em Arquivados, fora da barra lateral e da barra de menus. Nada é apagado." = "Keeps the project and its subprojects in Settings › Archived, out of the sidebar and the menu bar. Nothing is deleted.";
+
+/* Sidebar groups */
+"Mostrar os subprojetos" = "Show the subprojects";
+"Ocultar os subprojetos" = "Hide the subprojects";

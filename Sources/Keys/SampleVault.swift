@@ -8,7 +8,6 @@ enum SampleVault {
             Project(
                 name: "Loja Aurora",
                 symbol: "cart",
-                status: .active,
                 summary: "E-commerce em Next.js com Supabase e pagamentos por Pix.",
                 tags: ["next.js", "supabase", "vercel"],
                 context: """
@@ -56,7 +55,6 @@ enum SampleVault {
             Project(
                 name: "API de Cobranças",
                 symbol: "creditcard",
-                status: .maintenance,
                 summary: "NestJS que emite boletos e assinaturas; só correções.",
                 tags: ["nestjs", "postgres", "docker"],
                 context: """
@@ -87,7 +85,6 @@ enum SampleVault {
             Project(
                 name: "Site institucional",
                 symbol: "globe",
-                status: .paused,
                 summary: "Astro, publicado no GitHub Pages.",
                 tags: ["astro"],
                 updatedAt: now.addingTimeInterval(-86_400 * 40)
@@ -95,7 +92,6 @@ enum SampleVault {
             Project(
                 name: "App do Clube",
                 symbol: "iphone",
-                status: .archived,
                 summary: "App em React Native, desligado em 2025.",
                 updatedAt: now.addingTimeInterval(-86_400 * 300)
             ),
@@ -104,7 +100,6 @@ enum SampleVault {
         let group = Project(
             name: "Grupo Aurora",
             symbol: "building.2",
-            status: .active,
             summary: "A empresa e os produtos dela.",
             tags: ["empresa"],
             context: """
@@ -124,6 +119,13 @@ enum SampleVault {
         )
         for index in projects.indices where ["Loja Aurora", "API de Cobranças"].contains(projects[index].name) {
             projects[index].parentID = group.id
+        }
+        let tints: [String: Project.Tint] = ["Loja Aurora": .amber, "API de Cobranças": .mint, "Site institucional": .sky, "App do Clube": .rose]
+        for index in projects.indices {
+            projects[index].tint = tints[projects[index].name] ?? .lavender
+        }
+        for index in projects.indices where projects[index].name == "App do Clube" {
+            projects[index].archivedAt = now.addingTimeInterval(-86_400 * 200)
         }
         return [group] + projects
     }
