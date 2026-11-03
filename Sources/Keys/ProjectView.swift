@@ -75,6 +75,7 @@ struct ProjectHeader: View {
     @EnvironmentObject private var vault: Vault
     @State private var tags = ""
     @FocusState private var nameFocused: Bool
+    @State private var choosingLook = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -101,21 +102,17 @@ struct ProjectHeader: View {
     /// Symbol, name, summary and tags, with where the project sits and its status on the right.
     private var identity: some View {
         HStack(alignment: .top, spacing: 14) {
-            Menu {
-                Picker(localized("Símbolo"), selection: $project.symbol) {
-                    ForEach(Project.symbols, id: \.self) { symbol in
-                        Label(symbol, systemImage: symbol).labelStyle(.iconOnly).tag(symbol)
-                    }
-                }
-                .pickerStyle(.palette)
+            Button {
+                choosingLook = true
             } label: {
                 ProjectBadge(project: project, size: 46)
             }
-            .menuStyle(.button)
             .buttonStyle(.plain)
-            .menuIndicator(.hidden)
-            .fixedSize()
-            .help(localized("Trocar o símbolo"))
+            .help(localized("Trocar o ícone e a cor"))
+            .accessibilityLabel(localized("Trocar o ícone e a cor"))
+            .popover(isPresented: $choosingLook, arrowEdge: .bottom) {
+                ProjectLookPicker(symbol: $project.symbol, tint: $project.tint)
+            }
 
             VStack(alignment: .leading, spacing: 3) {
                 path
@@ -432,5 +429,71 @@ struct EmptyTab: View {
             }
         }
         .padding(.vertical, 6)
+    }
+}
+
+/// The project's color, on a row of swatches, and its icon, on a grid, each choice applied as it's
+/// made and shown in the project's color.
+struct ProjectLookPicker: View {
+    @Binding var symbol: String
+    @Binding var tint: Project.Tint
+    private let columns = Array(repeating: GridItem(.fixed(32), spacing: 6), count: 9)
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text(localized("Cor"))
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(Theme.muted)
+            HStack(spacing: 8) {
+                ForEach(Project.Tint.allCases) { option in
+                    let selected = option == tint
+                    Button {
+                        tint = option
+                    } label: {
+                        Circle()
+                            .fill(Theme.color(option))
+                            .frame(width: 20, height: 20)
+                            .padding(3)
+                            .overlay(Circle().strokeBorder(Theme.paper.opacity(selected ? 0.9 : 0), lineWidth: 1.5))
+                            .contentShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .help(option.label)
+                    .accessibilityLabel(option.label)
+                    .accessibilityAddTraits(selected ? .isSelected : [])
+                }
+            }
+
+            Text(localized("Ícone"))
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(Theme.muted)
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 6) {
+                    ForEach(Project.symbols, id: \.self) { option in
+                        let selected = option == symbol
+                        let color = Theme.color(tint)
+                        Button {
+                            symbol = option
+                        } label: {
+                            Image(systemName: option)
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundStyle(selected ? color : Theme.paper.opacity(0.75))
+                                .frame(width: 32, height: 32)
+                                .background(selected ? color.opacity(0.18) : Theme.paper.opacity(0.04), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(color.opacity(selected ? 0.6 : 0), lineWidth: 1))
+                                .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(option)
+                        .accessibilityAddTraits(selected ? .isSelected : [])
+                    }
+                }
+            }
+            .frame(height: 6 * 38)
+            .scrollIndicators(.never)
+        }
+        .padding(16)
+        .frame(width: 9 * 32 + 8 * 6 + 32)
+        .keysSurface()
     }
 }

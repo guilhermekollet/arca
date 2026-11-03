@@ -63,6 +63,19 @@ struct VaultContentsTests {
         #expect(firstProjectDecoded(from: #"{"projects":[{"name":"Old","status":"paused"}]}"#) == "Old|active|shippingbox|0|0")
     }
 
+    @Test func aProjectsColorFallsBackToLavender() {
+        #expect(firstProjectTint(from: #"{"projects":[{"name":"Old"}]}"#) == "lavender")
+        #expect(firstProjectTint(from: #"{"projects":[{"name":"New","tint":"ultraviolet"}]}"#) == "lavender")
+        #expect(firstProjectTint(from: #"{"projects":[{"name":"New","tint":"mint"}]}"#) == "mint")
+    }
+
+    @Test func everyProjectSymbolExists() {
+        let symbols = projectSymbolsExist()
+        #expect(symbols.count == 90)
+        #expect(symbols.missing.isEmpty)
+        #expect(Set(Project.symbols).count == Project.symbols.count)
+    }
+
     @Test func garbageIsReportedAsDamaged() {
         #expect(firstProjectDecoded(from: "{") == "failed")
     }

@@ -42,7 +42,6 @@
 "Variáveis" = "Variables";
 "Acessos" = "Accesses";
 "Links" = "Links";
-"Símbolo" = "Symbol";
 "Nome do projeto" = "Project name";
 "Uma linha sobre o projeto" = "One line about the project";
 "Etiquetas, separadas por vírgula" = "Tags, separated by commas";
@@ -173,7 +172,6 @@
 "A chave fica no Secure Enclave e só abre com Touch ID ou a senha do Mac. Nada vai para a internet." = "The key lives in the Secure Enclave and only opens with Touch ID or the Mac's password. Nothing goes to the internet.";
 "O cofre não abre aqui" = "The vault doesn't open here";
 "Crie um ambiente, como development ou production, para guardar as variáveis dele." = "Create an environment, such as development or production, to keep its variables.";
-"Trocar o símbolo" = "Change the symbol";
 "Ajustes do Chaves" = "Keys Settings";
 "Ajustes…" = "Settings…";
 
@@ -254,3 +252,17 @@
 "Volta a usar o projeto e os subprojetos dele" = "Puts the project and its subprojects back in use";
 "Guarda o projeto em Arquivados, fora da barra de menus. Nada é apagado." = "Keeps the project in Archived, out of the menu bar. Nothing is deleted.";
 "Guarda o projeto e os subprojetos dele em Arquivados, fora da barra de menus. Nada é apagado." = "Keeps the project and its subprojects in Archived, out of the menu bar. Nothing is deleted.";
+
+
+/* Project icon and color */
+"Trocar o ícone e a cor" = "Change the icon and color";
+"Cor" = "Color";
+"Ícone" = "Icon";
+"Lavanda" = "Lavender";
+"Céu" = "Sky";
+"Menta" = "Mint";
+"Lima" = "Lime";
+"Âmbar" = "Amber";
+"Coral" = "Coral";
+"Rosa" = "Rose";
+"Ardósia" = "Slate";

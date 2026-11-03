@@ -120,6 +120,10 @@ enum SampleVault {
         for index in projects.indices where ["Loja Aurora", "API de Cobranças"].contains(projects[index].name) {
             projects[index].parentID = group.id
         }
+        let tints: [String: Project.Tint] = ["Loja Aurora": .amber, "API de Cobranças": .mint, "Site institucional": .sky, "App do Clube": .rose]
+        for index in projects.indices {
+            projects[index].tint = tints[projects[index].name] ?? .lavender
+        }
         for index in projects.indices where projects[index].name == "App do Clube" {
             projects[index].archivedAt = now.addingTimeInterval(-86_400 * 200)
         }

@@ -2,6 +2,7 @@
 // Testing: with only the Command Line Tools installed (no Xcode), importing Testing next to
 // Foundation fails because the `_Testing_Foundation` overlay is missing. Test files import just
 // Testing and Keys and talk to these helpers through plain values.
+import AppKit
 import CryptoKit
 import Foundation
 @testable import Keys
@@ -438,4 +439,14 @@ func quickMatchTitlesWithShopArchived(_ query: String) -> [String] {
         case .variable(let variable, let environment): "\(variable.key)@\(environment)"
         }
     }
+}
+
+/// The color the first project in `json` decodes with.
+func firstProjectTint(from json: String) -> String {
+    (try? Vault.decode(Data(json.utf8)))?.projects.first?.tint.rawValue ?? "failed"
+}
+
+/// Whether every symbol offered for a project exists on this Mac, and how many there are.
+func projectSymbolsExist() -> (count: Int, missing: [String]) {
+    (Project.symbols.count, Project.symbols.filter { NSImage(systemSymbolName: $0, accessibilityDescription: nil) == nil })
 }

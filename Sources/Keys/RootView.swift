@@ -331,7 +331,8 @@ struct MainView: View {
                 // The projects in use, as a tree, then the archived ones in a section of their own.
                 let active = ProjectTree.roots(archived: false, in: vault.projects)
                 if !active.isEmpty {
-                    Section(localized("Projetos")) {
+                    // No title over the projects in use: they're what the sidebar is for.
+                    Section {
                         ForEach(active) { project in
                             ProjectTreeRow(project: project, archived: false, collapsed: $collapsed, actions: rowActions)
                         }
@@ -490,21 +491,21 @@ struct ProjectRow: View {
     @State private var hovering = false
 
     var body: some View {
-        HStack(spacing: 10) {
-            ProjectBadge(project: project, size: 26)
-            VStack(alignment: .leading, spacing: 1) {
+        HStack(spacing: 11) {
+            ProjectBadge(project: project, size: 32)
+            VStack(alignment: .leading, spacing: 2) {
                 Text(project.name.isEmpty ? localized("Sem nome") : project.name)
-                    .fontWeight(selected ? .semibold : .regular)
+                    .font(.system(size: 14, weight: selected ? .semibold : .regular))
                     .foregroundStyle(selected ? Theme.paper : Theme.paper.opacity(0.85))
                     .lineLimit(1)
                 if !path.isEmpty {
                     Text(path.joined(separator: " › "))
-                        .font(.caption)
+                        .font(.system(size: 11.5))
                         .foregroundStyle(Theme.muted)
                         .lineLimit(1)
                 } else if !project.summary.isEmpty {
                     Text(project.summary)
-                        .font(.caption)
+                        .font(.system(size: 11.5))
                         .foregroundStyle(Theme.muted)
                         .lineLimit(1)
                 }
@@ -513,11 +514,11 @@ struct ProjectRow: View {
         }
         // Archived projects read a little quieter, except the one that's open.
         .opacity(project.isArchived && !selected ? 0.6 : 1)
-        .padding(.vertical, 4)
-        .padding(.horizontal, 6)
+        .padding(.vertical, 6)
+        .padding(.horizontal, 7)
         .background(
             Theme.paper.opacity(selected ? 0.09 : hovering ? 0.04 : 0),
-            in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+            in: RoundedRectangle(cornerRadius: 9, style: .continuous)
         )
         .onHover { hovering = $0 }
     }

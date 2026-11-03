@@ -28,8 +28,16 @@ struct Project: Codable, Identifiable, Hashable {
     /// When the project was archived: kept, but out of the way (the sidebar's Archived section,
     /// out of the menu bar's list, last in searches). Nil while it's in use.
     var archivedAt: Date?
+    /// The color of the project's symbol, to tell projects apart at a glance.
+    var tint = Tint.lavender
 
     var isArchived: Bool { archivedAt != nil }
+
+    /// Soft tones that sit well on the ink background; lavender, the app's accent, comes first.
+    enum Tint: String, Codable, CaseIterable, Identifiable {
+        case lavender, sky, mint, lime, amber, coral, rose, slate
+        var id: Self { self }
+    }
 }
 
 struct ProjectLink: Codable, Identifiable, Hashable {
@@ -337,6 +345,7 @@ extension Project {
         updatedAt = try container.value(.updatedAt, or: createdAt)
         parentID = try container.decodeIfPresent(UUID.self, forKey: .parentID)
         archivedAt = try container.decodeIfPresent(Date.self, forKey: .archivedAt)
+        tint = (try? container.value(.tint, or: Tint.lavender)) ?? .lavender
         // Vaults from before archiving had a status instead; only "archived" carries over.
         if archivedAt == nil, (try? decoder.container(keyedBy: LegacyKeys.self).decodeIfPresent(String.self, forKey: .status)) == "archived" {
             archivedAt = updatedAt
