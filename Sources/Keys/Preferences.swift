@@ -6,6 +6,8 @@ enum Preferences {
     static let lockMinutesKey = "lockAfterMinutes"
     static let lockOnSleepKey = "lockOnSleep"
     static let clipboardSecondsKey = "clipboardSeconds"
+    /// When the last backup was exported, to remind the person how old it is.
+    static let lastBackupKey = "lastBackupAt"
 
     static let unlockMinuteChoices = [15, 60, 120, 240, 480]
     static let lockMinuteChoices = [0, 5, 15, 30, 60]

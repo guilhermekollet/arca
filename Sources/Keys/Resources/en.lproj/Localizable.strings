@@ -16,7 +16,6 @@
 "Não foi possível salvar o cofre: %@" = "Couldn't save the vault: %@";
 "O arquivo do cofre não é um cofre do Chaves." = "The vault file isn't a Keys vault.";
 "Este cofre foi salvo por uma versão mais nova do Chaves. Atualize o app para abri-lo." = "This vault was saved by a newer version of Keys. Update the app to open it.";
-"Este cofre foi trancado com outra chave: ele foi criado em outro Mac ou a chave deste Mac foi trocada." = "This vault was locked with another key: it was created on another Mac, or this Mac's key was replaced.";
 "O arquivo do cofre está danificado ou foi alterado." = "The vault file is damaged or was changed.";
 "A chave deste Mac não está no Keychain, então o cofre não pode ser aberto aqui." = "This Mac's key isn't in the Keychain, so the vault can't be opened here.";
 "Este Mac não tem Secure Enclave, que o Chaves usa para guardar a chave do cofre." = "This Mac has no Secure Enclave, which Keys uses to keep the vault's key.";
@@ -211,3 +210,37 @@
 "Subprojetos" = "Subprojects";
 "Este projeto ainda não tem acessos, variáveis nem subprojetos." = "This project has no accesses, variables or subprojects yet.";
 "Voltar para %@" = "Back to %@";
+
+
+/* Backups and moving to another Mac */
+"Este cofre foi trancado com outra chave: ele foi criado em outro Mac ou a chave deste Mac foi trocada. Para trazê-lo, importe um backup feito no Mac de origem." = "This vault was locked with another key: it was created on another Mac, or this Mac's key was replaced. To bring it here, import a backup made on the Mac it came from.";
+"Este arquivo não é um backup do cofre." = "This file isn't a vault backup.";
+"Este backup foi feito por uma versão mais nova do app. Atualize o app para abri-lo." = "This backup was made by a newer version of the app. Update the app to open it.";
+"A senha não abre este backup. Confira a senha; se ela estiver certa, o arquivo foi alterado." = "The password doesn't open this backup. Check it; if it's right, the file was changed.";
+"Use uma senha com pelo menos %lld caracteres." = "Use a password of at least %lld characters.";
+"As duas senhas não são iguais." = "The two passwords don't match.";
+"Escolha o arquivo de backup" = "Choose the backup file";
+"Backup e migração" = "Backup and moving to another Mac";
+"Para levar o cofre a outro Mac, ou guardar uma cópia fora deste caso ele se perca. O backup é protegido por uma senha que você escolhe e que não fica guardada." = "To take the vault to another Mac, or keep a copy off this one in case it's lost. The backup is protected by a password you choose, which isn't stored anywhere.";
+"Exportar backup…" = "Export backup…";
+"Importar backup…" = "Import backup…";
+"Destranque o cofre para exportar ou importar." = "Unlock the vault to export or import.";
+"Nenhum backup exportado ainda." = "No backup exported yet.";
+"Último backup: %@" = "Last backup: %@";
+"Exportar backup" = "Export backup";
+"Backup salvo em %@." = "Backup saved to %@.";
+"Guarde o arquivo e a senha em lugares diferentes. Para usar em outro Mac, abra o app lá e escolha “Tenho um backup de outro Mac”." = "Keep the file and the password in different places. To use it on another Mac, open the app there and choose “I have a backup from another Mac”.";
+"Um arquivo com todo o cofre, protegido por uma senha que você escolhe agora. Serve para levar o cofre a outro Mac ou para guardar fora deste. A senha não fica guardada em lugar nenhum: sem ela, ninguém abre o backup, nem você." = "A file with the whole vault, protected by a password you choose now. Use it to take the vault to another Mac or to keep it off this one. The password isn't stored anywhere: without it nobody can open the backup, not even you.";
+"Pelo menos %lld caracteres. Uma frase longa é mais forte e mais fácil de lembrar." = "At least %lld characters. A long phrase is stronger and easier to remember.";
+"Senha do backup" = "Backup password";
+"Repita a senha" = "Repeat the password";
+"Protegendo o backup…" = "Protecting the backup…";
+"Exportar…" = "Export…";
+"Importar backup" = "Import backup";
+"Abrindo o backup…" = "Opening the backup…";
+"Os projetos do backup entram no cofre. Um projeto que já existe fica com a versão alterada por último; nada é apagado." = "The backup's projects come into the vault. A project that's already here keeps whichever version was changed last; nothing is deleted.";
+"O backup vira o cofre deste Mac. O cofre que não abre aqui não é apagado: ele é renomeado e fica na mesma pasta." = "The backup becomes this Mac's vault. The vault that doesn't open here isn't deleted: it's renamed and stays in the same folder.";
+"O backup vira o cofre deste Mac, que passa a abrir com o Touch ID daqui." = "The backup becomes this Mac's vault, which then opens with this Mac's Touch ID.";
+"Projetos novos: %lld · atualizados: %lld" = "New projects: %lld · updated: %lld";
+"Projetos importados: %lld" = "Projects imported: %lld";
+"Tenho um backup de outro Mac" = "I have a backup from another Mac";

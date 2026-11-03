@@ -155,7 +155,7 @@ enum VaultError: LocalizedError, Equatable {
         case .newerVersion:
             localized("Este cofre foi salvo por uma versão mais nova do Chaves. Atualize o app para abri-lo.")
         case .otherDeviceKey:
-            localized("Este cofre foi trancado com outra chave: ele foi criado em outro Mac ou a chave deste Mac foi trocada.")
+            localized("Este cofre foi trancado com outra chave: ele foi criado em outro Mac ou a chave deste Mac foi trocada. Para trazê-lo, importe um backup feito no Mac de origem.")
         case .damaged:
             localized("O arquivo do cofre está danificado ou foi alterado.")
         case .missingDeviceKey:

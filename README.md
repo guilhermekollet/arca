@@ -82,12 +82,27 @@ draws. The name follows the Mac's language, in the app and in Finder, the Dock a
 | The vault key | Inside the same file, sealed for the device key (P256 key agreement + HKDF-SHA256). |
 | The device key | Created inside the Mac's **Secure Enclave**, which never lets it out. Using it requires Touch ID or the Mac's password. |
 | The device key's handle | Your login Keychain. It is encrypted by the Secure Enclave and useless on any other Mac. |
-| Backups | `Backups/` next to the vault: the vault as it was before each session's first change, the 20 most recent, encrypted the same way. |
+| Automatic copies | `Backups/` next to the vault: the vault as it was before each session's first change, the 20 most recent, encrypted the same way (so they also open only on this Mac). |
+| Exported backups | A `.keys-backup` file wherever you save it, sealed with ChaCha20-Poly1305 under a key derived from a password you choose (PBKDF2-HMAC-SHA256, 1,000,000 rounds, random salt). The password is never stored. |
 
 There is no master password, no account and no server: nothing is sent anywhere. The flip side is
-that **the vault only opens on the Mac that created it**. If that Mac is lost or its Keychain
-reset, the vault can't be recovered. An encrypted export you can open elsewhere is on the roadmap;
-until then, keep what you can't lose somewhere else too.
+that **the vault itself only opens on the Mac that created it**: Migration Assistant or Time
+Machine copy the file, but not the key in the Secure Enclave.
+
+### Moving to another Mac
+
+1. On the old Mac, **Ajustes › Backup e migração › Exportar backup…** (Settings › Backup and moving
+   to another Mac › Export backup…). Choose a long password; the app writes a `.keys-backup` file.
+2. Take the file to the new Mac (AirDrop, a USB drive, iCloud Drive: it's useless without the
+   password).
+3. On the new Mac, open the app and choose **Tenho um backup de outro Mac** (I have a backup from
+   another Mac), or **Importar backup…** if it says the vault doesn't open there. Type the
+   password: the backup becomes that Mac's vault, sealed for its own Secure Enclave key, and opens
+   with its Touch ID from then on.
+
+Importing into a vault that's already open merges: projects that aren't there come in, and a
+project in both keeps whichever copy was changed last. Nothing is deleted. Export a backup now and
+then and keep it off the Mac too: it's also what saves the vault if the Mac is lost.
 
 See [SECURITY.md](SECURITY.md) for what this protects against, and what it doesn't.
 
@@ -149,6 +164,8 @@ Sources/Keys/
   KeysApp.swift              App entry point, main window, menu bar item, commands
   Vault.swift              The vault while the app runs: unlock, lock, saving, backups, auto-lock
   VaultFile.swift          The file format and its encryption
+  VaultBackup.swift        Password-protected backups, for moving to another Mac, and merging them
+  BackupViews.swift        Exporting and importing backups
   DeviceKey.swift          The Secure Enclave key and its handle in the Keychain
   Models.swift             Projects, environments, variables, accesses, search
   DotEnv.swift             Reading and writing .env files

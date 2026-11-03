@@ -23,6 +23,7 @@ struct LockScreen: View {
     @EnvironmentObject private var vault: Vault
     @State private var shown = false
     @State private var confirmingNewVault = false
+    @State private var importing: BackupFile?
 
     private let features: [(symbol: String, title: String, text: String)] = [
         ("text.page", localized("O contexto de cada projeto"), localized("Como rodar, como publicar, onde está cada coisa e por que foi feito assim, para retomar meses depois.")),
@@ -63,6 +64,7 @@ struct LockScreen: View {
                 Task { await vault.unlock() }
             }
         }
+        .sheet(item: $importing) { file in ImportBackupSheet(file: file) }
         .confirmationDialog(localized("Começar um cofre novo?"), isPresented: $confirmingNewVault) {
             Button(localized("Começar de novo"), role: .destructive) { vault.setAsideUnreadable() }
         } message: {
@@ -108,6 +110,13 @@ struct LockScreen: View {
                 .keyboardShortcut(.defaultAction)
                 .disabled(!DeviceKey.isAvailable)
                 .padding(.top, 34)
+            // Moving from another Mac: the vault comes from a backup instead of starting empty.
+            Button(localized("Tenho um backup de outro Mac")) { importing = chooseBackupFile() }
+                .buttonStyle(.plain)
+                .font(.system(size: 12.5))
+                .foregroundStyle(Theme.accent)
+                .disabled(!DeviceKey.isAvailable)
+                .padding(.top, 14)
             if !DeviceKey.isAvailable {
                 Text(VaultError.noSecureEnclave.localizedDescription)
                     .font(.system(size: 12))
@@ -135,15 +144,18 @@ struct LockScreen: View {
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 10)
+            // The way back for a vault copied from another Mac: its backup, made there.
+            Button(localized("Importar backup…")) { importing = chooseBackupFile() }
+                .buttonStyle(PillButtonStyle(large: true))
+                .padding(.top, 28)
             HStack(spacing: 10) {
                 Button(localized("Mostrar no Finder")) {
                     NSWorkspace.shared.activateFileViewerSelecting([Vault.fileURL])
                 }
-                .buttonStyle(PillButtonStyle(prominent: false, large: true))
                 Button(localized("Começar um cofre novo…")) { confirmingNewVault = true }
-                    .buttonStyle(PillButtonStyle(large: true))
             }
-            .padding(.top, 28)
+            .buttonStyle(PillButtonStyle(prominent: false))
+            .padding(.top, 12)
         case .unlocked:
             EmptyView()
         }

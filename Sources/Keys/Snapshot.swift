@@ -44,6 +44,10 @@ enum Snapshot {
             await draw(CredentialEditor(credential: .constant(credential)) {}, size: nil, to: folder, name: "credential-editor")
         }
         await draw(GeneratorPopover(generator: .constant(PasswordGenerator())) { _ in }, size: nil, to: folder, name: "generator")
+        await draw(ExportBackupSheet().environmentObject(vault), size: nil, to: folder, name: "backup-export")
+        let sampleBackup = BackupFile(url: URL(fileURLWithPath: "/Users/you/\(VaultBackup.suggestedFileName())"))
+        await draw(ImportBackupSheet(file: sampleBackup).environmentObject(Vault(previewing: .new)), size: nil, to: folder, name: "backup-import-new-mac")
+        await draw(ImportBackupSheet(file: sampleBackup).environmentObject(vault), size: nil, to: folder, name: "backup-import-merge")
         print("Snapshots in \(folder.path)")
         NSApp.terminate(nil)
     }
