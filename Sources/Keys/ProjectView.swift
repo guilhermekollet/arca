@@ -41,12 +41,19 @@ struct ProjectView: View {
             Rectangle()
                 .fill(Theme.hairline)
                 .frame(height: 1)
-            switch vault.section {
-            case .context: ContextTab(project: $project)
-            case .variables: VariablesTab(project: $project)
-            case .credentials: CredentialsTab(project: $project)
-            case .links: LinksTab(project: $project)
+            Group {
+                switch vault.section {
+                case .context: ContextTab(project: $project)
+                case .variables: VariablesTab(project: $project)
+                case .credentials: CredentialsTab(project: $project)
+                case .links: LinksTab(project: $project)
+                }
             }
+            // Whatever a tab holds, it fits the room left under the header and never makes the
+            // window's content taller than the window (which pushed the sidebar and the header
+            // off screen once). Content that doesn't fit scrolls in its tab or is clipped.
+            .frame(minHeight: 0, maxHeight: .infinity, alignment: .top)
+            .clipped()
         }
         .navigationTitle(project.name)
     }
@@ -67,8 +74,32 @@ struct ProjectHeader: View {
     @Binding var project: Project
     @EnvironmentObject private var vault: Vault
     @State private var tags = ""
+    @FocusState private var nameFocused: Bool
 
     var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            identity
+            // Under the header, across the whole width (not squeezed beside the badges), lined up
+            // with the name. It scrolls sideways only when there are more chips than fit.
+            ScrollView(.horizontal, showsIndicators: false) {
+                subprojects
+            }
+            // As tall as the chips: a horizontal scroll view would otherwise take any height
+            // it's offered.
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.leading, 46 + 14)
+        }
+        .onAppear {
+            tags = project.tags.joined(separator: ", ")
+            // A project just created opens with its name selected, ready to be typed over.
+            if Date().timeIntervalSince(project.createdAt) < 2 {
+                DispatchQueue.main.async { nameFocused = true }
+            }
+        }
+    }
+
+    /// Symbol, name, summary and tags, with where the project sits and its status on the right.
+    private var identity: some View {
         HStack(alignment: .top, spacing: 14) {
             Menu {
                 Picker(localized("Símbolo"), selection: $project.symbol) {
@@ -91,6 +122,7 @@ struct ProjectHeader: View {
                 TextField(localized("Nome do projeto"), text: $project.name)
                     .font(Theme.display(26))
                     .textFieldStyle(.plain)
+                    .focused($nameFocused)
                 TextField(localized("Uma linha sobre o projeto"), text: $project.summary)
                     .font(.system(size: 13))
                     .textFieldStyle(.plain)
@@ -100,10 +132,6 @@ struct ProjectHeader: View {
                     .textFieldStyle(.plain)
                     .foregroundStyle(Theme.paper.opacity(0.45))
                     .onChange(of: tags) { commitTags() }
-                ScrollView(.horizontal, showsIndicators: false) {
-                    subprojects
-                }
-                .padding(.top, 8)
             }
 
             Spacer(minLength: 12)
@@ -126,7 +154,6 @@ struct ProjectHeader: View {
             .fixedSize()
             .help(localized("Situação do projeto"))
         }
-        .onAppear { tags = project.tags.joined(separator: ", ") }
     }
 
     /// "Grupo Fazolli ›" above the name of a subproject, each step a way back up.

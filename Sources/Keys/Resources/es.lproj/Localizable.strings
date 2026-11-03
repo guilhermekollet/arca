@@ -244,3 +244,7 @@
 "Projetos novos: %lld · atualizados: %lld" = "Proyectos nuevos: %lld · actualizados: %lld";
 "Projetos importados: %lld" = "Proyectos importados: %lld";
 "Tenho um backup de outro Mac" = "Tengo una copia de otro Mac";
+
+/* Sidebar */
+"Mostrar ou ocultar a barra lateral" = "Mostrar u ocultar la barra lateral";
+"Mostrar ou ocultar a barra lateral (⌃⌘S)" = "Mostrar u ocultar la barra lateral (⌃⌘S)";
