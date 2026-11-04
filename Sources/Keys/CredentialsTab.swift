@@ -142,9 +142,13 @@ struct CredentialEditor: View {
                                     SecureField(localized("Senha"), text: $credential.password)
                                 }
                             }
-                            .textFieldStyle(.code)
-                            IconButton(symbol: revealed ? "eye.slash" : "eye", help: revealed ? localized("Ocultar") : localized("Mostrar")) {
-                                revealed.toggle()
+                            .textFieldStyle(.code(trailingRoom: 18))
+                            // Inside the field, at its right end, as in macOS's own password fields.
+                            .overlay(alignment: .trailing) {
+                                IconButton(symbol: revealed ? "eye.slash" : "eye", help: revealed ? localized("Ocultar") : localized("Mostrar")) {
+                                    revealed.toggle()
+                                }
+                                .padding(.trailing, 2)
                             }
                             CopyButton(value: credential.password, secret: true, symbol: "key", help: localized("Copiar a senha"))
                             IconButton(symbol: "wand.and.stars", help: localized("Gerar senha"), color: Theme.accent) {
@@ -175,10 +179,7 @@ struct CredentialEditor: View {
             .scrollBounceBehavior(.basedOnSize)
 
             HStack {
-                Button(localized("Apagar acesso…"), action: delete)
-                    .buttonStyle(.plain)
-                    .font(.system(size: 12))
-                    .foregroundStyle(.red.opacity(0.85))
+                IconButton(symbol: "trash", help: localized("Apagar acesso…"), color: .red.opacity(0.85), action: delete)
                 Spacer()
                 Button(localized("Pronto"), action: close)
                     .buttonStyle(PillButtonStyle())
