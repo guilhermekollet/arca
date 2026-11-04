@@ -19,6 +19,9 @@ enum ProjectSection: String, CaseIterable, Identifiable {
 /// variables and links, filtered and searchable.
 struct ProjectView: View {
     @Binding var project: Project
+    /// The access open in the panel on the right.
+    @State private var editing: Credential.ID?
+    @State private var deletingCredential: Credential.ID?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -28,14 +31,65 @@ struct ProjectView: View {
             ContextCard(project: $project)
                 .padding(.horizontal, 20)
                 .padding(.top, 16)
-            ProjectItemsView(project: $project)
+            ProjectItemsView(project: $project, editing: $editing, deletingCredential: $deletingCredential)
                 // Whatever the list holds, it fits the room left and never makes the window's
                 // content taller than the window (which pushed the sidebar and the header off
                 // screen once). It scrolls instead.
                 .frame(minHeight: 0, maxHeight: .infinity, alignment: .top)
                 .clipped()
         }
+        // Floats over the project rather than pushing it aside, so the list keeps its width and
+        // another access can be opened with a click while this one is showing.
+        .overlay(alignment: .trailing) {
+            if let id = editing, let credential = credentialBinding(id) {
+                CredentialEditor(credential: credential, close: close) {
+                    deletingCredential = id
+                }
+                .id(id)
+                .frame(width: 360)
+                .frame(maxHeight: .infinity)
+                .background(Theme.panel, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(Theme.hairline))
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .shadow(color: .black.opacity(0.45), radius: 24, x: -4, y: 8)
+                .padding(10)
+                .transition(.move(edge: .trailing).combined(with: .opacity))
+            }
+        }
+        .animation(.smooth(duration: 0.25), value: editing == nil)
+        // An access closed without anything typed in it isn't kept.
+        .onChange(of: editing) { old, _ in dropIfEmpty(old) }
+        .onDisappear { dropIfEmpty(editing) }
+        .confirmationDialog(
+            localized("Apagar o acesso \(project.credentials.first { $0.id == deletingCredential }?.displayTitle ?? "")?"),
+            isPresented: Binding(get: { deletingCredential != nil }, set: { if !$0 { deletingCredential = nil } })
+        ) {
+            Button(localized("Apagar acesso"), role: .destructive) {
+                if editing == deletingCredential { editing = nil }
+                project.credentials.removeAll { $0.id == deletingCredential }
+            }
+        }
         .navigationTitle(project.name)
+    }
+
+    private func close() {
+        editing = nil
+    }
+
+    private func dropIfEmpty(_ id: Credential.ID?) {
+        guard let id, let credential = project.credentials.first(where: { $0.id == id }), credential.isEmpty else { return }
+        project.credentials.removeAll { $0.id == id }
+    }
+
+    /// The access with `id`, looked up on every read and write rather than by position.
+    private func credentialBinding(_ id: Credential.ID) -> Binding<Credential>? {
+        guard let current = project.credentials.first(where: { $0.id == id }) else { return nil }
+        return Binding(
+            get: { project.credentials.first { $0.id == id } ?? current },
+            set: { new in
+                if let index = project.credentials.firstIndex(where: { $0.id == id }) { project.credentials[index] = new }
+            }
+        )
     }
 }
 

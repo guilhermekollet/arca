@@ -76,6 +76,20 @@ struct VaultContentsTests {
         #expect(Set(Project.symbols).count == Project.symbols.count)
     }
 
+    @Test func everyAccessIconExists() {
+        let symbols = credentialSymbolsExist()
+        #expect(symbols.count == 36)
+        #expect(symbols.missing.isEmpty)
+        #expect(Set(Credential.symbols).count == Credential.symbols.count)
+    }
+
+    @Test func anAccessKeepsTheIconPickedForIt() {
+        #expect(credentialIcon(kind: .website, picked: "cloud") == "cloud")
+        #expect(credentialIcon(kind: .database, picked: nil) == "cylinder.split.1x2")
+        // Accesses saved before icons could be picked show their kind's.
+        #expect(credentialIcon(kind: .server, picked: "cloud", fromOldVault: true) == "server.rack")
+    }
+
     @Test func garbageIsReportedAsDamaged() {
         #expect(firstProjectDecoded(from: "{") == "failed")
     }

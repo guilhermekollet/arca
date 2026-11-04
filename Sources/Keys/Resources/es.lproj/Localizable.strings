@@ -97,8 +97,6 @@
 "Nenhum acesso" = "Ningún acceso";
 "Painéis, bancos de dados, servidores e chaves de API do projeto." = "Paneles, bases de datos, servidores y claves de API del proyecto.";
 "Novo acesso" = "Nuevo acceso";
-"Editar" = "Editar";
-"Editar…" = "Editar…";
 "Apagar acesso" = "Borrar acceso";
 "Apagar acesso…" = "Borrar acceso…";
 "Apagar o acesso %@?" = "¿Borrar el acceso %@?";
@@ -294,3 +292,6 @@
 "Recolher o contexto" = "Plegar el contexto";
 "Mostrar o contexto" = "Mostrar el contexto";
 "Vazio" = "Vacío";
+"Trocar o ícone" = "Cambiar el icono";
+"Fechar" = "Cerrar";
+"Usar o do tipo" = "Usar el del tipo";

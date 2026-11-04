@@ -451,6 +451,31 @@ func projectSymbolsExist() -> (count: Int, missing: [String]) {
     (Project.symbols.count, Project.symbols.filter { NSImage(systemSymbolName: $0, accessibilityDescription: nil) == nil })
 }
 
+/// Whether every icon offered for an access exists on this Mac, and how many there are.
+func credentialSymbolsExist() -> (count: Int, missing: [String]) {
+    (Credential.symbols.count, Credential.symbols.filter { NSImage(systemSymbolName: $0, accessibilityDescription: nil) == nil })
+}
+
+/// The icon an access of `kind` shows after a trip through the vault file, with `picked` chosen
+/// for it, or with the "symbol" key taken out, as in vaults from before accesses had icons.
+func credentialIcon(kind: Credential.Kind, picked: String?, fromOldVault: Bool = false) -> String {
+    var project = Project(name: "Icons")
+    project.credentials = [Credential(kind: kind, title: "Panel", symbol: picked)]
+    guard var data = try? Vault.encode(VaultContents(projects: [project])) else { return "failed" }
+    if fromOldVault {
+        guard var json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              var projects = json["projects"] as? [[String: Any]],
+              var credentials = projects[0]["credentials"] as? [[String: Any]]
+        else { return "failed" }
+        credentials[0].removeValue(forKey: "symbol")
+        projects[0]["credentials"] = credentials
+        json["projects"] = projects
+        guard let stripped = try? JSONSerialization.data(withJSONObject: json) else { return "failed" }
+        data = stripped
+    }
+    return (try? Vault.decode(data))?.projects.first?.credentials.first?.displaySymbol ?? "failed"
+}
+
 /// The names left after deleting `name`, and everything inside it, for good.
 func remainingAfterDeletingForGood(_ name: String) -> [String] {
     let projects = treeForArchiving()

@@ -12,6 +12,8 @@ enum Theme {
     /// Cards and fields on the ink background.
     static let surface = paper.opacity(0.05)
     static let hairline = paper.opacity(0.1)
+    /// Panels floating over the window, a step lighter than it.
+    static let panel = Color(red: 0x17 / 255, green: 0x17 / 255, blue: 0x18 / 255)
 
     /// Titles in the system font (San Francisco), like the rest of the app.
     static func display(_ size: CGFloat) -> Font {
@@ -273,12 +275,15 @@ extension Theme {
 /// A text field drawn as a quiet rounded surface instead of a bordered box.
 struct FieldStyle: TextFieldStyle {
     var monospaced = false
+    /// Room kept on the right for a button laid inside the field.
+    var trailingRoom: CGFloat = 0
 
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
             .textFieldStyle(.plain)
             .font(.system(size: 12.5, design: monospaced ? .monospaced : .default))
-            .padding(.horizontal, 8)
+            .padding(.leading, 8)
+            .padding(.trailing, 8 + trailingRoom)
             .padding(.vertical, 6)
             .background(Theme.paper.opacity(0.06), in: RoundedRectangle(cornerRadius: 7, style: .continuous))
     }
@@ -287,6 +292,7 @@ struct FieldStyle: TextFieldStyle {
 extension TextFieldStyle where Self == FieldStyle {
     static var field: FieldStyle { FieldStyle() }
     static var code: FieldStyle { FieldStyle(monospaced: true) }
+    static func code(trailingRoom: CGFloat) -> FieldStyle { FieldStyle(monospaced: true, trailingRoom: trailingRoom) }
 }
 
 /// The sidebar button's icon: a rounded square with a short bar along its left side.
