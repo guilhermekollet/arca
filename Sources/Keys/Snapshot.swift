@@ -77,7 +77,7 @@ enum Snapshot {
             contentRect: NSRect(origin: NSPoint(x: -20_000, y: -20_000), size: fitting),
             styleMask: [.borderless], backing: .buffered, defer: false
         )
-        window.appearance = NSAppearance(named: .darkAqua)
+        window.appearance = NSApp.effectiveAppearance
         window.contentView = host
         window.setContentSize(fitting)
         window.orderFrontRegardless()

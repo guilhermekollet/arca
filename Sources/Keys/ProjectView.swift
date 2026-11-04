@@ -51,7 +51,7 @@ struct ProjectView: View {
                 .background(Theme.panel, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(Theme.hairline))
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .shadow(color: .black.opacity(0.45), radius: 24, x: -4, y: 8)
+                .shadow(color: Theme.shadow, radius: 24, x: -4, y: 8)
                 .padding(10)
                 .transition(.move(edge: .trailing).combined(with: .opacity))
             }

@@ -161,8 +161,10 @@ each screen with it (main window per filter, lock screens, settings, menu bar pa
 without Touch ID or permission to record the screen. The translucent sidebar and toolbar come out
 blank in those drawings; everything else is as on screen.
 
-Keys shares Mara AI's design: near-black, off-white and lavender as the only accent, the system
-font, pill-shaped buttons, icon tabs and a dot-matrix mark. The tokens and shared controls are in
+Keys shares Mara AI's design: near-black and off-white, with the text color itself as the contrast
+color (white on the dark look, black on the light one), the system font, pill-shaped buttons, icon
+tabs and a dot-matrix mark. It follows the Mac's light or dark mode, or the one picked in
+**Ajustes › Aparência**. The tokens and shared controls are in
 `Sources/Keys/Theme.swift`.
 
 ## Project layout

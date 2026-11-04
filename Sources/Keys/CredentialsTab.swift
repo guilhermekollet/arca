@@ -81,7 +81,7 @@ struct CredentialIcon: View {
             .font(.system(size: size * 0.46, weight: .medium))
             .foregroundStyle(Theme.accent)
             .frame(width: size, height: size)
-            .background(Theme.accent.opacity(0.14), in: RoundedRectangle(cornerRadius: size * 0.28, style: .continuous))
+            .background(Theme.accent.opacity(0.1), in: RoundedRectangle(cornerRadius: size * 0.28, style: .continuous))
     }
 }
 
@@ -275,7 +275,7 @@ struct CredentialSymbolPicker: View {
                             .font(.system(size: 14, weight: .medium))
                             .foregroundStyle(selected ? Theme.accent : Theme.paper.opacity(0.75))
                             .frame(width: 32, height: 32)
-                            .background(selected ? Theme.accent.opacity(0.18) : Theme.paper.opacity(0.04), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                            .background(selected ? Theme.accent.opacity(0.12) : Theme.paper.opacity(0.04), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
                             .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(Theme.accent.opacity(selected ? 0.6 : 0), lineWidth: 1))
                             .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                     }

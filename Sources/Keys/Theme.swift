@@ -1,19 +1,46 @@
 import AppKit
 import SwiftUI
 
-/// The app's visual identity, shared with Mara AI: near-black, off-white and lavender as the only
-/// accent, the system font, pill-shaped controls and a dot-matrix mark (braces here,
-/// "M" there).
+/// The app's visual identity, shared with Mara AI: near-black and off-white, the system font,
+/// pill-shaped controls and a dot-matrix mark (braces here, "M" there). The contrast color is
+/// the text color itself: off-white on the dark look, near-black on the light one.
 enum Theme {
-    static let ink = Color(red: 0x0D / 255, green: 0x0D / 255, blue: 0x0D / 255)
-    static let paper = Color(red: 0xFA / 255, green: 0xFA / 255, blue: 0xFA / 255)
-    static let accent = Color(red: 0xB8 / 255, green: 0xA4 / 255, blue: 0xF8 / 255)
+    /// The background: near-black in dark mode, off-white in light mode.
+    static let ink = adaptive(dark: 0x0D0D0D, light: 0xFAFAFA)
+    /// The text, and the color that stands out on the background.
+    static let paper = adaptive(dark: 0xFAFAFA, light: 0x0D0D0D)
+    /// Selected and prominent controls: the text color, so white on dark and black on light.
+    static let accent = paper
     static let muted = paper.opacity(0.6)
     /// Cards and fields on the ink background.
     static let surface = paper.opacity(0.05)
     static let hairline = paper.opacity(0.1)
-    /// Panels floating over the window, a step lighter than it.
-    static let panel = Color(red: 0x17 / 255, green: 0x17 / 255, blue: 0x18 / 255)
+    /// Panels floating over the window, a step apart from it.
+    static let panel = adaptive(dark: 0x171718, light: 0xFFFFFF)
+    /// The shadow under a floating panel, lighter where the background is light.
+    static let shadow = Color(nsColor: NSColor(name: nil) { appearance in
+        NSColor.black.withAlphaComponent(isDark(appearance) ? 0.45 : 0.14)
+    })
+
+    /// A color that follows the appearance the view is drawn in.
+    static func adaptive(dark: UInt32, light: UInt32) -> Color {
+        Color(nsColor: NSColor(name: nil) { appearance in
+            rgb(isDark(appearance) ? dark : light)
+        })
+    }
+
+    private static func isDark(_ appearance: NSAppearance) -> Bool {
+        appearance.bestMatch(from: [.darkAqua, .aqua, .vibrantDark, .vibrantLight]).map { [.darkAqua, .vibrantDark].contains($0) } ?? true
+    }
+
+    private static func rgb(_ hex: UInt32) -> NSColor {
+        NSColor(
+            srgbRed: CGFloat((hex >> 16) & 0xFF) / 255,
+            green: CGFloat((hex >> 8) & 0xFF) / 255,
+            blue: CGFloat(hex & 0xFF) / 255,
+            alpha: 1
+        )
+    }
 
     /// Titles in the system font (San Francisco), like the rest of the app.
     static func display(_ size: CGFloat) -> Font {
@@ -47,16 +74,16 @@ enum Theme {
 }
 
 extension View {
-    /// The app's look on a window or panel: dark, ink behind, off-white text, lavender controls.
+    /// The app's look on a window or panel: ink behind, paper text and controls, in the
+    /// appearance picked in Settings (the system's by default).
     func keysSurface() -> some View {
         background(Theme.ink)
             .foregroundStyle(Theme.paper)
             .tint(Theme.accent)
-            .preferredColorScheme(.dark)
     }
 }
 
-/// The icon's dot-matrix braces, with their lavender dot. The dots pop in from left to right when
+/// The icon's dot-matrix braces. The dots pop in from left to right when
 /// `shown` turns on.
 struct DotMark: View {
     let shown: Bool
@@ -84,7 +111,7 @@ struct DotMark: View {
     }
 }
 
-/// Primary button: a lavender pill with dark text; `prominent: false` is the quiet version.
+/// Primary button: a pill in the text color with the background's color for its label; `prominent: false` is the quiet version.
 /// `large` is the lock screen's size.
 struct PillButtonStyle: ButtonStyle {
     var prominent = true
@@ -130,7 +157,7 @@ struct IconButton: View {
     }
 }
 
-/// Copies `value` and turns into a lavender check mark for a moment. `symbol` tells side by side
+/// Copies `value` and turns into a check mark for a moment. `symbol` tells side by side
 /// copies apart (a username and its password, say).
 struct CopyButton: View {
     let value: String
@@ -184,7 +211,7 @@ struct Card<Content: View>: View {
     }
 }
 
-/// Icon tabs in a capsule: only the active one shows its name, in lavender with dark text, as in
+/// Icon tabs in a capsule: only the active one shows its name, as a pill in the contrast color, as in
 /// Mara's Settings.
 struct CapsuleTabs<Tab: Hashable & Identifiable>: View {
     let tabs: [Tab]
@@ -226,7 +253,7 @@ struct CapsuleTabs<Tab: Hashable & Identifiable>: View {
     }
 }
 
-/// A small lavender capsule with a label, like Mara's summary kind.
+/// A small capsule with a label, like Mara's summary kind.
 struct Badge: View {
     let text: String
     let symbol: String
@@ -257,17 +284,19 @@ struct ProjectBadge: View {
 }
 
 extension Theme {
-    /// A project's color. Lavender is the accent itself; the others are as soft, so none shouts.
+    /// A project's color, picked in its header. All are soft, so none shouts.
     static func color(_ tint: Project.Tint) -> Color {
+        // Pastels on the dark look; deeper versions of the same hues on the light one, so the
+        // icons keep their contrast.
         switch tint {
-        case .lavender: accent
-        case .sky: Color(red: 0x8C / 255, green: 0xC4 / 255, blue: 0xF7 / 255)
-        case .mint: Color(red: 0x86 / 255, green: 0xDB / 255, blue: 0xBC / 255)
-        case .lime: Color(red: 0xC2 / 255, green: 0xDE / 255, blue: 0x80 / 255)
-        case .amber: Color(red: 0xF2 / 255, green: 0xC6 / 255, blue: 0x6D / 255)
-        case .coral: Color(red: 0xF4 / 255, green: 0x9A / 255, blue: 0x86 / 255)
-        case .rose: Color(red: 0xF0 / 255, green: 0xA2 / 255, blue: 0xC8 / 255)
-        case .slate: Color(red: 0xAE / 255, green: 0xB5 / 255, blue: 0xC0 / 255)
+        case .lavender: adaptive(dark: 0xB8A4F8, light: 0x7558D8)
+        case .sky: adaptive(dark: 0x8CC4F7, light: 0x2A7FCC)
+        case .mint: adaptive(dark: 0x86DBBC, light: 0x1D9468)
+        case .lime: adaptive(dark: 0xC2DE80, light: 0x5F8A16)
+        case .amber: adaptive(dark: 0xF2C66D, light: 0xB07A0C)
+        case .coral: adaptive(dark: 0xF49A86, light: 0xD0533A)
+        case .rose: adaptive(dark: 0xF0A2C8, light: 0xC84784)
+        case .slate: adaptive(dark: 0xAEB5C0, light: 0x5F6876)
         }
     }
 }

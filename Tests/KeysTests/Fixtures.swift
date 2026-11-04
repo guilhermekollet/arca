@@ -496,3 +496,14 @@ func projectListMatches(_ query: String) -> [String] {
     let links = shop.links.filter { $0.matches(query) }.map(\.title)
     return credentials + variables + links
 }
+
+// MARK: Appearance
+
+/// The appearance Settings show when the defaults hold `value` for it.
+func storedAppearance(_ value: String?) -> Preferences.Appearance {
+    let defaults = UserDefaults.standard
+    let previous = defaults.object(forKey: Preferences.appearanceKey)
+    defer { defaults.set(previous, forKey: Preferences.appearanceKey) }
+    defaults.set(value, forKey: Preferences.appearanceKey)
+    return Preferences.appearance
+}

@@ -64,6 +64,7 @@ struct KeysCommands: Commands {
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
+        Preferences.applyAppearance()
         // Development tool: `Keys --snapshot folder` draws every screen with the sample vault and
         // quits, so the interface can be checked without Touch ID or a real vault.
         if let flag = CommandLine.arguments.firstIndex(of: "--snapshot"), CommandLine.arguments.count > flag + 1 {
