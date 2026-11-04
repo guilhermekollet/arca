@@ -6,9 +6,10 @@ import SwiftUI
 struct ProjectItemsView: View {
     @Binding var project: Project
     @EnvironmentObject private var vault: Vault
+    /// The access open in the project's side panel.
+    @Binding var editing: Credential.ID?
+    @Binding var deletingCredential: Credential.ID?
     @State private var query = ""
-    @State private var editing: Credential.ID?
-    @State private var deletingCredential: Credential.ID?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -26,25 +27,6 @@ struct ProjectItemsView: View {
                 .padding(.bottom, 20)
             }
             .scrollBounceBehavior(.basedOnSize)
-        }
-        // A new access closed without anything typed in it isn't kept.
-        .sheet(item: Binding(get: { editing.map(EditingID.init) }, set: { editing = $0?.id }), onDismiss: {
-            project.credentials.removeAll { $0.title.isEmpty && $0.url.isEmpty && $0.username.isEmpty && $0.password.isEmpty && $0.notes.isEmpty }
-        }) { item in
-            if let credential = credentialBinding(item.id) {
-                CredentialEditor(credential: credential) {
-                    editing = nil
-                    deletingCredential = item.id
-                }
-            }
-        }
-        .confirmationDialog(
-            localized("Apagar o acesso \(project.credentials.first { $0.id == deletingCredential }?.displayTitle ?? "")?"),
-            isPresented: Binding(get: { deletingCredential != nil }, set: { if !$0 { deletingCredential = nil } })
-        ) {
-            Button(localized("Apagar acesso"), role: .destructive) {
-                project.credentials.removeAll { $0.id == deletingCredential }
-            }
         }
     }
 
@@ -155,7 +137,7 @@ struct ProjectItemsView: View {
                     if credentials.isEmpty {
                         EmptyTab(symbol: "key", title: localized("Nenhum acesso"), text: localized("Painéis, bancos de dados, servidores e chaves de API do projeto."))
                     } else {
-                        CredentialsSection(credentials: credentials, edit: { editing = $0 }, delete: { deletingCredential = $0 })
+                        CredentialsSection(credentials: credentials, selected: editing, open: { editing = $0 }, delete: { deletingCredential = $0 })
                     }
                 }
             }
@@ -248,17 +230,6 @@ struct ProjectItemsView: View {
 
     // MARK: Bindings
 
-    /// The access with `id`, looked up on every read and write rather than by position.
-    private func credentialBinding(_ id: Credential.ID) -> Binding<Credential>? {
-        guard let current = project.credentials.first(where: { $0.id == id }) else { return nil }
-        return Binding(
-            get: { project.credentials.first { $0.id == id } ?? current },
-            set: { new in
-                if let index = project.credentials.firstIndex(where: { $0.id == id }) { project.credentials[index] = new }
-            }
-        )
-    }
-
     private func linkBinding(_ id: ProjectLink.ID) -> Binding<ProjectLink>? {
         guard let current = project.links.first(where: { $0.id == id }) else { return nil }
         return Binding(
@@ -267,9 +238,5 @@ struct ProjectItemsView: View {
                 if let index = project.links.firstIndex(where: { $0.id == id }) { project.links[index] = new }
             }
         )
-    }
-
-    private struct EditingID: Identifiable {
-        let id: Credential.ID
     }
 }

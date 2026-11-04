@@ -56,7 +56,7 @@ enum Snapshot {
         await draw(MenuBarPanel(query: "prod", project: vault.projects.first?.id).environmentObject(vault), size: nil, to: folder, name: "panel-project-search")
         await draw(MenuBarPanel().environmentObject(Vault(previewing: .locked)), size: nil, to: folder, name: "panel-locked")
         if let credential = vault.projects.first?.credentials.last {
-            await draw(CredentialEditor(credential: .constant(credential)) {}, size: nil, to: folder, name: "credential-editor")
+            await draw(CredentialEditor(credential: .constant(credential), close: {}) {}.frame(width: 360, height: 600).background(Theme.panel), size: nil, to: folder, name: "credential-editor")
         }
         await draw(GeneratorPopover(generator: .constant(PasswordGenerator())) { _ in }, size: nil, to: folder, name: "generator")
         await draw(ExportBackupSheet().environmentObject(vault), size: nil, to: folder, name: "backup-export")

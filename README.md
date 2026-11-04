@@ -53,6 +53,8 @@ draws. The name follows the Mac's language, in the app and in Finder, the Dock a
 - **One list per project**: its accesses, variables (by environment) and links together, with
   chips to show one kind, a search over names, usernames and addresses (never values) and a
   button to add any of them. The context stays pinned above it and folds to a line.
+- **Accesses** open with a click in a panel floating on the right, where they're edited as you
+  type, with a password generator and an icon of your choice (or the one for its kind).
 - **Context**: free Markdown text for how to run it, how it's deployed, where things are, the
   decisions taken, gotchas and who to ask. An outline gets you started.
 - The project's folder on your Mac, opened in Finder or Terminal with one click.

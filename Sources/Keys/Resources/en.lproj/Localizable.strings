@@ -97,8 +97,6 @@
 "Nenhum acesso" = "No accesses";
 "Painéis, bancos de dados, servidores e chaves de API do projeto." = "The project's dashboards, databases, servers and API keys.";
 "Novo acesso" = "New access";
-"Editar" = "Edit";
-"Editar…" = "Edit…";
 "Apagar acesso" = "Delete access";
 "Apagar acesso…" = "Delete access…";
 "Apagar o acesso %@?" = "Delete the %@ access?";
@@ -294,3 +292,6 @@
 "Recolher o contexto" = "Fold the context";
 "Mostrar o contexto" = "Show the context";
 "Vazio" = "Empty";
+"Trocar o ícone" = "Change the icon";
+"Fechar" = "Close";
+"Usar o do tipo" = "Use the kind's";

@@ -77,6 +77,8 @@ struct Credential: Codable, Identifiable, Hashable {
     var username = ""
     var password = ""
     var notes = ""
+    /// The icon picked for this access; without one it shows its kind's.
+    var symbol: String?
     var updatedAt = Date()
 
     enum Kind: String, Codable, CaseIterable, Identifiable {
@@ -89,6 +91,14 @@ struct Credential: Codable, Identifiable, Hashable {
         if !title.isEmpty { return title }
         return URL(string: url)?.host() ?? url
     }
+
+    /// Nothing typed in it yet: a new access closed like this isn't kept.
+    var isEmpty: Bool {
+        title.isEmpty && url.isEmpty && username.isEmpty && password.isEmpty && notes.isEmpty
+    }
+
+    /// The icon shown for this access.
+    var displaySymbol: String { symbol ?? kind.symbol }
 }
 
 extension EnvironmentSet {
@@ -424,6 +434,7 @@ extension Credential {
         username = try container.value(.username, or: "")
         password = try container.value(.password, or: "")
         notes = try container.value(.notes, or: "")
+        symbol = try? container.decodeIfPresent(String.self, forKey: .symbol)
         updatedAt = try container.value(.updatedAt, or: Date())
     }
 }

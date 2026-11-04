@@ -34,6 +34,17 @@ extension Project.Tint {
     }
 }
 
+extension Credential {
+    /// Icons to pick from for an access, nine to a row: keys and locks, places it opens,
+    /// services and the rest.
+    static let symbols = [
+        "key", "key.horizontal", "lock", "lock.shield", "shield", "person.badge.key", "person.crop.circle", "touchid", "faceid",
+        "globe", "server.rack", "cylinder.split.1x2", "terminal", "cloud", "network", "externaldrive", "cpu", "desktopcomputer",
+        "envelope", "phone", "bubble.left", "creditcard", "banknote", "building.columns", "cart", "bag", "storefront",
+        "chart.bar", "megaphone", "camera", "play.rectangle", "music.note", "gamecontroller", "wifi", "gearshape", "star",
+    ]
+}
+
 extension Credential.Kind {
     var label: String {
         switch self {

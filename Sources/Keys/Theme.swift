@@ -12,6 +12,8 @@ enum Theme {
     /// Cards and fields on the ink background.
     static let surface = paper.opacity(0.05)
     static let hairline = paper.opacity(0.1)
+    /// Panels floating over the window, a step lighter than it.
+    static let panel = Color(red: 0x17 / 255, green: 0x17 / 255, blue: 0x18 / 255)
 
     /// Titles in the system font (San Francisco), like the rest of the app.
     static func display(_ size: CGFloat) -> Font {
