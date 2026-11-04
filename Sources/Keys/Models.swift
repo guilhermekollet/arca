@@ -33,7 +33,7 @@ struct Project: Codable, Identifiable, Hashable {
 
     var isArchived: Bool { archivedAt != nil }
 
-    /// Soft tones that sit well on the ink background; lavender, the app's accent, comes first.
+    /// Soft tones that sit well on the background, dark or light; lavender, the default, comes first.
     enum Tint: String, Codable, CaseIterable, Identifiable {
         case lavender, sky, mint, lime, amber, coral, rose, slate
         var id: Self { self }

@@ -70,9 +70,21 @@ private struct GeneralSettings: View {
     @AppStorage(Preferences.lockMinutesKey) private var lockMinutes = 0
     @AppStorage(Preferences.lockOnSleepKey) private var lockOnSleep = true
     @AppStorage(Preferences.clipboardSecondsKey) private var clipboardSeconds = 30
+    @AppStorage(Preferences.appearanceKey) private var appearance = Preferences.Appearance.system
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
+            Card(localized("Aparência")) {
+                row(localized("Tema")) {
+                    Picker(localized("Tema"), selection: $appearance) {
+                        ForEach(Preferences.Appearance.allCases) { option in
+                            Text(option.title).tag(option)
+                        }
+                    }
+                }
+            }
+            .onChange(of: appearance) { Preferences.applyAppearance() }
+
             Card(localized("Segurança"), hint: localized("Touch ID destranca o cofre pelo tempo escolhido; depois ele tranca e pede de novo. Também tranca quando você fecha o Chaves. Senhas e valores secretos copiados não entram no histórico de gerenciadores de área de transferência.")) {
                 VStack(spacing: 8) {
                     row(localized("Ficar destrancado por")) {
@@ -98,6 +110,9 @@ private struct GeneralSettings: View {
                     }
                     Toggle(localized("Trancar quando o Mac dormir ou a tela bloquear"), isOn: $lockOnSleep)
                         .toggleStyle(.switch)
+                        // A step softer than the contrast color, so the white knob still shows on
+                        // the dark look.
+                        .tint(Theme.paper.opacity(0.55))
                         .controlSize(.small)
                         .font(.system(size: 12.5))
                         .frame(maxWidth: .infinity, alignment: .leading)
