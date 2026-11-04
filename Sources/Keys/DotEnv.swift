@@ -122,4 +122,17 @@ enum DotEnv {
         guard let first = key.unicodeScalars.first, first == "_" || CharacterSet.letters.contains(first), first.isASCII else { return false }
         return key.unicodeScalars.allSatisfy { $0.isASCII && (CharacterSet.alphanumerics.contains($0) || "_.-".unicodeScalars.contains($0)) }
     }
+
+    /// Writes `text` to `url` readable only by the user from the first byte: the file is created
+    /// with mode 600 rather than made private after it is written, so its plaintext is never
+    /// readable by others, not even for a moment. An existing file is made private before it is
+    /// emptied, and a symbolic link in its place is refused rather than followed.
+    static func write(_ text: String, to url: URL) throws {
+        let descriptor = open(url.path, O_WRONLY | O_CREAT | O_TRUNC | O_NOFOLLOW | O_CLOEXEC, 0o600)
+        guard descriptor >= 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
+        let handle = FileHandle(fileDescriptor: descriptor, closeOnDealloc: true)
+        guard fchmod(descriptor, 0o600) == 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
+        try handle.write(contentsOf: Data(text.utf8))
+        try handle.close()
+    }
 }

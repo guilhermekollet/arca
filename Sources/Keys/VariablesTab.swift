@@ -185,8 +185,7 @@ struct EnvironmentSection: View {
         if let folder = projectFolder { panel.directoryURL = folder }
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do {
-            try environment.dotEnv.write(to: url, atomically: true, encoding: .utf8)
-            try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: url.path)
+            try DotEnv.write(environment.dotEnv, to: url)
             show(localized("Salvo em \(url.lastPathComponent)"))
         } catch {
             show(error.localizedDescription)
