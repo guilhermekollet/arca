@@ -35,7 +35,9 @@ elif [[ -n "${KEYS_SIGNING_IDENTITY:-}" && "$KEYS_SIGNING_IDENTITY" != "-" ]]; t
   echo "error: signing identity \"$KEYS_SIGNING_IDENTITY\" not found" >&2
   exit 1
 else
-  codesign --force --sign - "$APP"
+  # Ad hoc, still with the hardened runtime: without it macOS honors DYLD_INSERT_LIBRARIES, and
+  # code injected at launch could read the vault once the person unlocks it.
+  codesign --force --options runtime --sign - "$APP"
 fi
 
 echo "Built: $APP"

@@ -22,6 +22,10 @@ defends against.
   lowering the round count or swapping the salt makes the file refuse to open.
 - Tampering. Both seals authenticate the file's header; a changed byte, or contents and keys mixed
   from different vaults, is refused as damaged.
+- Code injected into the app when it starts. Every build, signed ad hoc or with a certificate,
+  runs with the hardened runtime, so macOS ignores `DYLD_INSERT_LIBRARIES` and similar tricks.
+- Exported `.env` files being read by other users of the Mac: they are created readable only by
+  you from the first byte, and an export never writes through a symbolic link.
 - Copied secrets lingering. They are marked concealed and transient for clipboard managers and
   Universal Clipboard, and cleared after 30 seconds by default.
 

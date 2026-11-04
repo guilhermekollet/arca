@@ -507,3 +507,43 @@ func storedAppearance(_ value: String?) -> Preferences.Appearance {
     defaults.set(value, forKey: Preferences.appearanceKey)
     return Preferences.appearance
 }
+
+// MARK: Exported .env files
+
+/// Exports `text` as a .env file, into a new file or over one readable by everyone, and returns
+/// its permissions and contents afterwards.
+func exportedDotEnv(_ text: String, overExisting: Bool) -> (permissions: String, contents: String) {
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent("keys-env-\(UUID().uuidString)")
+    defer { try? FileManager.default.removeItem(at: url) }
+    do {
+        if overExisting {
+            try Data("OLD=value-that-is-much-longer-than-the-new-one\n".utf8).write(to: url)
+            try FileManager.default.setAttributes([.posixPermissions: 0o644], ofItemAtPath: url.path)
+        }
+        try DotEnv.write(text, to: url)
+        let permissions = String((try FileManager.default.attributesOfItem(atPath: url.path)[.posixPermissions] as? NSNumber)?.intValue ?? 0, radix: 8)
+        return (permissions, try String(contentsOf: url, encoding: .utf8))
+    } catch {
+        return ("failed: \(error)", "")
+    }
+}
+
+/// Whether exporting refuses to write through a symbolic link, leaving its target untouched.
+func exportRefusesSymlink() -> (refused: Bool, targetUntouched: Bool) {
+    let manager = FileManager.default
+    let target = manager.temporaryDirectory.appendingPathComponent("keys-target-\(UUID().uuidString)")
+    let link = manager.temporaryDirectory.appendingPathComponent("keys-link-\(UUID().uuidString)")
+    defer {
+        try? manager.removeItem(at: link)
+        try? manager.removeItem(at: target)
+    }
+    do {
+        try Data("KEEP=1\n".utf8).write(to: target)
+        try manager.createSymbolicLink(at: link, withDestinationURL: target)
+    } catch {
+        return (false, false)
+    }
+    let refused = (try? DotEnv.write("SECRET=1\n", to: link)) == nil
+    let untouched = (try? String(contentsOf: target, encoding: .utf8)) == "KEEP=1\n"
+    return (refused, untouched)
+}

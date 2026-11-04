@@ -92,4 +92,20 @@ struct DotEnvTests {
     func plainNames(_ key: String) {
         #expect(!Variable.looksSecret(key))
     }
+
+    @Test func anExportIsPrivateFromTheStart() {
+        let new = exportedDotEnv("API_KEY=secret\n", overExisting: false)
+        #expect(new.permissions == "600")
+        #expect(new.contents == "API_KEY=secret\n")
+        // Over a file anyone could read: it becomes private, and nothing of the old one is left.
+        let replaced = exportedDotEnv("API_KEY=secret\n", overExisting: true)
+        #expect(replaced.permissions == "600")
+        #expect(replaced.contents == "API_KEY=secret\n")
+    }
+
+    @Test func anExportDoesNotFollowASymbolicLink() {
+        let result = exportRefusesSymlink()
+        #expect(result.refused)
+        #expect(result.targetUntouched)
+    }
 }
