@@ -91,7 +91,7 @@ struct MenuBarPanel: View {
                 .font(.system(size: 13, weight: .semibold))
                 .lineLimit(1)
             Spacer()
-            IconButton(symbol: "macwindow", help: localized("Abrir na janela do Chaves")) { open(project.id, at: .context) }
+            IconButton(symbol: "macwindow", help: localized("Abrir na janela do Chaves")) { open(project.id, at: .all) }
         }
     }
 

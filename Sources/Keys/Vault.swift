@@ -26,7 +26,7 @@ final class Vault: ObservableObject {
     /// The project open in the main window, and the part of it on screen; the menu bar panel
     /// sets them too, to open an access or a variable where it is.
     @Published var selection: Project.ID?
-    @Published var section = ProjectSection.context
+    @Published var section = ProjectSection.all
     @Published private(set) var isUnlocking = false
     /// When Touch ID last opened the vault; it locks again `Preferences.unlockMinutes` later.
     @Published private(set) var unlockedAt: Date?
@@ -289,7 +289,7 @@ final class Vault: ObservableObject {
         project.parentID = parent
         projects.append(project)
         selection = project.id
-        section = .context
+        section = .all
         return project.id
     }
 

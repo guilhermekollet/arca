@@ -457,3 +457,17 @@ func remainingAfterDeletingForGood(_ name: String) -> [String] {
     let id = projects.first { $0.name == name }!.id
     return ProjectTree.removingWithSubprojects(id, from: projects).map(\.name).sorted()
 }
+
+// MARK: The project's list
+
+/// What the project list's search keeps of the sample's "Loja Aurora": access titles, variable
+/// keys (with their environment) and link titles.
+func projectListMatches(_ query: String) -> [String] {
+    guard let shop = SampleVault.projects.first(where: { $0.name == "Loja Aurora" }) else { return ["no shop"] }
+    let credentials = shop.credentials.filter { $0.matches(query) }.map(\.displayTitle)
+    let variables = shop.environments.flatMap { environment in
+        environment.variables.filter { $0.matches(query) }.map { "\($0.key)@\(environment.name)" }
+    }
+    let links = shop.links.filter { $0.matches(query) }.map(\.title)
+    return credentials + variables + links
+}

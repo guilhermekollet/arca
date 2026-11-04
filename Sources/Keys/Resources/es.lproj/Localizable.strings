@@ -64,40 +64,30 @@
 /* Links */
 "Nenhum link" = "Ningún enlace";
 "Repositório, produção, painéis, documentação." = "Repositorio, producción, paneles, documentación.";
-"Adicionar link" = "Añadir enlace";
 "Copiar o endereço" = "Copiar la dirección";
 "Abrir" = "Abrir";
 "Abrir %@" = "Abrir %@";
 "Remover" = "Quitar";
 
 /* Variables */
-"Ambientes" = "Entornos";
 "Nenhum ambiente" = "Ningún entorno";
 "Novo ambiente" = "Nuevo entorno";
 "Nome do ambiente" = "Nombre del entorno";
-"Renomear %@…" = "Renombrar %@…";
-"Duplicar %@" = "Duplicar %@";
-"Apagar %@…" = "Borrar %@…";
 "Apagar o ambiente %@?" = "¿Borrar el entorno %@?";
 "Apagar ambiente" = "Borrar entorno";
 "As variáveis dele saem do cofre." = "Sus variables salen de la bóveda.";
 "%@ (cópia)" = "%@ (copia)";
 "Importar" = "Importar";
-"De um arquivo .env…" = "De un archivo .env…";
 "Colar da área de transferência" = "Pegar del portapapeles";
 "Escolha um arquivo .env" = "Elige un archivo .env";
 "Nenhuma variável encontrada" = "No se encontraron variables";
 "%lld novas, %lld atualizadas" = "%lld nuevas, %lld actualizadas";
-"Exportar" = "Exportar";
 "Copiar como .env" = "Copiar como .env";
 "Copiado como .env" = "Copiado como .env";
 "Salvar arquivo .env…" = "Guardar archivo .env…";
 "O arquivo fica sem criptografia, como as ferramentas esperam. Não o coloque no Git." = "El archivo queda sin cifrar, como lo esperan las herramientas. No lo subas a Git.";
 "Salvo em %@" = "Guardado en %@";
-"Nenhuma variável" = "Ninguna variable";
-"Adicione uma a uma ou importe um arquivo .env." = "Añádelas una a una o importa un archivo .env.";
 "Adicionar variável" = "Añadir variable";
-"Os valores secretos ficam ocultos e são copiados sem passar pelo histórico da área de transferência." = "Los valores secretos quedan ocultos y se copian sin pasar por el historial del portapapeles.";
 "valor" = "valor";
 "Copiar o valor" = "Copiar el valor";
 "Secreta: oculta na tela" = "Secreta: oculta en pantalla";
@@ -284,3 +274,23 @@
 /* Sidebar groups */
 "Mostrar os subprojetos" = "Mostrar los subproyectos";
 "Ocultar os subprojetos" = "Ocultar los subproyectos";
+
+
+/* The project list */
+"Tudo" = "Todo";
+"Buscar no projeto" = "Buscar en el proyecto";
+"Limpar a busca" = "Borrar la búsqueda";
+"Adicionar" = "Añadir";
+"Nova variável" = "Nueva variable";
+"Novo link" = "Nuevo enlace";
+"Nada por aqui ainda" = "Aún no hay nada";
+"Os acessos, as variáveis de ambiente e os links do projeto aparecem aqui. Use Adicionar para começar." = "Los accesos, las variables de entorno y los enlaces del proyecto aparecen aquí. Usa Añadir para empezar.";
+"Nenhuma variável. Adicione uma a uma ou importe um arquivo .env." = "Ninguna variable. Añádelas una a una o importa un archivo .env.";
+"Importar de um arquivo .env…" = "Importar de un archivo .env…";
+"Renomear…" = "Renombrar…";
+"Duplicar" = "Duplicar";
+"Apagar…" = "Borrar…";
+"Importar, exportar e organizar o ambiente" = "Importar, exportar y organizar el entorno";
+"Recolher o contexto" = "Plegar el contexto";
+"Mostrar o contexto" = "Mostrar el contexto";
+"Vazio" = "Vacío";

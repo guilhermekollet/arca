@@ -1,72 +1,41 @@
 import SwiftUI
 
-/// The parts of a project, one tab each.
+/// What the project's list shows: everything, or one kind of item.
 enum ProjectSection: String, CaseIterable, Identifiable {
-    case context, variables, credentials, links
+    case all, credentials, variables, links
     var id: Self { self }
 
     var title: String {
         switch self {
-        case .context: localized("Contexto")
-        case .variables: localized("Variáveis")
+        case .all: localized("Tudo")
         case .credentials: localized("Acessos")
+        case .variables: localized("Variáveis")
         case .links: localized("Links")
-        }
-    }
-
-    var symbol: String {
-        switch self {
-        case .context: "text.page"
-        case .variables: "curlybraces"
-        case .credentials: "key"
-        case .links: "link"
         }
     }
 }
 
-/// One project: its name and status on top, its tabs, then the open tab.
+/// One project: its name on top, its context pinned under it, then a single list of its accesses,
+/// variables and links, filtered and searchable.
 struct ProjectView: View {
     @Binding var project: Project
-    @EnvironmentObject private var vault: Vault
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             ProjectHeader(project: $project)
                 .padding(.horizontal, 24)
                 .padding(.top, 20)
-            CapsuleTabs(tabs: ProjectSection.allCases, selection: $vault.section, title: title, symbol: \.symbol)
-                .padding(.horizontal, 24)
+            ContextCard(project: $project)
+                .padding(.horizontal, 20)
                 .padding(.top, 16)
-                .padding(.bottom, 14)
-            Rectangle()
-                .fill(Theme.hairline)
-                .frame(height: 1)
-            Group {
-                switch vault.section {
-                case .context: ContextTab(project: $project)
-                case .variables: VariablesTab(project: $project)
-                case .credentials: CredentialsTab(project: $project)
-                case .links: LinksTab(project: $project)
-                }
-            }
-            // Whatever a tab holds, it fits the room left under the header and never makes the
-            // window's content taller than the window (which pushed the sidebar and the header
-            // off screen once). Content that doesn't fit scrolls in its tab or is clipped.
-            .frame(minHeight: 0, maxHeight: .infinity, alignment: .top)
-            .clipped()
+            ProjectItemsView(project: $project)
+                // Whatever the list holds, it fits the room left and never makes the window's
+                // content taller than the window (which pushed the sidebar and the header off
+                // screen once). It scrolls instead.
+                .frame(minHeight: 0, maxHeight: .infinity, alignment: .top)
+                .clipped()
         }
         .navigationTitle(project.name)
-    }
-
-    /// The tab's name, with how many items it holds.
-    private func title(_ section: ProjectSection) -> String {
-        let count = switch section {
-        case .context: 0
-        case .variables: project.environments.reduce(0) { $0 + $1.variables.count }
-        case .credentials: project.credentials.count
-        case .links: project.links.count
-        }
-        return count == 0 ? section.title : "\(section.title) · \(count)"
     }
 }
 
@@ -258,9 +227,11 @@ struct ProjectHeader: View {
     }
 }
 
-/// Where the code is and the free text that explains the project.
-struct ContextTab: View {
+/// Where the code is and the free text that explains the project, pinned above the list. It folds
+/// down to one line, showing the start of the text, to leave the room to the list.
+struct ContextCard: View {
     @Binding var project: Project
+    @AppStorage("contextExpanded") private var expanded = true
 
     /// Headings that cover what is usually missing when a project is picked up again.
     static var outline: String {
@@ -270,48 +241,83 @@ struct ContextTab: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 6) {
-                Image(systemName: "folder")
-                    .foregroundStyle(Theme.muted)
-                    .frame(width: 18)
-                TextField(localized("Pasta do projeto neste Mac"), text: $project.localPath)
-                    .textFieldStyle(.code)
-                Button(localized("Escolher…"), action: chooseFolder)
-                    .buttonStyle(PillButtonStyle(prominent: false))
-                IconButton(symbol: "folder.badge.gearshape", help: localized("Abrir no Finder")) {
-                    if let folderURL { NSWorkspace.shared.open(folderURL) }
-                }
-                .disabled(!folderExists)
-                IconButton(symbol: "terminal", help: localized("Abrir no Terminal"), action: openInTerminal)
-                    .disabled(!folderExists)
-            }
-
-            TextEditor(text: $project.context)
-                .font(.system(size: 13, design: .monospaced))
-                .lineSpacing(2)
-                .scrollContentBackground(.hidden)
-                .padding(10)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                // An overlay, not a sibling in a stack: the hint must never decide how tall the
-                // editor is. Measured as part of the layout, its wrapped text made the whole window
-                // taller than the screen for a new, empty project.
-                .overlay(alignment: .topLeading) {
-                    if project.context.isEmpty {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text(localized("Tudo o que você vai querer saber quando voltar a este projeto: como rodar, como publicar, onde está cada coisa, por que foi feito assim e com quem falar."))
-                                .font(.system(size: 12.5))
-                                .foregroundStyle(Theme.muted)
-                            Button(localized("Começar com um roteiro")) { project.context = Self.outline }
-                                .buttonStyle(PillButtonStyle())
-                        }
-                        .padding(16)
-                        .frame(maxWidth: 460, alignment: .leading)
+        VStack(alignment: .leading, spacing: 10) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.18)) { expanded.toggle() }
+            } label: {
+                HStack(spacing: 7) {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(Theme.paper.opacity(0.45))
+                        .rotationEffect(.degrees(expanded ? 90 : 0))
+                    Text(localized("Contexto"))
+                        .font(.system(size: 12.5, weight: .semibold))
+                    if !expanded {
+                        Text(preview)
+                            .font(.system(size: 12))
+                            .foregroundStyle(Theme.muted)
+                            .lineLimit(1)
                     }
+                    Spacer(minLength: 0)
                 }
-            .background(Theme.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help(expanded ? localized("Recolher o contexto") : localized("Mostrar o contexto"))
+
+            if expanded {
+                HStack(spacing: 6) {
+                    Image(systemName: "folder")
+                        .foregroundStyle(Theme.muted)
+                        .frame(width: 18)
+                    TextField(localized("Pasta do projeto neste Mac"), text: $project.localPath)
+                        .textFieldStyle(.code)
+                    Button(localized("Escolher…"), action: chooseFolder)
+                        .buttonStyle(PillButtonStyle(prominent: false))
+                    IconButton(symbol: "folder.badge.gearshape", help: localized("Abrir no Finder")) {
+                        if let folderURL { NSWorkspace.shared.open(folderURL) }
+                    }
+                    .disabled(!folderExists)
+                    IconButton(symbol: "terminal", help: localized("Abrir no Terminal"), action: openInTerminal)
+                        .disabled(!folderExists)
+                }
+
+                TextEditor(text: $project.context)
+                    .font(.system(size: 13, design: .monospaced))
+                    .lineSpacing(2)
+                    .scrollContentBackground(.hidden)
+                    .padding(6)
+                    .frame(height: 150)
+                    .background(Theme.paper.opacity(0.03), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    // An overlay, not a sibling in a stack: the hint must never decide how tall the
+                    // editor is. Measured as part of the layout, its wrapped text once made the
+                    // whole window taller than the screen for a new, empty project.
+                    .overlay(alignment: .topLeading) {
+                        if project.context.isEmpty {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text(localized("Tudo o que você vai querer saber quando voltar a este projeto: como rodar, como publicar, onde está cada coisa, por que foi feito assim e com quem falar."))
+                                    .font(.system(size: 12.5))
+                                    .foregroundStyle(Theme.muted)
+                                Button(localized("Começar com um roteiro")) { project.context = Self.outline }
+                                    .buttonStyle(PillButtonStyle())
+                            }
+                            .padding(12)
+                            .frame(maxWidth: 460, alignment: .leading)
+                        }
+                    }
+            }
         }
-        .padding(20)
+        .padding(12)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+
+    /// The first line of the context with words in it, without Markdown's heading marks.
+    private var preview: String {
+        let line = project.context
+            .split(separator: "\n")
+            .map { $0.trimmingCharacters(in: CharacterSet(charactersIn: "# ").union(.whitespaces)) }
+            .first { !$0.isEmpty }
+        return line ?? localized("Vazio")
     }
 
     private var folderURL: URL? {
@@ -341,41 +347,8 @@ struct ContextTab: View {
     }
 }
 
-/// Addresses that go with the project: repository, production, dashboards, docs.
-struct LinksTab: View {
-    @Binding var project: Project
-
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 14) {
-                if project.links.isEmpty {
-                    EmptyTab(symbol: "link", title: localized("Nenhum link"), text: localized("Repositório, produção, painéis, documentação."))
-                } else {
-                    Card {
-                        VStack(spacing: 0) {
-                            ForEach($project.links) { $link in
-                                if link.id != project.links.first?.id { RowDivider() }
-                                LinkRow(link: $link) {
-                                    project.links.removeAll { $0.id == link.id }
-                                }
-                            }
-                        }
-                    }
-                }
-                Button {
-                    project.links.append(ProjectLink())
-                } label: {
-                    Label(localized("Adicionar link"), systemImage: "plus")
-                }
-                .buttonStyle(PillButtonStyle(prominent: project.links.isEmpty))
-            }
-            .padding(20)
-        }
-        .scrollBounceBehavior(.basedOnSize)
-    }
-}
-
-private struct LinkRow: View {
+/// An address that goes with the project: repository, production, a dashboard, docs.
+struct LinkRow: View {
     @Binding var link: ProjectLink
     let remove: () -> Void
 

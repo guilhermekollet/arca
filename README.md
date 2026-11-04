@@ -50,6 +50,9 @@ draws. The name follows the Mac's language, in the app and in Finder, the Dock a
   nothing deleted, and shows only in **Ajustes › Arquivados** (Settings › Archived). There you
   bring it back, or delete it for good after a confirmation. Archiving a project takes its
   subprojects along; unarchiving, or deleting, does too.
+- **One list per project**: its accesses, variables (by environment) and links together, with
+  chips to show one kind, a search over names, usernames and addresses (never values) and a
+  button to add any of them. The context stays pinned above it and folds to a line.
 - **Context**: free Markdown text for how to run it, how it's deployed, where things are, the
   decisions taken, gotchas and who to ask. An outline gets you started.
 - The project's folder on your Mac, opened in Finder or Terminal with one click.
@@ -152,7 +155,7 @@ KEYS_VAULT_DIR=/tmp/keys-dev open build/Keys.app   # a separate vault, to try th
 ```
 
 `--sample` is the way to work on the interface without touching your vault, and `--snapshot` draws
-each screen with it (main window per tab, lock screens, settings, menu bar panel, access editor)
+each screen with it (main window per filter, lock screens, settings, menu bar panel, access editor)
 without Touch ID or permission to record the screen. The translucent sidebar and toolbar come out
 blank in those drawings; everything else is as on screen.
 
@@ -175,8 +178,9 @@ Sources/Keys/
   PasswordGenerator.swift  Random passwords
   Clipboard.swift          Concealed copies that clear themselves
   RootView.swift           Lock screen, sidebar and the split view
-  ProjectView.swift        A project's header, context and links
-  VariablesTab.swift       Environments and their variables, import and export
+  ProjectView.swift        A project's header, its pinned context and its links
+  ProjectItems.swift       The project's single list: filter chips, search and adding
+  VariablesTab.swift       An environment's block in the list, import and export
   CredentialsTab.swift     Accesses, their editor and the password generator
   MenuBarPanel.swift       Quick search from the menu bar
   SettingsView.swift       Settings

@@ -247,6 +247,21 @@ extension Project {
     }
 }
 
+// What the project's list search looks at: names, usernames and addresses, never a value or a
+// password, like every search in the app.
+
+extension Variable {
+    func matches(_ query: String) -> Bool { Search.contains(query, in: [key]) }
+}
+
+extension Credential {
+    func matches(_ query: String) -> Bool { Search.contains(query, in: [title, url, username, kind.rawValue]) }
+}
+
+extension ProjectLink {
+    func matches(_ query: String) -> Bool { Search.contains(query, in: [title, url]) }
+}
+
 /// What the menu bar's search finds: an access or a variable, with the project it belongs to.
 struct QuickMatch: Identifiable, Hashable {
     enum Item: Hashable {
@@ -269,6 +284,13 @@ struct QuickMatch: Identifiable, Hashable {
 enum Search {
     static func words(_ query: String) -> [String] {
         query.split(whereSeparator: \.isWhitespace).map(String.init)
+    }
+
+    /// Whether every word of `query` appears in `fields`, ignoring case and accents; an empty
+    /// query matches everything.
+    static func contains(_ query: String, in fields: [String]) -> Bool {
+        let text = fields.joined(separator: " ")
+        return words(query).allSatisfy { text.range(of: $0, options: [.caseInsensitive, .diacriticInsensitive]) != nil }
     }
 
     /// Accesses and variables whose project and own name, together, contain every word of

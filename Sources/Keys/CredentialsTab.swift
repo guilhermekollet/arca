@@ -1,76 +1,25 @@
 import SwiftUI
 
-/// The project's accesses: logins, databases, servers and API keys.
-struct CredentialsTab: View {
-    @Binding var project: Project
-    @State private var editing: Credential.ID?
-    @State private var deleting: Credential.ID?
+/// The project's accesses in its list: logins, databases, servers and API keys, those matching
+/// `query` while there's a search. Editing and deleting are the list's (see ProjectItemsView).
+struct CredentialsSection: View {
+    let credentials: [Credential]
+    let edit: (Credential.ID) -> Void
+    let delete: (Credential.ID) -> Void
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 14) {
-                if project.credentials.isEmpty {
-                    EmptyTab(symbol: "key", title: localized("Nenhum acesso"), text: localized("Painéis, bancos de dados, servidores e chaves de API do projeto."))
-                } else {
-                    Card {
-                        VStack(spacing: 0) {
-                            ForEach(project.credentials) { credential in
-                                if credential.id != project.credentials.first?.id { RowDivider() }
-                                CredentialRow(credential: credential) { editing = credential.id }
-                                    .contextMenu {
-                                        Button(localized("Editar…")) { editing = credential.id }
-                                        Button(localized("Apagar acesso…"), role: .destructive) { deleting = credential.id }
-                                    }
-                            }
+        Card {
+            VStack(spacing: 0) {
+                ForEach(credentials) { credential in
+                    if credential.id != credentials.first?.id { RowDivider() }
+                    CredentialRow(credential: credential) { edit(credential.id) }
+                        .contextMenu {
+                            Button(localized("Editar…")) { edit(credential.id) }
+                            Button(localized("Apagar acesso…"), role: .destructive) { delete(credential.id) }
                         }
-                    }
-                }
-                Button {
-                    let credential = Credential()
-                    project.credentials.append(credential)
-                    editing = credential.id
-                } label: {
-                    Label(localized("Novo acesso"), systemImage: "plus")
-                }
-                .buttonStyle(PillButtonStyle(prominent: project.credentials.isEmpty))
-            }
-            .padding(20)
-        }
-        .scrollBounceBehavior(.basedOnSize)
-        // A new access closed without anything typed in it isn't kept.
-        .sheet(item: Binding(get: { editing.map(EditingID.init) }, set: { editing = $0?.id }), onDismiss: {
-            project.credentials.removeAll { $0.title.isEmpty && $0.url.isEmpty && $0.username.isEmpty && $0.password.isEmpty && $0.notes.isEmpty }
-        }) { item in
-            if let credential = binding(for: item.id) {
-                CredentialEditor(credential: credential) {
-                    editing = nil
-                    deleting = item.id
                 }
             }
         }
-        .confirmationDialog(
-            localized("Apagar o acesso \(project.credentials.first { $0.id == deleting }?.displayTitle ?? "")?"),
-            isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } })
-        ) {
-            Button(localized("Apagar acesso"), role: .destructive) {
-                project.credentials.removeAll { $0.id == deleting }
-            }
-        }
-    }
-
-    /// The access with `id`, looked up on every read and write rather than by position.
-    private func binding(for id: Credential.ID) -> Binding<Credential>? {
-        guard let current = project.credentials.first(where: { $0.id == id }) else { return nil }
-        return Binding(
-            get: { project.credentials.first { $0.id == id } ?? current },
-            set: { new in
-                if let index = project.credentials.firstIndex(where: { $0.id == id }) { project.credentials[index] = new }
-            }
-        )
-    }
-
-    private struct EditingID: Identifiable {
-        let id: Credential.ID
     }
 }
 

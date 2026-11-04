@@ -64,40 +64,30 @@
 /* Links */
 "Nenhum link" = "No links";
 "Repositório, produção, painéis, documentação." = "Repository, production, dashboards, docs.";
-"Adicionar link" = "Add link";
 "Copiar o endereço" = "Copy the address";
 "Abrir" = "Open";
 "Abrir %@" = "Open %@";
 "Remover" = "Remove";
 
 /* Variables */
-"Ambientes" = "Environments";
 "Nenhum ambiente" = "No environments";
 "Novo ambiente" = "New environment";
 "Nome do ambiente" = "Environment name";
-"Renomear %@…" = "Rename %@…";
-"Duplicar %@" = "Duplicate %@";
-"Apagar %@…" = "Delete %@…";
 "Apagar o ambiente %@?" = "Delete the %@ environment?";
 "Apagar ambiente" = "Delete environment";
 "As variáveis dele saem do cofre." = "Its variables leave the vault.";
 "%@ (cópia)" = "%@ (copy)";
 "Importar" = "Import";
-"De um arquivo .env…" = "From a .env file…";
 "Colar da área de transferência" = "Paste from the clipboard";
 "Escolha um arquivo .env" = "Choose a .env file";
 "Nenhuma variável encontrada" = "No variables found";
 "%lld novas, %lld atualizadas" = "%lld new, %lld updated";
-"Exportar" = "Export";
 "Copiar como .env" = "Copy as .env";
 "Copiado como .env" = "Copied as .env";
 "Salvar arquivo .env…" = "Save .env file…";
 "O arquivo fica sem criptografia, como as ferramentas esperam. Não o coloque no Git." = "The file isn't encrypted, as tools expect it. Don't commit it to Git.";
 "Salvo em %@" = "Saved to %@";
-"Nenhuma variável" = "No variables";
-"Adicione uma a uma ou importe um arquivo .env." = "Add them one by one or import a .env file.";
 "Adicionar variável" = "Add variable";
-"Os valores secretos ficam ocultos e são copiados sem passar pelo histórico da área de transferência." = "Secret values stay hidden and are copied without going into clipboard history.";
 "valor" = "value";
 "Copiar o valor" = "Copy the value";
 "Secreta: oculta na tela" = "Secret: hidden on screen";
@@ -284,3 +274,23 @@
 /* Sidebar groups */
 "Mostrar os subprojetos" = "Show the subprojects";
 "Ocultar os subprojetos" = "Hide the subprojects";
+
+
+/* The project list */
+"Tudo" = "All";
+"Buscar no projeto" = "Search this project";
+"Limpar a busca" = "Clear the search";
+"Adicionar" = "Add";
+"Nova variável" = "New variable";
+"Novo link" = "New link";
+"Nada por aqui ainda" = "Nothing here yet";
+"Os acessos, as variáveis de ambiente e os links do projeto aparecem aqui. Use Adicionar para começar." = "The project's accesses, environment variables and links show here. Use Add to start.";
+"Nenhuma variável. Adicione uma a uma ou importe um arquivo .env." = "No variables. Add them one by one or import a .env file.";
+"Importar de um arquivo .env…" = "Import from a .env file…";
+"Renomear…" = "Rename…";
+"Duplicar" = "Duplicate";
+"Apagar…" = "Delete…";
+"Importar, exportar e organizar o ambiente" = "Import, export and organize the environment";
+"Recolher o contexto" = "Fold the context";
+"Mostrar o contexto" = "Show the context";
+"Vazio" = "Empty";
