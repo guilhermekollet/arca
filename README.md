@@ -20,8 +20,8 @@ way? Keys keeps those answers together, one project at a time, in a vault that n
 Mac.
 
 **Keys** is the app's name in every language but one: on a Mac set to Portuguese it is
-**Chaves**, the word for both "keys" and the curly braces `{ }`, which is what its dotted icon
-draws. The name follows the Mac's language, in the app and in Finder, the Dock and the menu bar.
+**Chaves**, the word for both "keys" and the curly braces `{ }`. Its icon is a solid key
+pointing down. The name follows the Mac's language, in the app and in Finder, the Dock and the menu bar.
 
 > **Language note:** the app's interface follows your Mac's language: Portuguese (Brazil), English or
 > Spanish, and English on a Mac set to any other language. The name does too: Chaves in
@@ -163,7 +163,7 @@ blank in those drawings; everything else is as on screen.
 
 Keys shares Mara AI's design: near-black and off-white, with the text color itself as the contrast
 color (white on the dark look, black on the light one), the system font, pill-shaped buttons, icon
-tabs and a dot-matrix mark. It follows the Mac's light or dark mode, or the one picked in
+tabs and a solid key as its mark. It follows the Mac's light or dark mode, or the one picked in
 **Ajustes › Aparência**. The tokens and shared controls are in
 `Sources/Keys/Theme.swift`.
 
@@ -188,7 +188,7 @@ Sources/Keys/
   CredentialsTab.swift     Accesses, their editor and the password generator
   MenuBarPanel.swift       Quick search from the menu bar
   SettingsView.swift       Settings
-  Theme.swift              Colors, the dot-matrix mark and the shared controls (pills, cards, tabs)
+  Theme.swift              Colors, the key mark and the shared controls (pills, cards, tabs)
   SampleVault.swift        The made-up vault behind --sample
   Snapshot.swift           --snapshot: draws every screen to PNG
   Localization.swift       Picks the interface language and the app's name; translations in Resources/*.lproj

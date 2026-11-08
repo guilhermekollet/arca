@@ -36,8 +36,8 @@ struct LockScreen: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            DotMark(shown: shown)
-                .frame(height: 64)
+            KeyMark(shown: shown)
+                .frame(height: 72)
             Text(title)
                 .font(Theme.display(32))
                 .multilineTextAlignment(.center)
@@ -413,7 +413,8 @@ struct MainView: View {
 
     private var emptyDetail: some View {
         VStack(spacing: 14) {
-            DotMark(shown: true, dot: 6, spacing: 3.5)
+            KeyMark()
+                .frame(height: 44)
                 .opacity(0.5)
             Text(localized("Escolha um projeto"))
                 .font(Theme.display(22))

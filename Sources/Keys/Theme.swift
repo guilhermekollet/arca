@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 
 /// The app's visual identity, shared with Mara AI: near-black and off-white, the system font,
-/// pill-shaped controls and a dot-matrix mark (braces here, "M" there). The contrast color is
+/// pill-shaped controls and a solid mark (a key here, an "M" there). The contrast color is
 /// the text color itself: off-white on the dark look, near-black on the light one.
 enum Theme {
     /// The background: near-black in dark mode, off-white in light mode.
@@ -47,30 +47,53 @@ enum Theme {
         .system(size: size * 0.86, weight: .semibold)
     }
 
-    /// The 5 × 5 braces, "{ }": the variables and code a project keeps. "o" is the accent dot,
-    /// in the middle.
-    static let glyph = [".x.x.", "x...x", "x.o.x", "x...x", ".x.x."]
-
-    /// The braces as a template image for the menu bar.
+    /// The key, as a template image for the menu bar.
     static let menuBarIcon: NSImage = {
         let side: CGFloat = 18
-        let image = NSImage(size: NSSize(width: side, height: side), flipped: true) { _ in
-            let step: CGFloat = 3.5
-            let dot: CGFloat = 2.5
-            let origin = side / 2 - step * 2
-            NSColor.black.setFill()
-            for (row, line) in glyph.enumerated() {
-                for (column, mark) in line.enumerated() where mark != "." {
-                    let x = origin + CGFloat(column) * step - dot / 2
-                    let y = origin + CGFloat(row) * step - dot / 2
-                    NSBezierPath(ovalIn: NSRect(x: x, y: y, width: dot, height: dot)).fill()
-                }
+        let image = NSImage(size: NSSize(width: side, height: side), flipped: true) { rect in
+            guard let context = NSGraphicsContext.current?.cgContext else { return false }
+            let parts = KeyGlyph.paths(fitting: rect.insetBy(dx: 1, dy: 1))
+            context.setFillColor(NSColor.black.cgColor)
+            for part in parts.solids {
+                context.addPath(part.cgPath)
+                context.fillPath()
             }
+            context.setBlendMode(.clear)
+            context.addPath(parts.hole.cgPath)
+            context.fillPath()
             return true
         }
         image.isTemplate = true
         return image
     }()
+}
+
+/// The app's mark: a key pointing down, with a round bow pierced near its top, a rounded shaft and
+/// two teeth on its right. It is laid out on the 180-point square of the app icon's tile (drawn by
+/// scripts/make-icon.swift, which keeps its own copy of these numbers) and fitted to any rect.
+enum KeyGlyph {
+    /// The key's extent on the 180-point square.
+    static let bounds = CGRect(x: 58, y: 24, width: 64, height: 138)
+    private static let bow = CGRect(x: 58, y: 24, width: 64, height: 64)
+    private static let shaft = CGRect(x: 78, y: 70, width: 24, height: 92)
+    private static let teeth = [CGRect(x: 96, y: 118, width: 20, height: 13), CGRect(x: 96, y: 137, width: 15, height: 13)]
+    private static let hole = CGRect(x: 82, y: 35, width: 16, height: 16)
+
+    /// The key's solid parts and the hole to cut from them, scaled to fit `rect` and centered in
+    /// it, with y growing downwards.
+    static func paths(fitting rect: CGRect) -> (solids: [Path], hole: Path) {
+        let scale = min(rect.width / bounds.width, rect.height / bounds.height)
+        let origin = CGPoint(
+            x: rect.midX - bounds.width * scale / 2 - bounds.minX * scale,
+            y: rect.midY - bounds.height * scale / 2 - bounds.minY * scale
+        )
+        func place(_ part: CGRect) -> CGRect {
+            CGRect(x: origin.x + part.minX * scale, y: origin.y + part.minY * scale, width: part.width * scale, height: part.height * scale)
+        }
+        let solids = [Path(ellipseIn: place(bow)), Path(roundedRect: place(shaft), cornerRadius: 12 * scale)]
+            + teeth.map { Path(roundedRect: place($0), cornerRadius: 4 * scale) }
+        return (solids, Path(ellipseIn: place(hole)))
+    }
 }
 
 extension View {
@@ -83,29 +106,26 @@ extension View {
     }
 }
 
-/// The icon's dot-matrix braces. The dots pop in from left to right when
-/// `shown` turns on.
-struct DotMark: View {
-    let shown: Bool
-    var dot: CGFloat = 8.5
-    var spacing: CGFloat = 4.5
-    private let dots = Theme.glyph.map(Array.init)
+/// The key in the text color, for the lock screen and empty states. It drops in when `shown`
+/// turns on.
+struct KeyMark: View {
+    var shown = true
 
     var body: some View {
-        VStack(spacing: spacing) {
-            ForEach(dots.indices, id: \.self) { row in
-                HStack(spacing: spacing) {
-                    ForEach(dots[row].indices, id: \.self) { column in
-                        Circle()
-                            .fill(dots[row][column] == "o" ? Theme.accent : Theme.paper)
-                            .frame(width: dot, height: dot)
-                            .opacity(dots[row][column] != "." && shown ? 1 : 0)
-                            .scaleEffect(shown ? 1 : 0.3)
-                            .animation(.spring(response: 0.42, dampingFraction: 0.62).delay(Double(column) * 0.05 + Double(row) * 0.02), value: shown)
-                    }
-                }
+        Canvas { context, size in
+            let parts = KeyGlyph.paths(fitting: CGRect(origin: .zero, size: size))
+            for part in parts.solids {
+                context.fill(part, with: .foreground)
             }
+            context.blendMode = .clear
+            context.fill(parts.hole, with: .color(.black))
         }
+        .aspectRatio(KeyGlyph.bounds.width / KeyGlyph.bounds.height, contentMode: .fit)
+        .foregroundStyle(Theme.paper)
+        .opacity(shown ? 1 : 0)
+        .scaleEffect(shown ? 1 : 0.8)
+        .offset(y: shown ? 0 : -8)
+        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: shown)
         .accessibilityElement()
         .accessibilityLabel(appName)
     }
