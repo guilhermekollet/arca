@@ -1,13 +1,16 @@
-// Generates Resources/AppIcon.icns: dot-matrix braces "{ }" on a dark background, in the style of Mara AI's "M".
+// Generates Resources/AppIcon.icns: a solid off-white key pointing down on a dark tile.
 // Usage: swift scripts/make-icon.swift
 import AppKit
 
 let ink = NSColor(srgbRed: 0x17 / 255, green: 0x17 / 255, blue: 0x17 / 255, alpha: 1)
 let paper = NSColor(srgbRed: 0xFA / 255, green: 0xFA / 255, blue: 0xFA / 255, alpha: 1)
-let accent = NSColor(srgbRed: 0xB8 / 255, green: 0xA4 / 255, blue: 0xF8 / 255, alpha: 1)
 
-// Rows from top to bottom; "o" is the accent dot.
-let glyph = [".x.x.", "x...x", "x.o.x", "x...x", ".x.x."]
+// The key on a 180-point square, y growing downwards: the same numbers as KeyGlyph in
+// Sources/Keys/Theme.swift, which draws it in the app.
+let bow = CGRect(x: 58, y: 24, width: 64, height: 64)
+let shaft = CGRect(x: 78, y: 70, width: 24, height: 92)
+let teeth = [CGRect(x: 96, y: 118, width: 20, height: 13), CGRect(x: 96, y: 137, width: 15, height: 13)]
+let hole = CGRect(x: 82, y: 35, width: 16, height: 16)
 
 func render(_ pixels: Int) -> Data {
     let rep = NSBitmapImageRep(
@@ -21,16 +24,19 @@ func render(_ pixels: Int) -> Data {
     ink.setFill()
     NSBezierPath(roundedRect: tile, xRadius: tile.width * 0.2237, yRadius: tile.width * 0.2237).fill()
 
-    let step = tile.width * 0.15
-    let dot = step * 0.62
-    let origin = NSPoint(x: tile.midX - step * 2, y: tile.midY + step * 2)
-    for (row, line) in glyph.enumerated() {
-        for (column, mark) in line.enumerated() where mark != "." {
-            (mark == "o" ? accent : paper).setFill()
-            let center = NSPoint(x: origin.x + CGFloat(column) * step, y: origin.y - CGFloat(row) * step)
-            NSBezierPath(ovalIn: NSRect(x: center.x - dot / 2, y: center.y - dot / 2, width: dot, height: dot)).fill()
-        }
+    // From the 180-point square onto the tile, turning y the right way up.
+    let scale = tile.width / 180
+    func place(_ part: CGRect) -> NSRect {
+        NSRect(x: tile.minX + part.minX * scale, y: tile.maxY - part.maxY * scale, width: part.width * scale, height: part.height * scale)
     }
+    paper.setFill()
+    NSBezierPath(ovalIn: place(bow)).fill()
+    NSBezierPath(roundedRect: place(shaft), xRadius: 12 * scale, yRadius: 12 * scale).fill()
+    for tooth in teeth {
+        NSBezierPath(roundedRect: place(tooth), xRadius: 4 * scale, yRadius: 4 * scale).fill()
+    }
+    ink.setFill()
+    NSBezierPath(ovalIn: place(hole)).fill()
     NSGraphicsContext.restoreGraphicsState()
     return rep.representation(using: .png, properties: [:])!
 }
